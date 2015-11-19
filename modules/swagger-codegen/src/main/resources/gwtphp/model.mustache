@@ -1,0 +1,83 @@
+<?php
+{{#models}}
+{{#model}}
+/**
+ * {{classname}}
+ *
+ * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
+ * @author		AUTO GENERATED CODE
+ * @category	Class
+ * @package 	{{invokerPackage}}
+ * @license		http://www.qualityunit.com/licenses/license
+ *
+ * Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ * Version 1.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * http://www.qualityunit.com/licenses/license
+ */
+ 
+namespace {{modelPackage}};
+
+/**
+ * Auto generated code from swagger api description. DO NOT EDIT !!!!
+ */
+class {{classname}} {
+
+	{{#vars}}const {{#fnUpperCase}}{{name}}{{/fnUpperCase}} = '{{name}}';
+	{{/vars}}
+
+	private $data;
+    
+    /**
+     * Constructor
+     * @param mixed[] $data Associated array of property value initalizing the model
+     */
+    public function __construct(array $data = null) {
+        if ($data === null) {
+        	$data = array();
+        }
+        $this->data = $data;
+    }
+    
+    /**
+     * @return array
+     */
+    public function getData() {
+    	return $this->data;
+    }
+    {{#vars}}
+    /**
+     * Gets {{name}}
+     * @return {{datatype}}
+     */
+    public function {{getter}}() {
+        return {{^isPrimitiveType}}new {{datatype}}({{/isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]{{^isPrimitiveType}}){{/isPrimitiveType}};
+    }
+  
+    /**
+     * Sets {{name}}
+     * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
+     * @return $this
+     */
+    public function {{setter}}(${{name}}) {
+        {{#isEnum}}$allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!in_array(${{{name}}}, $allowed_values)) {
+            throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+        }
+        {{/isEnum}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = {{#isPrimitiveType}}${{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}${{name}}->getData(){{/isPrimitiveType}};
+    }
+    {{/vars}}
+    /**
+     * Gets the string presentation of the object
+     * @return string
+     */
+    public function __toString() {
+        if (defined('JSON_PRETTY_PRINT')) {
+            return json_encode($this->getData(), JSON_PRETTY_PRINT);
+        } else {
+            return json_encode($this->getData());
+        }
+    }
+}
+{{/model}}
+{{/models}}

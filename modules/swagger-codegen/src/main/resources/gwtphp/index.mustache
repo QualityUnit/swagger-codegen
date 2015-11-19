@@ -1,0 +1,25 @@
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+
+$app = new \Slim\Slim();
+
+{{#apiInfo}}
+    {{#apis}}
+        {{#operations}}
+            {{#operation}}
+
+$app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) {
+	{{#queryParams}}${{paramName}} = $request->get('{{paramName}}');{{newline}}    {{/queryParams}}
+    {{#formParams}}${{paramName}} = $request->get('{{paramName}}');{{newline}}    {{/formParams}}
+    
+    $handler = new Handler();
+    return $handler->hhhh();
+    echo "Hello, $name";
+});
+
+            {{/operation}}
+        {{/operations}}
+    {{/apis}}
+{{/apiInfo}}
+
+$app->run();
