@@ -40,8 +40,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         outputFolder = "generated-code" + File.separator + "php";
         modelTemplateFiles.put("model.mustache", ".class.php");
         embeddedTemplateDir = templateDir = "gwtphp";
-        apiPackage = invokerPackage + "\\Api";
-        modelPackage = invokerPackage + "\\Api\\Model";
+        apiPackage = invokerPackage + "_Api";
+        modelPackage = invokerPackage + "_Api_Model";
 
         reservedWords = new HashSet<String>(
                 Arrays.asList(
@@ -119,7 +119,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
 
         return (getPackagePath() + File.separatorChar + basePath
                     // Replace period, backslash, forward slash with file separator in package name
-                    + packageName.replaceAll("[\\.\\\\/]", File.separator)
+                    + packageName.replaceAll("[_]", File.separator)
                     // Trim prefix file separators from package path
                     .replaceAll(regFirstPathSeparator, ""))
                     // Trim trailing file separators from the overall path
@@ -180,8 +180,33 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         additionalProperties.put("fnSlimPath", new SlimPathLambda());
         additionalProperties.put("fnUpperCase", new UpperCaseLambda());
         
-        supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/index.php"));
-        supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/.htaccess"));
+        additionalProperties.put("fnClassName", new ClassNameLambda());
+        additionalProperties.put("fnMethodName", new MethodNameLambda());
+        
+        supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/v3/index.php"));
+        supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/v3/.htaccess"));
+    }
+    
+    private static class ClassNameLambda extends CustomLambda {
+        @Override
+        public String formatFragment(String fragment) {
+        	String[] parts = fragment.split("::", 2);
+        	if (parts.length != 2) {
+        		return "UNKNOWN";
+        	}
+        	return parts[0];
+        }
+    }
+    
+    private static class MethodNameLambda extends CustomLambda {
+        @Override
+        public String formatFragment(String fragment) {
+        	String[] parts = fragment.split("::", 2);
+        	if (parts.length != 2) {
+        		return "UNKNOWN";
+        	}
+        	return parts[1];
+        }
     }
     
     private static class UpperCaseLambda extends CustomLambda {
@@ -236,7 +261,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         } else if (p instanceof RefProperty) {
             String type = super.getTypeDeclaration(p);
             return (!languageSpecificPrimitives.contains(type))
-                    ? "\\" + modelPackage + "\\" + type : type;
+                    ? modelPackage + "_" + type : type;
         }
         return super.getTypeDeclaration(p);
     }
@@ -244,7 +269,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     @Override
     public String getTypeDeclaration(String name) {
         if (!languageSpecificPrimitives.contains(name)) {
-            return "\\" + modelPackage + "\\" + name;
+            return modelPackage + "_" + name;
         }
         return super.getTypeDeclaration(name);
     }
@@ -292,22 +317,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public void setParameterNamingConvention(String variableNamingConvention) {
         this.variableNamingConvention = variableNamingConvention;
     }
-
-    @Override
-    public String toOperationId(String operationId) {
-        // throw exception if method name is empty
-        if (StringUtils.isEmpty(operationId)) {
-            throw new RuntimeException("Empty method name (operationId) not allowed");
-        }
-
-        // method name cannot use reserved keyword, e.g. return
-        if (reservedWords.contains(operationId)) {
-            throw new RuntimeException(operationId + " (reserved word) cannot be used as method name");
-        }
-
-        return camelize(sanitizeName(operationId), true);
+    
+    public String removeNonNameElementToCamelCase(String name) {
+        return name;
     }
-
 
     @Override
     public String toVarName(String name) {
