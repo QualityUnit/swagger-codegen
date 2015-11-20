@@ -7,19 +7,19 @@ require '../../scripts/bootstrap.php';
 
 $app = new \Slim\Slim();
 
-$auth = new Crm_Api_Auth($app->request());
+$auth = new Crm_RestApi_Auth($app->request());
 
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
-	$params = new Crm_Api_Params($app->request());
+	$params = new Crm_RestApi_Params($app->request());
 	{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});
 	{{/isBodyParam}}{{/isPathParam}}{{/allParams}}
 	{{#authMethods}}{{#scopes}}$auth->checkScope('{{scope}}');{{/scopes}}
 	{{/authMethods}}{{#bodyParam}}
-	$data = new {{dataType}}($app->request()->getBody());
+	$data = new {{dataType}}($params->getBody());
 	{{/bodyParam}}
     $handler = new {{#fnClassName}}{{operationId}}(){{/fnClassName}}($params);
-    return $handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}});
+    $app->response->setBody(json_encode($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}})));
 });
 
 {{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
