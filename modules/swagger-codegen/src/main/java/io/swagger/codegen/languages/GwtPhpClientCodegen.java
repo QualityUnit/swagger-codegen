@@ -29,7 +29,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
     protected String invokerPackage = "Crm";
-    protected String packagePath = "Crm-server";
+    protected String packagePath = "";
     protected String artifactVersion = "1.0.0";
     protected String srcBasePath = "include/Crm";
     protected String variableNamingConvention= "snake_case";
@@ -319,19 +319,6 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     }
     
     public String removeNonNameElementToCamelCase(String name) {
-        return name;
-    }
-
-    @Override
-    public String toVarName(String name) {
-        name = camelize(name);
-
-        // parameter name starting with number won't compile
-        // need to escape it by appending _ at the beginning
-        if (name.matches("^\\d.*")) {
-            name = "_" + name;
-        }
-
         return name;
     }
 
