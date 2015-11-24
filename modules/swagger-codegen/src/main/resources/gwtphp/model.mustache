@@ -49,7 +49,10 @@ class {{modelPackage}}_{{classname}} {
      * @return {{datatype}}
      */
     public function {{getter}}() {
-        return {{^isPrimitiveType}}new {{datatype}}({{/isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]{{^isPrimitiveType}}){{/isPrimitiveType}};
+    	if ($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] == '') {
+    		return {{{defaultValue}}};
+    	}
+    	return {{^isPrimitiveType}}new {{datatype}}({{/isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]{{^isPrimitiveType}}){{/isPrimitiveType}};
     }
   
     /**
@@ -75,6 +78,21 @@ class {{modelPackage}}_{{classname}} {
         } else {
             return json_encode($this->getData());
         }
+    }
+    
+    /**
+     * Checks if the object contains all mandatory fields and that fields are in correct format
+     * @throws Exception
+     */
+    public function check() {
+    	{{#vars}}{{#required}}{{#isPrimitiveType}}if ($this->{{getter}}() == '') {
+    		throw new Exception('{{name}} is required');
+    	}{{/isPrimitiveType}}{{^isPrimitiveType}}$this->{{getter}}()->check();{{/isPrimitiveType}}
+    	{{/required}}{{#isEnum}}$allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!in_array($this->{{getter}}(), $allowed_values)) {
+            throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+        }
+        {{/isEnum}}{{/vars}}
     }
 }
 {{/model}}

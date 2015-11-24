@@ -7,7 +7,7 @@ require '../../scripts/bootstrap.php';
 
 $app = new \Slim\Slim();
 
-$auth = new Crm_RestApi_Auth($app->request());
+$auth = Crm_RestApi_Auth::init($app->request());
 
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
@@ -17,9 +17,15 @@ $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#path
 	{{#authMethods}}{{#scopes}}$auth->checkScope('{{scope}}');{{/scopes}}
 	{{/authMethods}}{{#bodyParam}}
 	$data = new {{dataType}}($params->getBody());
+	$data->check();
 	{{/bodyParam}}
-    $handler = new {{#fnClassName}}{{operationId}}(){{/fnClassName}}($params);
-    $app->response->setBody(json_encode($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}})));
+    $response = new Crm_RestApi_Response($app->response);
+    try {
+    	$handler = new {{#fnClassName}}{{operationId}}{{/fnClassName}}($params);
+    	$response->setResult($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));	
+    } catch (Exception $e) {
+    	$response->setError($e);
+    }
 });
 
 {{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}

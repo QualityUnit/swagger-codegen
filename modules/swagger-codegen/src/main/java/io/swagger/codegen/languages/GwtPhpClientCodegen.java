@@ -10,6 +10,7 @@ import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
@@ -295,7 +296,14 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     }
 
     public String toDefaultValue(Property p) {
-        return "null";
+    	if (p instanceof StringProperty) {
+    		StringProperty dp = (StringProperty) p;
+            if (dp.getDefault() != null) {
+                return "'"+dp.getDefault().toString()+"'";
+            }
+            return "null";
+        }
+        return super.toDefaultValue(p);
     }
 
     public void setInvokerPackage(String invokerPackage) {
