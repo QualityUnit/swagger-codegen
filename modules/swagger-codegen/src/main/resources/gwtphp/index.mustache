@@ -24,10 +24,11 @@ $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#path
 		{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});
 		{{/isBodyParam}}{{/isPathParam}}{{/allParams}}
 		{{#authMethods}}{{#scopes}}$auth->checkScope('{{scope}}');{{/scopes}}
-		{{/authMethods}}{{#bodyParam}}
+		{{/authMethods}}{{#bodyParam}}{{^dataType}}
+		$data = $params->getBody(){{/dataType}}{{#dataType}}
 		$data = new {{dataType}}($params->getBody());
 		$data->check();
-		{{/bodyParam}}
+		{{/dataType}}{{/bodyParam}}
     	
     	$handler = new {{#fnClassName}}{{operationId}}{{/fnClassName}}($params);
     	$response->setResult($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));	

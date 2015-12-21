@@ -180,6 +180,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
 
         additionalProperties.put("fnSlimPath", new SlimPathLambda());
         additionalProperties.put("fnUpperCase", new UpperCaseLambda());
+        additionalProperties.put("fnItemType", new ItemTypeLambda());
         
         additionalProperties.put("fnClassName", new ClassNameLambda());
         additionalProperties.put("fnMethodName", new MethodNameLambda());
@@ -221,6 +222,13 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         @Override
         public String formatFragment(String fragment) {
         	return fragment.replace("{", ":").replace("}","");
+        }
+    }
+    
+    private static class ItemTypeLambda extends CustomLambda {
+        @Override
+        public String formatFragment(String fragment) {
+        	return fragment.replace("[", "").replace("]","");
         }
     }
     

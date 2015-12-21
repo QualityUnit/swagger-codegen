@@ -50,9 +50,15 @@ class {{modelPackage}}_{{classname}} {
      */
     public function {{getter}}() {
     	if ($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] == '') {
-    		return {{{defaultValue}}};
+    		return {{#isContainer}}array(){{/isContainer}}{{^isContainer}}{{{defaultValue}}}{{/isContainer}};
+    	}{{#isContainer}}
+    	$data = array();
+    	foreach ($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] as $item) {
+    		$data[] = new {{#fnItemType}}{{datatype}}{{/fnItemType}}($item);
     	}
-    	return {{^isPrimitiveType}}new {{datatype}}({{/isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]{{^isPrimitiveType}}){{/isPrimitiveType}};
+    	return $data;{{/isContainer}}{{^isContainer}}{{#isPrimitiveType}}
+    	return $this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}];{{/isPrimitiveType}}{{^isPrimitiveType}}
+    	return new {{datatype}}($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]);{{/isPrimitiveType}}{{/isContainer}}
     }
   
     /**
@@ -60,12 +66,15 @@ class {{modelPackage}}_{{classname}} {
      * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
      * @return $this
      */
-    public function {{setter}}(${{name}}) {
+    public function {{setter}}({{#isContainer}}array {{/isContainer}}${{name}}) {
         {{#isEnum}}$allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
         if (!in_array(${{{name}}}, $allowed_values)) {
             throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }
-        {{/isEnum}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = {{#isPrimitiveType}}${{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}${{name}}->getData(){{/isPrimitiveType}};
+        {{/isEnum}}{{#isContainer}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = array();
+        foreach (${{name}} as $item) {
+        	$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}][] = $item->getData();
+        }{{/isContainer}}{{^isContainer}}{{#isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = ${{name}};{{/isPrimitiveType}}{{^isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = ${{name}}->getData();{{/isPrimitiveType}}{{/isContainer}}
     }
     {{/vars}}
     /**
