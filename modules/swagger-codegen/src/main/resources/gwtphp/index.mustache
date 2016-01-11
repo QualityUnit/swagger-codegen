@@ -8,7 +8,7 @@ require '../../scripts/bootstrap.php';
 $app = new \Slim\Slim();
 
 try {
-    $auth = Crm_RestApi_Auth::init($app->request());
+    $auth = {{invokerPackage}}_Api_Auth::init($app->request());
 } catch (Exception $e) {
     http_response_code($e->getCode());
     echo $e->getMessage();
@@ -20,8 +20,8 @@ try {
 {{notes}}
 */
 $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
-	$params = new Crm_RestApi_Params($app->request());
-	$response = new Crm_RestApi_Response($app->response());
+	$params = new RestApi_Params($app->request());
+	$response = new RestApi_Response($app->response());
 	
 	try {
 		{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});

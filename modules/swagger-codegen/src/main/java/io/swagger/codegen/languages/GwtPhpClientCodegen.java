@@ -33,8 +33,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String SRC_BASE_PATH = "srcBasePath";
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
-    protected String artifactVersion = "1.0.0";
-    protected String srcBasePath = "include/Crm";
+    protected String artifactVersion = "1";
+    protected String srcBasePath = "include/" + invokerPackage;
     protected String variableNamingConvention= "snake_case";
 
     public GwtPhpClientCodegen() {
@@ -43,8 +43,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         outputFolder = "generated-code" + File.separator + "php";
         modelTemplateFiles.put("model.mustache", ".class.php");
         embeddedTemplateDir = templateDir = "gwtphp";
-        apiPackage = invokerPackage + "_Api";
-        modelPackage = invokerPackage + "_Api_Model";
+        setInvokerPackage(invokerPackage);
+        
 
         reservedWords = new HashSet<String>(
                 Arrays.asList(
@@ -189,8 +189,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         additionalProperties.put("fnClassName", new ClassNameLambda());
         additionalProperties.put("fnMethodName", new MethodNameLambda());
         
-        supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/v3/index.php"));
-        supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/v3/.htaccess"));
+        supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/v"+artifactVersion+"/index.php"));
+        supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/v"+artifactVersion+"/.htaccess"));
     }
     
     private static class ClassNameLambda extends CustomLambda {
@@ -320,6 +320,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
 
     public void setInvokerPackage(String invokerPackage) {
         this.invokerPackage = invokerPackage;
+    	srcBasePath = "include/" + invokerPackage;
+    	apiPackage = invokerPackage + "_Api";
+        modelPackage = invokerPackage + "_Api_Model";
     }
         
     public void setArtifactVersion(String artifactVersion) {
