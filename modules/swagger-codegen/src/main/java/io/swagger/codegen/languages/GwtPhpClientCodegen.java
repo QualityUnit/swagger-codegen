@@ -22,6 +22,8 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,7 +66,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
                         "mixed",
                         "number",
                         "void",
-                        "byte")
+                        "byte",
+                        "Number",
+                        "Integer")
         );
 
         instantiationTypes.put("array", "array");
@@ -84,14 +88,14 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         typeMapping.put("string", "string");
         typeMapping.put("byte", "int");
         typeMapping.put("boolean", "bool");
-        typeMapping.put("date", "\\DateTime");
-        typeMapping.put("datetime", "\\DateTime");
-        typeMapping.put("file", "\\SplFileObject");
+        typeMapping.put("date", "string");
+        typeMapping.put("datetime", "string");
+        typeMapping.put("file", "file");
         typeMapping.put("map", "map");
         typeMapping.put("array", "array");
         typeMapping.put("list", "array");
         typeMapping.put("object", "object");
-        typeMapping.put("DateTime", "\\DateTime");
+        typeMapping.put("DateTime", "string");
     }
 
     public String getPackagePath() {
@@ -349,7 +353,6 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         if (reservedWords.contains(name)) {
             escapeReservedWord(name); // e.g. return => _return
         }
-
         // camelize the model name
         // phone_number => PhoneNumber
         return camelize(name);

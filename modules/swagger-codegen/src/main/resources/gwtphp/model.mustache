@@ -54,7 +54,7 @@ class {{modelPackage}}_{{classname}} {
     	}{{#isContainer}}
     	$data = array();
     	foreach ($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] as $item) {
-    		$data[] = new {{#fnItemType}}{{datatype}}{{/fnItemType}}($item);
+    	    $data[] = {{^isPrimitiveType}}new {{#fnItemType}}{{datatype}}{{/fnItemType}}($item){{/isPrimitiveType}}{{#isPrimitiveType}}$item{{/isPrimitiveType}};
     	}
     	return $data;{{/isContainer}}{{^isContainer}}{{#isPrimitiveType}}
     	return $this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}];{{/isPrimitiveType}}{{^isPrimitiveType}}
@@ -66,14 +66,14 @@ class {{modelPackage}}_{{classname}} {
      * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
      * @return $this
      */
-    public function {{setter}}({{#isContainer}}array {{/isContainer}}${{name}}) {
+    public function {{setter}}({{^isContainer}}{{^isPrimitiveType}}{{datatype}} {{/isPrimitiveType}}{{/isContainer}}{{#isContainer}}array {{/isContainer}}${{name}}) {
         {{#isEnum}}$allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
         if (!in_array(${{{name}}}, $allowed_values)) {
             throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }
         {{/isEnum}}{{#isContainer}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = array();
         foreach (${{name}} as $item) {
-        	$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}][] = $item->getData();
+        	$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}][] = {{^isPrimitiveType}}$item->getData(){{/isPrimitiveType}}{{#isPrimitiveType}}$item{{/isPrimitiveType}};
         }{{/isContainer}}{{^isContainer}}{{#isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = ${{name}};{{/isPrimitiveType}}{{^isPrimitiveType}}$this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}] = ${{name}}->getData();{{/isPrimitiveType}}{{/isContainer}}
     }
     {{/vars}}
