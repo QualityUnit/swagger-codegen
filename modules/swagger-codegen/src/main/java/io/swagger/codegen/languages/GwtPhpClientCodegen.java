@@ -108,23 +108,12 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
             basePath = basePath.replaceAll("[\\\\/]?$", "") + File.separatorChar;
         }
 
-        String regFirstPathSeparator;
-        if ("/".equals(File.separator)) { // for mac, linux
-            regFirstPathSeparator = "^/";
-        } else { // for windows
-            regFirstPathSeparator = "^\\\\";
-        }
+        String regFirstPathSeparator = "^/";
+        String regLastPathSeparator = "/$";
 
-        String regLastPathSeparator;
-        if ("/".equals(File.separator)) { // for mac, linux
-            regLastPathSeparator = "/$";
-        } else { // for windows
-            regLastPathSeparator = "\\\\$";
-        }
-
-        return (getPackagePath() + File.separatorChar + basePath
+        return (getPackagePath() + "/" + basePath
                     // Replace period, backslash, forward slash with file separator in package name
-                    + packageName.replaceAll("[_]", File.separator)
+                    + packageName.replaceAll("[_]", "/")
                     // Trim prefix file separators from package path
                     .replaceAll(regFirstPathSeparator, ""))
                     // Trim trailing file separators from the overall path

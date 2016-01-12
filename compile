@@ -1,3 +1,2 @@
 #!/bin/bash
 mvn clean package
-cp ./modules/swagger-codegen-cli/target/swagger-codegen-cli.jar ../Crm/Crm/server/api/
