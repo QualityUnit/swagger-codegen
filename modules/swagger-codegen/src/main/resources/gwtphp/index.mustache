@@ -26,7 +26,7 @@ $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#path
 	try {
 		{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});
 		{{/isBodyParam}}{{/isPathParam}}{{/allParams}}
-		{{#authMethods}}{{#scopes}}$auth->checkScope('{{scope}}');{{/scopes}}
+		{{#authMethods}}$auth->checkScope(array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}));
 		{{/authMethods}}{{#bodyParam}}{{^dataType}}
 		$data = $params->getBody(){{/dataType}}{{#dataType}}
 		$data = new {{dataType}}($params->getBody());
