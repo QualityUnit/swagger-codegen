@@ -1,6 +1,7 @@
 <?php
 /**
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
+ * Codegen version: {{codegenVersion}}
  */
 require __DIR__ . '/../../vendor/autoload.php';
 require '../../scripts/bootstrap.php';
@@ -20,13 +21,13 @@ try {
 {{notes}}
 */
 $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
-	$params = new RestApi_Params($app->request());
+	$params = new RestApi_Params($app->request(){{#authMethods}}, array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}){{/authMethods}});
 	$response = new RestApi_Response($app->response());
 	
 	try {
 		{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});
 		{{/isBodyParam}}{{/isPathParam}}{{/allParams}}
-		{{#authMethods}}$auth->checkScope(array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}));
+		{{#authMethods}}$auth->checkScope($params->getScopes());
 		{{/authMethods}}{{#bodyParam}}{{^dataType}}
 		$data = $params->getBody(){{/dataType}}{{#dataType}}
 		$data = new {{dataType}}($params->getBody());

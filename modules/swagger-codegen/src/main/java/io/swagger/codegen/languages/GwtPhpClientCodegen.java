@@ -31,6 +31,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
+    public static final String CODEGEN_VERSION = "1.0.0";
+    
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
     protected String artifactVersion = "1";
@@ -180,6 +182,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         
         supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/v"+artifactVersion+"/index.php"));
         supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/v"+artifactVersion+"/.htaccess"));
+        
+        additionalProperties.put("codegenVersion", CODEGEN_VERSION);
     }
     
     private static class ClassNameLambda extends CustomLambda {
