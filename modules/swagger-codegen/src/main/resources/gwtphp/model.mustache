@@ -31,8 +31,8 @@ class {{modelPackage}}_{{classname}} {
      * Constructor
      * @param mixed[] $data Associated array of property value initalizing the model
      */
-    public function __construct(array $data = null) {
-        if ($data === null) {
+    public function __construct($data = null) {
+        if ($data === null || !is_array($data)) {
         	$data = array();
         }
         $this->data = $data;
@@ -96,11 +96,11 @@ class {{modelPackage}}_{{classname}} {
      */
     public function check() {
     	{{#vars}}{{#required}}{{#isPrimitiveType}}if ($this->{{getter}}() == '') {
-    		throw new Exception('{{name}} is required');
+    		throw new Gpf_RestApi_ProcessingException(400, '{{name}} is required');
     	}{{/isPrimitiveType}}{{^isPrimitiveType}}$this->{{getter}}()->check();{{/isPrimitiveType}}
     	{{/required}}{{#isEnum}}$allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
         if (!in_array($this->{{getter}}(), $allowed_values)) {
-            throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+            throw new Gpf_RestApi_ProcessingException(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }
         {{/isEnum}}{{/vars}}
     }

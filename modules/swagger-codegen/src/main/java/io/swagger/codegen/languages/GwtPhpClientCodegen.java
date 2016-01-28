@@ -1,6 +1,18 @@
 package io.swagger.codegen.languages;
 
-import io.swagger.codegen.CliOption;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.CodegenConstants;
 import io.swagger.codegen.CodegenType;
@@ -12,26 +24,11 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-
 public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig {
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
-    public static final String CODEGEN_VERSION = "1.0.0";
+    public static final String CODEGEN_VERSION = "1.0.1";
     
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
