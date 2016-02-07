@@ -15,32 +15,24 @@ try {
     echo $e->getMessage();
     exit();
 }
-
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 /*
-{{notes}}
-*/
+ * {{notes}}
+ */
 $app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
-	$params = new RestApi_Params($app->request(){{#authMethods}}, array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}){{/authMethods}});
-	$response = new RestApi_Response($app->response());
-	
-	try {
-		{{#allParams}}{{^isPathParam}}{{^isBodyParam}}$params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});
-		{{/isBodyParam}}{{/isPathParam}}{{/allParams}}
-		{{#authMethods}}$auth->checkScope($params->getScopes());
-		{{/authMethods}}{{#bodyParam}}{{^dataType}}
-		$data = $params->getBody(){{/dataType}}{{#dataType}}
-		$data = new {{dataType}}($params->getBody());
-		$data->check();
-		{{/dataType}}{{/bodyParam}}
-    	
-    	$handler = new {{#fnClassName}}{{operationId}}{{/fnClassName}}($params);
-    	$response->setResult($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));	
+    $params = new RestApi_Params($app->request(){{#authMethods}}, array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}){{/authMethods}});
+    $response = new RestApi_Response($app->response());
+    try { {{#allParams}}{{^isPathParam}}{{^isBodyParam}}
+        $params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});{{/isBodyParam}}{{/isPathParam}}{{/allParams}}{{#authMethods}}
+        $auth->checkScope($params->getScopes());{{/authMethods}}{{#bodyParam}}{{^dataType}}
+        $data = $params->getBody(){{/dataType}}{{#dataType}}
+        $data = new {{dataType}}($params->getBody());
+        $data->check();{{/dataType}}{{/bodyParam}}
+        $handler = new {{#fnClassName}}{{operationId}}{{/fnClassName}}($params);
+        $response->setResult($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));
     } catch (Exception $e) {
-    	$response->setError($e);
+        $response->setError($e);
     }
 });
-
 {{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
-
 $app->run();

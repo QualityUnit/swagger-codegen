@@ -28,7 +28,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
-    public static final String CODEGEN_VERSION = "1.0.1";
+    public static final String CODEGEN_VERSION = "1.1.0";
     
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
@@ -81,6 +81,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         // ref: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types
         typeMapping = new HashMap<String, String>();
         typeMapping.put("integer", "int");
+        typeMapping.put("number", "float");
         typeMapping.put("long", "int");
         typeMapping.put("float", "float");
         typeMapping.put("double", "double");
