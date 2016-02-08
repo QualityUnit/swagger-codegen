@@ -32,7 +32,7 @@ abstract class RestApi_TypeUtils_Field {
                 return new RestApi_TypeUtils_IntField();
             case 'double':
             case 'float':
-                return new Gpf_TypeUtils_FloatField();
+                return new RestApi_TypeUtils_FloatField();
             case 'string':
                 return new RestApi_TypeUtils_StringField();
             case 'bool':

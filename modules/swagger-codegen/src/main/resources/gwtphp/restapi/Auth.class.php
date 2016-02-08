@@ -67,7 +67,7 @@ class RestApi_Auth {
         self::$instance->checkScope($privileges);
     }
     
-    private function __construct(\Slim\Http\Request $request) {
+    protected function __construct(\Slim\Http\Request $request) {
         $key = $request->get('apikey');
         if($key == '') {
             $key = $request->post('apikey');

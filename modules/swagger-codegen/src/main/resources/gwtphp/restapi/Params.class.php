@@ -36,7 +36,7 @@ class RestApi_Params {
             throw new Gpf_RestApi_ProcessingException(400, sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues)));
         }
         try {
-            Gpf_TypeUtils_Field::of($type, $this->get($name));
+            RestApi_TypeUtils_Field::of($type, $this->get($name));
         } catch (Gpf_TypeUtils_ParseException $e) {
             $e->setFieldName($name);
             throw $e;
