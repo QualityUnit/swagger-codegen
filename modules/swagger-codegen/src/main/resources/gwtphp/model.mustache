@@ -29,7 +29,7 @@ class {{modelPackage}}_{{classname}} {
             self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}} => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}']{{#hasMore}},{{/hasMore}}{{/vars}});
 
     /**
-     * @var Gpf_TypeUtils_Field[]
+     * @var RestApi_TypeUtils_Field[]
      */
     private $data;
 
@@ -81,7 +81,7 @@ class {{modelPackage}}_{{classname}} {
      * Sets {{name}}
      * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
      * @return $this
-     * @throws Gpf_TypeUtils_ParseException
+     * @throws RestApi_TypeUtils_ParseException
      */
     public function {{setter}}({{^isContainer}}{{^isPrimitiveType}}{{datatype}} {{/isPrimitiveType}}{{/isContainer}}{{#isContainer}}array {{/isContainer}}${{name}}) { {{#isEnum}}
         $allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
