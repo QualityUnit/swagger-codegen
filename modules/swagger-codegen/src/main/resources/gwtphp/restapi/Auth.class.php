@@ -18,12 +18,12 @@ class RestApi_Auth {
     private static $instance;
     
     /**
-     * 
      * @var RestApi_Role
      */
     private $role;
+
     /**
-     * @var Gpf_Db_Apikey
+     * @var string
      */
     private $apiKey;
     
@@ -31,12 +31,16 @@ class RestApi_Auth {
      * @param \Slim\Http\Request $request
      * @return RestApi_Auth
      */
-    public static function init(\Slim\Http\Request $request) {
-        return self::$instance = new RestApi_Auth($request);
+    public static final function init(\Slim\Http\Request $request) {
+        return self::$instance = static::getInstance($request);
+    }
+
+    protected static function getInstance($request) {
+        return new RestApi_Auth($request);
     }
 
     /**
-     * @return Gpf_Db_Apikey|null
+     * @return string|null
      */
     public static function getApiKey() {
         if (self::$instance === null) {
@@ -71,14 +75,16 @@ class RestApi_Auth {
         if ($key == '') {
             return;
         }
-        $this->apiKey = new Gpf_Db_Apikey();
-        $this->apiKey->setKey($key);
-        try {
-            $this->apiKey->loadFromData();
-        } catch (Gpf_DbEngine_NoRowException $e) {
-            throw new Exception('Invalid api key', 401);
-        }
-        $this->role = Gpf::newObj($this->apiKey->getRole());
+        $this->apiKey = $key;
+        $this->role = $this->getRoleFromKey($this->apiKey);
+    }
+
+    /**
+     * @param string $apiKey
+     * @return RestApi_Role
+     */
+    protected function getRoleFromKey($apiKey) {
+        return null;
     }
 
     /**

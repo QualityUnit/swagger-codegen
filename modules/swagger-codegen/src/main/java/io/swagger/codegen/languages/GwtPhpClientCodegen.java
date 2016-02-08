@@ -28,7 +28,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
-    public static final String CODEGEN_VERSION = "1.2.1";
+    public static final String CODEGEN_VERSION = "1.2.2";
     
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
