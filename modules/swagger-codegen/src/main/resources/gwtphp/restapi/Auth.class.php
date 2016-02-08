@@ -19,7 +19,7 @@ class RestApi_Auth {
     
     /**
      * 
-     * @var Gpf_RestApi_Role
+     * @var RestApi_Role
      */
     private $role;
     /**
@@ -51,10 +51,9 @@ class RestApi_Auth {
         }
         return self::$instance->hasPrivilegePrivate($name);
     }
-    
+
     /**
-     * 
-     * @param string|array $scopes If array is given, method succeeds if user has at least one of the specified privileges
+     * @param string|array $privileges If array is given, method succeeds if user has at least one of the specified privileges
      * @throws Gpf_RestApi_ProcessingException
      */
     public static function checkPrivileges($privileges) {

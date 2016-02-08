@@ -193,6 +193,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
             {"restapi/", "", "OkResponse.class.php"},
             {"restapi/", "", "Params.class.php"},
             {"restapi/", "", "Response.class.php"},
+            {"restapi/", "", "Role.class.php"}
         };
 
         for(String[] file : suppFiles) {
