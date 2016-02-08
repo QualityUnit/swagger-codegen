@@ -28,7 +28,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
-    public static final String CODEGEN_VERSION = "1.1.0";
+    public static final String CODEGEN_VERSION = "1.2.0";
     
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
@@ -180,7 +180,25 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         
         supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(), "api/v"+artifactVersion+"/index.php"));
         supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(), "api/v"+artifactVersion+"/.htaccess"));
-        
+
+        String restApiPath = "include/RestApi/";
+        String[][] suppFiles = {
+            {"field/", "TypeUtils/", "Field.class.php"},
+            {"field/", "TypeUtils/", "BoolField.class.php"},
+            {"field/", "TypeUtils/", "IntField.class.php"},
+            {"field/", "TypeUtils/", "FloatField.class.php"},
+            {"field/", "TypeUtils/", "StringField.class.php"},
+            {"field/", "TypeUtils/", "ParseException.class.php"},
+            {"restapi/", "", "Auth.class.php"},
+            {"restapi/", "", "OkResponse.class.php"},
+            {"restapi/", "", "Params.class.php"},
+            {"restapi/", "", "Response.class.php"},
+        };
+
+        for(String[] file : suppFiles) {
+            supportingFiles.add(new SupportingFile(file[0] + file[2], getPackagePath(), restApiPath + file[1] + file[2]));
+        }
+
         additionalProperties.put("codegenVersion", CODEGEN_VERSION);
     }
     
