@@ -26,7 +26,7 @@ class {{modelPackage}}_{{classname}} {
     {{/hasMore}}{{/vars}}
 
     private static $fieldTypes = array({{#vars}}
-            self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}} => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}']{{#hasMore}},{{/hasMore}}{{/vars}});
+            self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}} => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}]{{#hasMore}},{{/hasMore}}{{/vars}});
 
     /**
      * @var RestApi_TypeUtils_Field[]
@@ -73,7 +73,11 @@ class {{modelPackage}}_{{classname}} {
            $data[] = new {{#fnItemType}}{{datatype}}{{/fnItemType}}($item);
         }
         return $data;{{/isContainer}}{{^isContainer}}
-        return new {{datatype}}($this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]->get());{{/isContainer}}{{/isPrimitiveType}}{{#isPrimitiveType}}
+        $data = $this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]->get();
+        if($data === array()) {
+            return null;
+        }
+        return new {{datatype}}($data);{{/isContainer}}{{/isPrimitiveType}}{{#isPrimitiveType}}
         return $this->data[self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}}]->get();{{/isPrimitiveType}}
     }
 
@@ -82,6 +86,7 @@ class {{modelPackage}}_{{classname}} {
      * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
      * @return $this
      * @throws RestApi_TypeUtils_ParseException
+     * @throws \InvalidArgumentException
      */
     public function {{setter}}({{^isContainer}}{{^isPrimitiveType}}{{datatype}} {{/isPrimitiveType}}{{/isContainer}}{{#isContainer}}array {{/isContainer}}${{name}}) { {{#isEnum}}
         $allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
@@ -113,15 +118,15 @@ class {{modelPackage}}_{{classname}} {
 
     /**
      * Checks if the object contains all mandatory fields and that fields are in correct format
-     * @throws Exception
+     * @throws RestApi_ProcessingException
      */
     public function check() { {{#vars}}{{#required}}
         {{#isPrimitiveType}}if ($this->{{getter}}() == '') {
-            throw new Gpf_RestApi_ProcessingException(400, '{{name}} is required');
+            throw RestApi_Make::error(400, '{{name}} is required');
         }{{/isPrimitiveType}}{{^isPrimitiveType}}$this->{{getter}}()->check();{{/isPrimitiveType}}{{/required}}{{#isEnum}}
         $allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
         if (!in_array($this->{{getter}}(), $allowed_values)) {
-            throw new Gpf_RestApi_ProcessingException(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+            throw RestApi_Make::error(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }{{/isEnum}}{{/vars}}
     }
 }

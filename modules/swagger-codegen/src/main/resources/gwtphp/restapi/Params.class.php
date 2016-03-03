@@ -30,14 +30,14 @@ class RestApi_Params {
         $this->defaultValues[$name] = $defaultValue;
         $value = $this->get($name);
         if ($value == '' && $required) {
-            throw new Gpf_RestApi_ProcessingException(400, sprintf('Param %s is required', $name));
+            throw RestApi_Make::error(400, sprintf('Param %s is required', $name));
         }
         if ($allowedValues !== null && !in_array($value, $allowedValues)) {
-            throw new Gpf_RestApi_ProcessingException(400, sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues)));
+            throw RestApi_Make::error(400, sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues)));
         }
         try {
             RestApi_TypeUtils_Field::of($type, $this->get($name));
-        } catch (Gpf_TypeUtils_ParseException $e) {
+        } catch (RestApi_TypeUtils_ParseException $e) {
             $e->setFieldName($name);
             throw $e;
         }

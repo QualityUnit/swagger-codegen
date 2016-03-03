@@ -15,6 +15,7 @@ import java.util.HashSet;
 
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.CodegenConstants;
+import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
@@ -28,7 +29,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     public static final String PACKAGE_PATH = "packagePath";
     public static final String SRC_BASE_PATH = "srcBasePath";
-    public static final String CODEGEN_VERSION = "1.2.2";
+    public static final String CODEGEN_VERSION = "1.3.0";
     
     protected String invokerPackage = "Crm";
     protected String packagePath = "";
@@ -192,7 +193,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
             {"restapi/", "", "Auth.class.php"},
             {"restapi/", "", "OkResponse.class.php"},
             {"restapi/", "", "Params.class.php"},
+            {"restapi/", "", "ProcessingException.class.php"},
             {"restapi/", "", "Response.class.php"},
+            {"restapi/", "", "Make.class.php"},
             {"restapi/", "", "Role.class.php"}
         };
 
@@ -318,10 +321,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
     }
 
     public String toDefaultValue(Property p) {
-    	if (p instanceof StringProperty) {
-    		StringProperty dp = (StringProperty) p;
+        if (p instanceof StringProperty) {
+            StringProperty dp = (StringProperty) p;
             if (dp.getDefault() != null) {
-                return "'"+dp.getDefault().toString()+"'";
+                return "'" + dp.getDefault() + "'";
             }
             return "null";
         }
@@ -377,4 +380,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
         return toModelName(name);
     }
 
+    @Override
+    public CodegenProperty fromProperty(final String name, final Property p) {
+        CodegenProperty cp = super.fromProperty(name, p);
+        cp.hasDefaultValue = !"null".equals(cp.defaultValue);
+        return cp;
+    }
 }

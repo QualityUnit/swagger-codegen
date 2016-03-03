@@ -9,6 +9,10 @@ require '../../scripts/bootstrap.php';
 $app = new \Slim\Slim();
 
 try {
+    RestApi_Make::init(new {{invokerPackage}}_Api_Make);
+} catch (Exception $ignore) {}
+
+try {
     $auth = {{invokerPackage}}_Api_Auth::init($app->request());
 } catch (Exception $e) {
     http_response_code($e->getCode());

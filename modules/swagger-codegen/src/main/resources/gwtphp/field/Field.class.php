@@ -52,7 +52,7 @@ abstract class RestApi_TypeUtils_Field {
      * @param $value
      */
     public final function set($value) {
-        if($value == null) {
+        if($value === null) {
             $this->value = $this->getDefaultValue();
             return;
         }

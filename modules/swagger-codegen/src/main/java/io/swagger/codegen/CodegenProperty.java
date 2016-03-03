@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 public class CodegenProperty {
+
+    // QU start
+    public Boolean hasDefaultValue = true;
+    // QU end
+
     public String baseName, complexType, getter, setter, description, datatype, datatypeWithEnum,
             name, min, max, defaultValue, baseType, containerType;
 

@@ -58,11 +58,11 @@ class RestApi_Auth {
 
     /**
      * @param string|array $privileges If array is given, method succeeds if user has at least one of the specified privileges
-     * @throws Gpf_RestApi_ProcessingException
+     * @throws RestApi_ProcessingException
      */
     public static function checkPrivileges($privileges) {
         if (self::$instance === null) {
-            throw new Gpf_RestApi_ProcessingException(403, 'You do not have sufficient privileges');
+            throw RestApi_Make::error(403, 'You do not have sufficient privileges');
         }
         self::$instance->checkScope($privileges);
     }
@@ -90,7 +90,7 @@ class RestApi_Auth {
     /**
      * 
      * @param string|array $scopes If array is given, method succeeds if user has at least one of the specified privileges 
-     * @throws Gpf_RestApi_ProcessingException
+     * @throws RestApi_ProcessingException
      */
     public function checkScope($scopes) {
         if (!is_array($scopes)) {
@@ -104,7 +104,7 @@ class RestApi_Auth {
                 return;
             }
         }
-        throw new Gpf_RestApi_ProcessingException(403, 'You do not have sufficient privileges');
+        throw RestApi_Make::error(403, 'You do not have sufficient privileges');
     }
     
     private function hasPrivilegePrivate($name) {

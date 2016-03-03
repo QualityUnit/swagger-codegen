@@ -27,12 +27,11 @@ class RestApi_Response {
     
     public function setError(Exception $e) {
         if($e instanceof RestApi_TypeUtils_ParseException) {
-            $e = new Gpf_RestApi_ProcessingException(400, "Invalid field " . $e->getFieldName() . ": " . $e->getMessage());
-        } else if(!($e instanceof Gpf_RestApi_ProcessingException)) {
-            $e = new Gpf_RestApi_ProcessingException(500, sprintf("Internal server error: %s", $e->getMessage()));
+            $e = RestApi_Make::error(400, "Invalid field " . $e->getFieldName() . ": " . $e->getMessage());
+        } else if(!($e instanceof RestApi_ProcessingException)) {
+            $e = RestApi_Make::error(500, "Internal server error: " . $e->getMessage());
         }
         $this->response->setStatus($e->getCode());
         $this->response->setBody($e->getMessage());
     }
-
 }
