@@ -34,4 +34,11 @@ class RestApi_Response {
         $this->response->setStatus($e->getCode());
         $this->response->setBody($e->getMessage());
     }
+    
+    public function send() {
+        foreach ($this->response->headers() as $name => $value) {
+            header("$name: $value", true, $this->response->getStatus());
+        }
+        echo $this->response->getBody();
+    }
 }

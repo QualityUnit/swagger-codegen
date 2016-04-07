@@ -14,8 +14,9 @@ try {
 try {
     $auth = {{invokerPackage}}_Api_Auth::init($app->request());
 } catch (Exception $e) {
-    http_response_code($e->getCode());
-    echo $e->getMessage();
+    $response = new RestApi_Response($app->response());
+    $response->setError($e);
+    $response->send();
     exit();
 }
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
