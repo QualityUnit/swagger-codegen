@@ -21,8 +21,12 @@ class RestApi_Response {
         $this->response = $response;
     }
     
-    public function setResult($result) {
-        $this->response->setBody(json_encode($result));
+    public function setResult(RestApi_Result $result) {
+        foreach ($result->getHeaders() as $name => $value) {
+            $this->response->headers()->set($name, $value);
+        }
+        $this->response->setStatus($result->getCode());
+        $this->response->setBody($result->getBody());
     }
     
     public function setError(Exception $e) {

@@ -44,7 +44,7 @@ class {{modelPackage}}_{{classname}} {
         }
         foreach (self::$fieldTypes as $name => $info) {
             try {
-                $this->data[$name] = RestApi_TypeUtils_Field::of($info[0], $data[$name], @$info[1]);
+                $this->data[$name] = RestApi_TypeUtils_Field::of($info[0], @$data[$name], @$info[1]);
             } catch (RestApi_TypeUtils_ParseException $e) {
                 $e->setFieldName($name);
                 throw $e;
