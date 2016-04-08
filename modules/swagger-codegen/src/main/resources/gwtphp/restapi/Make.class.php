@@ -54,7 +54,6 @@ class RestApi_Make {
      * @return RestApi_ProcessingException
      */
     protected function innerError($code, $message, $cause) {
-        $headers['Content-Type'] = 'application/json; charset=utf-8';
         return new RestApi_ProcessingException($code, $message, $cause);
     }
 

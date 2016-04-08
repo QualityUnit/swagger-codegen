@@ -12,7 +12,25 @@
 
 class RestApi_ProcessingException extends Exception {
 
+    private $headers = [];
+
     public function __construct($code, $message, $cause = null) {
         parent::__construct($message, $code, $cause);
+    }
+
+    public function getHeaders() {
+        return $this->headers;
+    }
+
+    public function setHeader($name, $value) {
+        $this->headers[$name] = $value;
+    }
+
+    public function removeHeader($name) {
+        unset($this->headers[$name]);
+    }
+
+    public function asResult() {
+        return RestApi_Make::result($this->getMessage(), $this->getCode(), $this->headers);
     }
 }

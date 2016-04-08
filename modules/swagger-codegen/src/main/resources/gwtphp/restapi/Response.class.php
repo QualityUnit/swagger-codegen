@@ -29,14 +29,15 @@ class RestApi_Response {
         $this->response->setBody($result->getBody());
     }
     
-    public function setError(Exception $e) {
-        if($e instanceof RestApi_TypeUtils_ParseException) {
-            $e = RestApi_Make::error(400, "Invalid field " . $e->getFieldName() . ": " . $e->getMessage());
-        } else if(!($e instanceof RestApi_ProcessingException)) {
-            $e = RestApi_Make::error(500, "Internal server error: " . $e->getMessage());
+    public function setError(Exception $error) {
+        if($error instanceof RestApi_TypeUtils_ParseException) {
+            $error = RestApi_Make::error(400, "Invalid field "
+                    . $error->getFieldName() . ": " . $error->getMessage());
+        } else if(!($error instanceof RestApi_ProcessingException)) {
+            $error = RestApi_Make::error(500, "Internal server error: "
+                    . $error->getMessage());
         }
-        $this->response->setStatus($e->getCode());
-        $this->response->setBody($e->getMessage());
+        $this->setResult($error->asResult());
     }
     
     public function send() {
