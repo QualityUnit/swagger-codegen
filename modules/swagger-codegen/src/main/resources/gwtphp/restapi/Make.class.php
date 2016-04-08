@@ -12,8 +12,8 @@ class RestApi_Make {
     /**
      * @return RestApi_Result
      */
-    public static function okResponse() {
-        return self::getInstance()->innerOkResponse();
+    public static function okResult() {
+        return self::getInstance()->innerOkResult();
     }
 
     /**
@@ -43,7 +43,7 @@ class RestApi_Make {
     /**
      * @return object
      */
-    protected function innerOkResponse() {
+    protected function innerOkResult() {
         return RestApi_OkResponse::asResult();
     }
 
@@ -54,7 +54,9 @@ class RestApi_Make {
      * @return RestApi_ProcessingException
      */
     protected function innerError($code, $message, $cause) {
-        return new RestApi_ProcessingException($code, $message, $cause);
+        $exception = new RestApi_ProcessingException($code, $message, $cause);
+        $exception->setHeader('Content-Type', 'application/json; charset=utf-8');
+        return $exception;
     }
 
     /**
