@@ -196,6 +196,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
             {"restapi/", "", "ProcessingException.class.php"},
             {"restapi/", "", "Response.class.php"},
             {"restapi/", "", "Make.class.php"},
+            {"restapi/", "", "Result.class.php"},
             {"restapi/", "", "Role.class.php"}
         };
 
