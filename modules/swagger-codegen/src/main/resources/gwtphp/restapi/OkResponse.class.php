@@ -10,8 +10,4 @@ class RestApi_OkResponse {
         }
         return self::$instance;
     }
-
-    public static function asResult() {
-        return new RestApi_Result(self::instance());
-    }
 }
