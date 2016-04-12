@@ -191,7 +191,6 @@ public class GwtPhpClientCodegen extends DefaultCodegen implements CodegenConfig
             {"field/", "TypeUtils/", "StringField.class.php"},
             {"field/", "TypeUtils/", "ParseException.class.php"},
             {"restapi/", "", "Auth.class.php"},
-            {"restapi/", "", "OkResponse.class.php"},
             {"restapi/", "", "Params.class.php"},
             {"restapi/", "", "ProcessingException.class.php"},
             {"restapi/", "", "Response.class.php"},

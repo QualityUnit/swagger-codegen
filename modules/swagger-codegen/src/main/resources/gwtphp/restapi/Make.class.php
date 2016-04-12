@@ -44,7 +44,7 @@ class RestApi_Make {
      * @return object
      */
     protected function innerOkResult() {
-        return RestApi_Make::result(RestApi_OkResponse::instance());
+        return RestApi_Make::result(new stdClass());
     }
 
     /**
