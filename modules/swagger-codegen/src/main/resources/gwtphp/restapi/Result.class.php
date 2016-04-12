@@ -14,7 +14,7 @@ class RestApi_Result {
 
     private $code;
     private $body;
-    private $headers;
+    private $headers = array();
 
     public function getCode() {
         return $this->code;
