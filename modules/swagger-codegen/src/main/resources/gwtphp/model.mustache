@@ -26,7 +26,7 @@ class {{modelPackage}}_{{classname}} {
     {{/hasMore}}{{/vars}}
 
     private static $fieldTypes = array({{#vars}}
-            self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}} => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}]{{#hasMore}},{{/hasMore}}{{/vars}});
+            self::{{#fnUpperCase}}{{name}}{{/fnUpperCase}} => array('{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}){{#hasMore}},{{/hasMore}}{{/vars}});
 
     /**
      * @var RestApi_TypeUtils_Field[]
