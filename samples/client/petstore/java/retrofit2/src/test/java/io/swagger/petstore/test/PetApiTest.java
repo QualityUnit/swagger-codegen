@@ -1,5 +1,7 @@
 package io.swagger.petstore.test;
 
+import io.swagger.TestUtils;
+
 import io.swagger.client.ApiClient;
 import io.swagger.client.api.*;
 import io.swagger.client.model.*;
@@ -13,10 +15,10 @@ import java.util.List;
 
 import org.junit.*;
 
-import retrofit.Response;
+import retrofit2.Response;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 import static org.junit.Assert.*;
 
@@ -32,7 +34,7 @@ public class PetApiTest {
     public void testCreateAndGetPet() throws Exception {
         Pet pet = createRandomPet();
         Response<Void> rp2 = api.addPet(pet).execute();
-        
+
         Response<Pet> rp = api.getPetById(pet.getId()).execute();
         Pet fetched = rp.body();
         assertNotNull(fetched);
@@ -139,12 +141,39 @@ public class PetApiTest {
         writer.write("Hello world!");
         writer.close();
 
-        api.uploadFile(pet.getId(), "a test file", RequestBody.create(MediaType.parse("text/plain"), file)).execute();
+        api.uploadFile(pet.getId(), null, RequestBody.create(MediaType.parse("text/plain"), file)).execute();
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        Pet pet1 = new Pet();
+        Pet pet2 = new Pet();
+        assertTrue(pet1.equals(pet2));
+        assertTrue(pet2.equals(pet1));
+        assertTrue(pet1.hashCode() == pet2.hashCode());
+        assertTrue(pet1.equals(pet1));
+        assertTrue(pet1.hashCode() == pet1.hashCode());
+
+        pet2.setName("really-happy");
+        pet2.setPhotoUrls(Arrays.asList(new String[]{"http://foo.bar.com/1", "http://foo.bar.com/2"}));
+        assertFalse(pet1.equals(pet2));
+        assertFalse(pet2.equals(pet1));
+        assertFalse(pet1.hashCode() == (pet2.hashCode()));
+        assertTrue(pet2.equals(pet2));
+        assertTrue(pet2.hashCode() == pet2.hashCode());
+
+        pet1.setName("really-happy");
+        pet1.setPhotoUrls(Arrays.asList(new String[]{"http://foo.bar.com/1", "http://foo.bar.com/2"}));
+        assertTrue(pet1.equals(pet2));
+        assertTrue(pet2.equals(pet1));
+        assertTrue(pet1.hashCode() == pet2.hashCode());
+        assertTrue(pet1.equals(pet1));
+        assertTrue(pet1.hashCode() == pet1.hashCode());
     }
 
     private Pet createRandomPet() {
         Pet pet = new Pet();
-        pet.setId(System.currentTimeMillis());
+        pet.setId(TestUtils.nextId());
         pet.setName("gorilla");
 
         Category category = new Category();

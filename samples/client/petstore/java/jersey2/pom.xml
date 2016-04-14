@@ -104,6 +104,27 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      <!-- For testing build.gradle -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <id>gradle-test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>gradle</executable>
+              <arguments>
+                <argument>check</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -123,6 +144,11 @@
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
       <version>${jersey-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>2.22.1</version>
     </dependency>
 
     <!-- JSON processing: jackson -->
@@ -152,6 +178,13 @@
       <version>${jodatime-version}</version>
     </dependency>
 
+    <!-- Base64 encoding that works in both JVM and Android -->
+    <dependency>
+      <groupId>com.brsanthu</groupId>
+      <artifactId>migbase64</artifactId>
+      <version>2.2</version>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -162,10 +195,10 @@
   </dependencies>
   <properties>
     <swagger-annotations-version>1.5.0</swagger-annotations-version>
-    <jersey-version>2.6</jersey-version>
+    <jersey-version>2.22</jersey-version>
     <jackson-version>2.4.2</jackson-version>
     <jodatime-version>2.3</jodatime-version>
     <maven-plugin-version>1.0.0</maven-plugin-version>
-    <junit-version>4.8.1</junit-version>
+    <junit-version>4.12</junit-version>
   </properties>
 </project>

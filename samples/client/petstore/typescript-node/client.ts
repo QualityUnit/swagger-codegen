@@ -1,11 +1,19 @@
 import api = require('./api');
 import fs = require('fs');
 
-var petApi = new api.PetApi('http://petstore.swagger.io/');
-petApi.apiKey = 'special-key';
+var petApi = new api.PetApi();
+petApi.setApiKey(api.PetApiApiKeys.api_key, 'special-key');
+petApi.setApiKey(api.PetApiApiKeys.test_api_key_header, 'query-key');
+
+var tag1 = new api.Tag();
+tag1.id = 18291;
+tag1.name = 'TS tag 1';
 
 var pet = new api.Pet();
 pet.name = 'TypeScriptDoggie';
+pet.id = 18291;
+pet.photoUrls = ["http://url1", "http://url2"];
+pet.tags = [tag1];
 
 var petId: any;
 

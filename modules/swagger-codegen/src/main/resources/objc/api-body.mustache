@@ -40,7 +40,6 @@ static {{classname}}* singletonAPI = nil;
 #pragma mark -
 
 +({{classname}}*) apiWithHeader:(NSString*)headerValue key:(NSString*)key {
-
     if (singletonAPI == nil) {
         singletonAPI = [[{{classname}} alloc] init];
         [singletonAPI addHeader:headerValue forKey:key];
@@ -49,7 +48,6 @@ static {{classname}}* singletonAPI = nil;
 }
 
 +({{classname}}*) sharedAPI {
-
     if (singletonAPI == nil) {
         singletonAPI = [[{{classname}} alloc] init];
     }
@@ -75,22 +73,22 @@ static {{classname}}* singletonAPI = nil;
 ///
 /// {{{summary}}}
 /// {{{notes}}}
-/// {{#allParams}} @param {{paramName}} {{{description}}}
+/// {{#allParams}} @param {{paramName}} {{{description}}} {{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
 ///
 /// {{/allParams}} @returns {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}
 ///
--(NSNumber*) {{nickname}}WithCompletionBlock{{^allParams}}: {{/allParams}}{{#allParams}}{{#secondaryParam}} {{paramName}}{{/secondaryParam}}: ({{{dataType}}}) {{paramName}}
-        {{/allParams}}
-        {{#returnBaseType}}{{#hasParams}}completionHandler: {{/hasParams}}(void (^)({{{returnType}}} output, NSError* error))completionBlock { {{/returnBaseType}}
-        {{^returnBaseType}}{{#hasParams}}completionHandler: {{/hasParams}}(void (^)(NSError* error))completionBlock { {{/returnBaseType}}
-
-    {{#allParams}}{{#required}}
+-(NSNumber*) {{#vendorExtensions.x-objc-operationId}}{{vendorExtensions.x-objc-operationId}}{{/vendorExtensions.x-objc-operationId}}{{^vendorExtensions.x-objc-operationId}}{{nickname}}{{#hasParams}}With{{vendorExtensions.firstParamAltName}}{{/hasParams}}{{^hasParams}}WithCompletionHandler: {{/hasParams}}{{/vendorExtensions.x-objc-operationId}}{{#allParams}}{{#secondaryParam}}
+    {{paramName}}{{/secondaryParam}}: ({{{dataType}}}) {{paramName}}{{/allParams}}
+    {{#hasParams}}completionHandler: {{/hasParams}}(void (^)({{#returnBaseType}}{{{returnType}}} output, {{/returnBaseType}}NSError* error)) handler {
+    {{#allParams}}
+    {{#required}}
     // verify the required parameter '{{paramName}}' is set
     if ({{paramName}} == nil) {
         [NSException raise:@"Invalid parameter" format:@"Missing the required parameter `{{paramName}}` when calling `{{nickname}}`"];
     }
-    {{/required}}{{/allParams}}
 
+    {{/required}}
+    {{/allParams}}
     NSMutableString* resourcePath = [NSMutableString stringWithFormat:@"{{path}}"];
 
     // remove format in URL if needed
@@ -99,13 +97,15 @@ static {{classname}}* singletonAPI = nil;
     }
 
     NSMutableDictionary *pathParams = [[NSMutableDictionary alloc] init];
-    {{#pathParams}}if ({{paramName}} != nil) {
+    {{#pathParams}}
+    if ({{paramName}} != nil) {
         pathParams[@"{{baseName}}"] = {{paramName}};
     }
     {{/pathParams}}
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    {{#queryParams}}if({{paramName}} != nil) {
+    {{#queryParams}}
+    if ({{paramName}} != nil) {
         {{#collectionFormat}}
         queryParams[@"{{baseName}}"] = [[{{classPrefix}}QueryParamCollection alloc] initWithValuesAndFormat: {{baseName}} format: @"{{collectionFormat}}"];
         {{/collectionFormat}}
@@ -113,12 +113,13 @@ static {{classname}}* singletonAPI = nil;
     }
     {{/queryParams}}
     NSMutableDictionary* headerParams = [NSMutableDictionary dictionaryWithDictionary:self.defaultHeaders];
-
-    {{#headerParams}}if({{paramName}} != nil) {
+    {{#headerParams}}
+    
+    if ({{paramName}} != nil) {
         headerParams[@"{{baseName}}"] = {{paramName}};
     }
-    {{/headerParams}}
 
+    {{/headerParams}}
     // HTTP header `Accept`
     headerParams[@"Accept"] = [{{classPrefix}}ApiClient selectHeaderAccept:@[{{#produces}}@"{{mediaType}}"{{#hasMore}}, {{/hasMore}}{{/produces}}]];
     if ([headerParams[@"Accept"] length] == 0) {
@@ -142,44 +143,38 @@ static {{classname}}* singletonAPI = nil;
 
     id bodyParam = nil;
     NSMutableDictionary *formParams = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary *files = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *localVarFiles = [[NSMutableDictionary alloc] init];
     {{#bodyParam}}
     bodyParam = {{paramName}};
-    {{/bodyParam}}{{^bodyParam}}
+    {{/bodyParam}}
+    {{^bodyParam}}
     {{#formParams}}
     {{#notFile}}
     if ({{paramName}}) {
         formParams[@"{{baseName}}"] = {{paramName}};
     }
-    {{/notFile}}{{#isFile}}
-    files[@"{{paramName}}"] = {{paramName}};
+    {{/notFile}}
+    {{#isFile}}
+    localVarFiles[@"{{paramName}}"] = {{paramName}};
     {{/isFile}}
     {{/formParams}}
     {{/bodyParam}}
 
-    {{#requiredParamCount}}
-    {{#requiredParams}}
-    if({{paramName}} == nil) {
-        // error
-    }
-    {{/requiredParams}}
-    {{/requiredParamCount}}
-    return [self.apiClient requestWithCompletionBlock: resourcePath
-                                               method: @"{{httpMethod}}"
-                                           pathParams: pathParams
-                                          queryParams: queryParams
-                                           formParams: formParams
-                                                files: files
-                                                 body: bodyParam
-                                         headerParams: headerParams
-                                         authSettings: authSettings
-                                   requestContentType: requestContentType
-                                  responseContentType: responseContentType
-                                         responseType: {{^returnType}}nil{{/returnType}}{{#returnType}}@"{{{ returnType }}}"{{/returnType}}
-                                      completionBlock: ^(id data, NSError *error) {
-                  {{^returnType}}completionBlock(error);{{/returnType}}
-                  {{#returnType}}completionBlock(({{{ returnType }}})data, error);{{/returnType}}
-              }
+    return [self.apiClient requestWithPath: resourcePath
+                                    method: @"{{httpMethod}}"
+                                pathParams: pathParams
+                               queryParams: queryParams
+                                formParams: formParams
+                                     files: localVarFiles
+                                      body: bodyParam
+                              headerParams: headerParams
+                              authSettings: authSettings
+                        requestContentType: requestContentType
+                       responseContentType: responseContentType
+                              responseType: {{^returnType}}nil{{/returnType}}{{#returnType}}@"{{{ returnType }}}"{{/returnType}}
+                           completionBlock: ^(id data, NSError *error) {
+                               handler({{#returnType}}({{{ returnType }}})data, {{/returnType}}error);
+                           }
           ];
 }
 

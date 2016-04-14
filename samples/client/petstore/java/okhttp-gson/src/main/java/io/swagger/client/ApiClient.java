@@ -11,6 +11,8 @@ import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.internal.http.HttpMethod;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor.Level;
 
 import java.lang.reflect.Type;
 
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +67,38 @@ import io.swagger.client.auth.ApiKeyAuth;
 import io.swagger.client.auth.OAuth;
 
 public class ApiClient {
+  public static final double JAVA_VERSION;
+  public static final boolean IS_ANDROID;
+  public static final int ANDROID_SDK_VERSION;
+
+  static {
+    JAVA_VERSION = Double.parseDouble(System.getProperty("java.specification.version"));
+    boolean isAndroid;
+    try {
+      Class.forName("android.app.Activity");
+      isAndroid = true;
+    } catch (ClassNotFoundException e) {
+      isAndroid = false;
+    }
+    IS_ANDROID = isAndroid;
+    int sdkVersion = 0;
+    if (IS_ANDROID) {
+      try {
+        sdkVersion = Class.forName("android.os.Build$VERSION").getField("SDK_INT").getInt(null);
+      } catch (Exception e) {
+        try {
+          sdkVersion = Integer.parseInt((String) Class.forName("android.os.Build$VERSION").getField("SDK").get(null));
+        } catch (Exception e2) { }
+      }
+    }
+    ANDROID_SDK_VERSION = sdkVersion;
+  }
+
+  /**
+   * The datetime format to be used when <code>lenientDatetimeFormat</code> is enabled.
+   */
+  public static final String LENIENT_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
   private String basePath = "http://petstore.swagger.io/v2";
   private boolean lenientOnJson = false;
   private boolean debugging = false;
@@ -71,9 +106,6 @@ public class ApiClient {
   private String tempFolderPath = null;
 
   private Map<String, Authentication> authentications;
-
-  private int statusCode;
-  private Map<String, List<String>> responseHeaders;
 
   private DateFormat dateFormat;
   private DateFormat datetimeFormat;
@@ -85,6 +117,8 @@ public class ApiClient {
 
   private OkHttpClient httpClient;
   private JSON json;
+
+  private HttpLoggingInterceptor loggingInterceptor;
 
   public ApiClient() {
     httpClient = new OkHttpClient();
@@ -100,20 +134,24 @@ public class ApiClient {
     this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     // Always use UTC as the default time zone when dealing with date (without time).
     this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // Use the system's default time zone when dealing with datetime (mainly formatting).
-    this.datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    initDatetimeFormat();
 
     // Be lenient on datetime formats when parsing datetime from string.
     // See <code>parseDatetime</code>.
     this.lenientDatetimeFormat = true;
 
     // Set default User-Agent.
-    setUserAgent("Java-Swagger");
+    setUserAgent("Swagger-Codegen/1.0.0/java");
 
     // Setup authentications (key: authentication name, value: authentication).
     authentications = new HashMap<String, Authentication>();
     authentications.put("petstore_auth", new OAuth());
+    authentications.put("test_api_client_id", new ApiKeyAuth("header", "x-test_api_client_id"));
+    authentications.put("test_api_client_secret", new ApiKeyAuth("header", "x-test_api_client_secret"));
     authentications.put("api_key", new ApiKeyAuth("header", "api_key"));
+    authentications.put("test_http_basic", new HttpBasicAuth());
+    authentications.put("test_api_key_query", new ApiKeyAuth("query", "test_api_key_query"));
+    authentications.put("test_api_key_header", new ApiKeyAuth("header", "test_api_key_header"));
     // Prevent the authentications from being modified.
     authentications = Collections.unmodifiableMap(authentications);
   }
@@ -143,24 +181,6 @@ public class ApiClient {
   public ApiClient setJSON(JSON json) {
     this.json = json;
     return this;
-  }
-
-  /**
-   * Gets the status code of the previous request.
-   * NOTE: Status code of last async response is not recorded here, it is
-   * passed to the callback methods instead.
-   */
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  /**
-   * Gets the response headers of the previous request.
-   * NOTE: Headers of last async response is not recorded here, it is passed
-   * to callback methods instead.
-   */
-  public Map<String, List<String>> getResponseHeaders() {
-    return responseHeaders;
   }
 
   public boolean isVerifyingSsl() {
@@ -262,25 +282,30 @@ public class ApiClient {
     if (str == null)
       return null;
 
+    DateFormat format;
     if (lenientDatetimeFormat) {
       /*
-       * When lenientDatetimeFormat is enabled, process the given string
-       * to support various formats defined by ISO 8601.
+       * When lenientDatetimeFormat is enabled, normalize the date string
+       * into <code>LENIENT_DATETIME_FORMAT</code> to support various formats
+       * defined by ISO 8601.
        */
       // normalize time zone
-      //   trailing "Z": 2015-08-16T08:20:05Z => 2015-08-16T08:20:05+00:00
-      str = str.replaceAll("[zZ]\\z", "+00:00");
-      //   add colon: 2015-08-16T08:20:05+0000 => 2015-08-16T08:20:05+00:00
-      str = str.replaceAll("([+-]\\d{2})(\\d{2})\\z", "$1:$2");
-      //   expand time zone: 2015-08-16T08:20:05+00 => 2015-08-16T08:20:05+00:00
-      str = str.replaceAll("([+-]\\d{2})\\z", "$1:00");
+      //   trailing "Z": 2015-08-16T08:20:05Z => 2015-08-16T08:20:05+0000
+      str = str.replaceAll("[zZ]\\z", "+0000");
+      //   remove colon in time zone: 2015-08-16T08:20:05+00:00 => 2015-08-16T08:20:05+0000
+      str = str.replaceAll("([+-]\\d{2}):(\\d{2})\\z", "$1$2");
+      //   expand time zone: 2015-08-16T08:20:05+00 => 2015-08-16T08:20:05+0000
+      str = str.replaceAll("([+-]\\d{2})\\z", "$100");
       // add milliseconds when missing
-      //   2015-08-16T08:20:05+00:00 => 2015-08-16T08:20:05.000+00:00
-      str = str.replaceAll("(:\\d{1,2})([+-]\\d{2}:\\d{2})\\z", "$1.000$2");
+      //   2015-08-16T08:20:05+0000 => 2015-08-16T08:20:05.000+0000
+      str = str.replaceAll("(:\\d{1,2})([+-]\\d{4})\\z", "$1.000$2");
+      format = new SimpleDateFormat(LENIENT_DATETIME_FORMAT);
+    } else {
+      format = this.datetimeFormat;
     }
 
     try {
-      return datetimeFormat.parse(str);
+      return format.parse(str);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }
@@ -435,6 +460,16 @@ public class ApiClient {
    * @param debugging To enable (true) or disable (false) debugging
    */
   public ApiClient setDebugging(boolean debugging) {
+    if (debugging != this.debugging) {
+      if (debugging) {
+        loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(Level.BODY);
+        httpClient.interceptors().add(loggingInterceptor);
+      } else {
+        httpClient.interceptors().remove(loggingInterceptor);
+        loggingInterceptor = null;
+      }
+    }
     this.debugging = debugging;
     return this;
   }
@@ -452,6 +487,23 @@ public class ApiClient {
 
   public ApiClient setTempFolderPath(String tempFolderPath) {
     this.tempFolderPath = tempFolderPath;
+    return this;
+  }
+
+  /**
+   * Connect timeout (in milliseconds).
+   */
+  public int getConnectTimeout() {
+    return httpClient.getConnectTimeout();
+  }
+
+  /**
+   * Sets the connect timeout (in milliseconds).
+   * A value of 0 means no timeout, otherwise values must be between 1 and
+   * {@link Integer#MAX_VALUE}.
+   */
+  public ApiClient setConnectTimeout(int connectionTimeout) {
+    httpClient.setConnectTimeout(connectionTimeout, TimeUnit.MILLISECONDS);
     return this;
   }
 
@@ -534,6 +586,28 @@ public class ApiClient {
   }
 
   /**
+   * Sanitize filename by removing path.
+   * e.g. ../../sun.gif becomes sun.gif
+   *
+   * @param filename The filename to be sanitized
+   * @return The sanitized filename
+   */
+  public String sanitizeFilename(String filename) {
+    return filename.replaceAll(".*[/\\\\]", "");
+  }
+
+  /**
+   * Check if the given MIME is a JSON MIME.
+   * JSON MIME examples:
+   *   application/json
+   *   application/json; charset=UTF8
+   *   APPLICATION/JSON
+   */
+  public boolean isJsonMime(String mime) {
+    return mime != null && mime.matches("(?i)application\\/json(;.*)?");
+  }
+
+  /**
    * Select the Accept header's value from the given accepts array:
    *   if JSON exists in the given array, use it;
    *   otherwise use all of them (joining into a string)
@@ -543,8 +617,14 @@ public class ApiClient {
    *   null will be returned (not to set the Accept header explicitly).
    */
   public String selectHeaderAccept(String[] accepts) {
-    if (accepts.length == 0) return null;
-    if (StringUtil.containsIgnoreCase(accepts, "application/json")) return "application/json";
+    if (accepts.length == 0) {
+      return null;
+    }
+    for (String accept : accepts) {
+      if (isJsonMime(accept)) {
+        return accept;
+      }
+    }
     return StringUtil.join(accepts, ",");
   }
 
@@ -558,8 +638,14 @@ public class ApiClient {
    *   JSON will be used.
    */
   public String selectHeaderContentType(String[] contentTypes) {
-    if (contentTypes.length == 0) return "application/json";
-    if (StringUtil.containsIgnoreCase(contentTypes, "application/json")) return "application/json";
+    if (contentTypes.length == 0) {
+      return "application/json";
+    }
+    for (String contentType : contentTypes) {
+      if (isJsonMime(contentType)) {
+        return contentType;
+      }
+    }
     return contentTypes[0];
   }
 
@@ -575,20 +661,31 @@ public class ApiClient {
   }
 
   /**
-   * Deserialize response body to Java object, according to the Content-Type
-   * response header.
+   * Deserialize response body to Java object, according to the return type and
+   * the Content-Type response header.
    *
    * @param response HTTP response
    * @param returnType The type of the Java object
    * @return The deserialized Java object
+   * @throws ApiException If fail to deserialize response body, i.e. cannot read response body
+   *   or the Content-Type of the response is not supported.
    */
   public <T> T deserialize(Response response, Type returnType) throws ApiException {
-    if (response == null || returnType == null)
+    if (response == null || returnType == null) {
       return null;
+    }
 
-    // Handle file downloading.
-    if (returnType.equals(File.class))
+    if ("byte[]".equals(returnType.toString())) {
+      // Handle binary response (byte array).
+      try {
+        return (T) response.body().bytes();
+      } catch (IOException e) {
+        throw new ApiException(e);
+      }
+    } else if (returnType.equals(File.class)) {
+      // Handle file downloading.
       return (T) downloadFileFromResponse(response);
+    }
 
     String respBody;
     try {
@@ -600,15 +697,16 @@ public class ApiClient {
       throw new ApiException(e);
     }
 
-    if (respBody == null || "".equals(respBody))
+    if (respBody == null || "".equals(respBody)) {
       return null;
+    }
 
     String contentType = response.headers().get("Content-Type");
     if (contentType == null) {
       // ensuring a default content type
       contentType = "application/json";
     }
-    if (contentType.startsWith("application/json")) {
+    if (isJsonMime(contentType)) {
       return json.deserialize(respBody, returnType);
     } else if (returnType.equals(String.class)) {
       // Expecting string, return the raw response body.
@@ -623,19 +721,29 @@ public class ApiClient {
   }
 
   /**
-   * Serialize the given Java object into request body string, according to the
-   * request Content-Type.
+   * Serialize the given Java object into request body according to the object's
+   * class and the request Content-Type.
    *
    * @param obj The Java object
    * @param contentType The request Content-Type
-   * @return The serialized string
+   * @return The serialized request body
+   * @throws ApiException If fail to serialize the given object
    */
-  public String serialize(Object obj, String contentType) throws ApiException {
-    if (contentType.startsWith("application/json")) {
-      if (obj != null)
-        return json.serialize(obj);
-      else
-        return null;
+  public RequestBody serialize(Object obj, String contentType) throws ApiException {
+    if (obj instanceof byte[]) {
+      // Binary (byte array) body parameter support.
+      return RequestBody.create(MediaType.parse(contentType), (byte[]) obj);
+    } else if (obj instanceof File) {
+      // File body parameter support.
+      return RequestBody.create(MediaType.parse(contentType), (File) obj);
+    } else if (isJsonMime(contentType)) {
+      String content;
+      if (obj != null) {
+        content = json.serialize(obj);
+      } else {
+        content = null;
+      }
+      return RequestBody.create(MediaType.parse(contentType), content);
     } else {
       throw new ApiException("Content type \"" + contentType + "\" is not supported");
     }
@@ -643,6 +751,7 @@ public class ApiClient {
 
   /**
    * Download file from the given response.
+   * @throws ApiException If fail to read file content from response and write to disk
    */
   public File downloadFileFromResponse(Response response) throws ApiException {
     try {
@@ -663,8 +772,9 @@ public class ApiClient {
       // Get filename from the Content-Disposition header.
       Pattern pattern = Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
       Matcher matcher = pattern.matcher(contentDisposition);
-      if (matcher.find())
-        filename = matcher.group(1);
+      if (matcher.find()) {
+        filename = sanitizeFilename(matcher.group(1));
+      }
     }
 
     String prefix = null;
@@ -694,7 +804,7 @@ public class ApiClient {
   /**
    * @see #execute(Call, Type)
    */
-  public <T> T execute(Call call) throws ApiException {
+  public <T> ApiResponse<T> execute(Call call) throws ApiException {
     return execute(call, null);
   }
 
@@ -703,14 +813,16 @@ public class ApiClient {
    *
    * @param returnType The return type used to deserialize HTTP response body
    * @param <T> The return type corresponding to (same with) returnType
-   * @return The Java object deserialized from response body. Returns null if returnType is null.
+   * @return <code>ApiResponse</code> object containing response status, headers and
+   *   data, which is a Java object deserialized from response body and would be null
+   *   when returnType is null.
+   * @throws ApiException If fail to execute the call
    */
-  public <T> T execute(Call call, Type returnType) throws ApiException {
+  public <T> ApiResponse<T> execute(Call call, Type returnType) throws ApiException {
     try {
       Response response = call.execute();
-      this.statusCode = response.code();
-      this.responseHeaders = response.headers().toMultimap();
-      return handleResponse(response, returnType);
+      T data = handleResponse(response, returnType);
+      return new ApiResponse<T>(response.code(), response.headers().toMultimap(), data);
     } catch (IOException e) {
       throw new ApiException(e);
     }
@@ -719,7 +831,7 @@ public class ApiClient {
   /**
    * #see executeAsync(Call, Type, ApiCallback)
    */
-  public <T> void executeAsync(Call call, ApiCallback<T> callback) throws ApiException {
+  public <T> void executeAsync(Call call, ApiCallback<T> callback) {
     executeAsync(call, null, callback);
   }
 
@@ -750,6 +862,12 @@ public class ApiClient {
     });
   }
 
+  /**
+   * Handle the given response, return the deserialized object when the response is successful.
+   *
+   * @throws ApiException If the response has a unsuccessful status code or
+   *   fail to deserialize the response body
+   */
   public <T> T handleResponse(Response response, Type returnType) throws ApiException {
     if (response.isSuccessful()) {
       if (returnType == null || response.code() == 204) {
@@ -783,8 +901,9 @@ public class ApiClient {
    * @param formParams The form parameters
    * @param authNames The authentications to apply
    * @return The HTTP call
+   * @throws ApiException If fail to serialize the request body object
    */
-  public Call buildCall(String path, String method, List<Pair> queryParams, Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames) throws ApiException {
+  public Call buildCall(String path, String method, List<Pair> queryParams, Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames, ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
     updateParamsForAuth(authNames, queryParams, headerParams);
 
     final String url = buildUrl(path, queryParams);
@@ -793,7 +912,9 @@ public class ApiClient {
 
     String contentType = (String) headerParams.get("Content-Type");
     // ensuring a default content type
-    if (contentType == null) contentType = "application/json";
+    if (contentType == null) {
+      contentType = "application/json";
+    }
 
     RequestBody reqBody;
     if (!HttpMethod.permitsRequestBody(method)) {
@@ -811,10 +932,18 @@ public class ApiClient {
         reqBody = RequestBody.create(MediaType.parse(contentType), "");
       }
     } else {
-      reqBody = RequestBody.create(MediaType.parse(contentType), serialize(body, contentType));
+      reqBody = serialize(body, contentType);
     }
 
-    Request request = reqBuilder.method(method, reqBody).build();
+    Request request = null;
+
+    if(progressRequestListener != null && reqBody != null) {
+      ProgressRequestBody progressRequestBody = new ProgressRequestBody(reqBody, progressRequestListener);
+      request = reqBuilder.method(method, progressRequestBody).build();
+    } else {
+      request = reqBuilder.method(method, reqBody).build();
+    }
+
     return httpClient.newCall(request);
   }
 
@@ -826,20 +955,27 @@ public class ApiClient {
    * @return The full URL
    */
   public String buildUrl(String path, List<Pair> queryParams) {
-    StringBuilder query = new StringBuilder();
-    if (queryParams != null) {
+    final StringBuilder url = new StringBuilder();
+    url.append(basePath).append(path);
+
+    if (queryParams != null && !queryParams.isEmpty()) {
+      // support (constant) query string in `path`, e.g. "/posts?draft=1"
+      String prefix = path.contains("?") ? "&" : "?";
       for (Pair param : queryParams) {
         if (param.getValue() != null) {
-          if (query.toString().length() == 0)
-            query.append("?");
-          else
-            query.append("&");
+          if (prefix != null) {
+            url.append(prefix);
+            prefix = null;
+          } else {
+            url.append("&");
+          }
           String value = parameterToString(param.getValue());
-          query.append(escapeString(param.getName())).append("=").append(escapeString(value));
+          url.append(escapeString(param.getName())).append("=").append(escapeString(value));
         }
       }
     }
-    return basePath + path + query.toString();
+
+    return url.toString();
   }
 
   /**
@@ -912,6 +1048,31 @@ public class ApiClient {
       return "application/octet-stream";
     } else {
       return contentType;
+    }
+  }
+
+  /**
+   * Initialize datetime format according to the current environment, e.g. Java 1.7 and Android.
+   */
+  private void initDatetimeFormat() {
+    String formatWithTimeZone = null;
+    if (IS_ANDROID) {
+      if (ANDROID_SDK_VERSION >= 18) {
+        // The time zone format "ZZZZZ" is available since Android 4.3 (SDK version 18)
+        formatWithTimeZone = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+      }
+    } else if (JAVA_VERSION >= 1.7) {
+      // The time zone format "XXX" is available since Java 1.7
+      formatWithTimeZone = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    }
+    if (formatWithTimeZone != null) {
+      this.datetimeFormat = new SimpleDateFormat(formatWithTimeZone);
+      // NOTE: Use the system's default time zone (mainly for datetime formatting).
+    } else {
+      // Use a common format that works across all systems.
+      this.datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      // Always use the UTC time zone as we are using a constant trailing "Z" here.
+      this.datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
   }
 

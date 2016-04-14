@@ -1,5 +1,7 @@
 package io.swagger.petstore.test;
 
+import io.swagger.TestUtils;
+
 import io.swagger.client.ApiClient;
 import io.swagger.client.api.*;
 import io.swagger.client.model.*;
@@ -143,9 +145,36 @@ public class PetApiTest {
         api.uploadFile(pet.getId(), "a test file", new TypedFile("text/plain", file));
     }
 
+    @Test
+    public void testEqualsAndHashCode() {
+        Pet pet1 = new Pet();
+        Pet pet2 = new Pet();
+        assertTrue(pet1.equals(pet2));
+        assertTrue(pet2.equals(pet1));
+        assertTrue(pet1.hashCode() == pet2.hashCode());
+        assertTrue(pet1.equals(pet1));
+        assertTrue(pet1.hashCode() == pet1.hashCode());
+
+        pet2.setName("really-happy");
+        pet2.setPhotoUrls(Arrays.asList(new String[]{"http://foo.bar.com/1", "http://foo.bar.com/2"}));
+        assertFalse(pet1.equals(pet2));
+        assertFalse(pet2.equals(pet1));
+        assertFalse(pet1.hashCode() == (pet2.hashCode()));
+        assertTrue(pet2.equals(pet2));
+        assertTrue(pet2.hashCode() == pet2.hashCode());
+
+        pet1.setName("really-happy");
+        pet1.setPhotoUrls(Arrays.asList(new String[]{"http://foo.bar.com/1", "http://foo.bar.com/2"}));
+        assertTrue(pet1.equals(pet2));
+        assertTrue(pet2.equals(pet1));
+        assertTrue(pet1.hashCode() == pet2.hashCode());
+        assertTrue(pet1.equals(pet1));
+        assertTrue(pet1.hashCode() == pet1.hashCode());
+    }
+
     private Pet createRandomPet() {
         Pet pet = new Pet();
-        pet.setId(System.currentTimeMillis());
+        pet.setId(TestUtils.nextId());
         pet.setName("gorilla");
 
         Category category = new Category();

@@ -22,7 +22,7 @@ export class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
     * {{{description}}}
     */
 {{/description}}
-    {{name}}: {{#isEnum}}{{classname}}.{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
+    "{{name}}": {{#isEnum}}{{classname}}.{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
 {{/vars}}
 }
 
@@ -31,7 +31,7 @@ export namespace {{classname}} {
 {{#vars}}
 {{#isEnum}}
     export enum {{datatypeWithEnum}} { {{#allowableValues}}{{#values}}
-        {{.}} = <any> '{{.}}',{{/values}}{{/allowableValues}}
+        {{.}} = <any> '{{.}}'{{^-last}},{{/-last}}{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}
 {{/vars}}
@@ -73,8 +73,10 @@ class ApiKeyAuth implements Authentication {
 }
 
 class OAuth implements Authentication {
+    public accessToken: string;
+
     applyToRequest(requestOptions: request.Options): void {
-        // TODO: support oauth
+        requestOptions.headers["Authorization"] = "Bearer " + this.accessToken;
     }
 }
 
@@ -94,13 +96,19 @@ class VoidAuth implements Authentication {
 * {{&description}}
 */
 {{/description}}
+export enum {{classname}}ApiKeys {
+{{#authMethods}}
+{{#isApiKey}}
+    {{name}},
+{{/isApiKey}}
+{{/authMethods}}
+}
+
 export class {{classname}} {
     protected basePath = '{{basePath}}';
     protected defaultHeaders : any = {};
 
-
-
-    public authentications = {
+    protected authentications = {
         'default': <Authentication>new VoidAuth(),
 {{#authMethods}}
 {{#isBasic}}
@@ -115,13 +123,13 @@ export class {{classname}} {
 {{/authMethods}}
     }
 
-    constructor(url: string, basePath?: string);
+    constructor(basePath?: string);
 {{#authMethods}}
 {{#isBasic}}
-    constructor(url: string, username: string, password: string, basePath?: string);
+    constructor(username: string, password: string, basePath?: string);
 {{/isBasic}}
 {{/authMethods}}
-    constructor(private url: string, basePathOrUsername: string, password?: string, basePath?: string) {
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
         if (password) {
 {{#authMethods}}
 {{#isBasic}}
@@ -138,6 +146,10 @@ export class {{classname}} {
             }
         }
     }
+
+    public setApiKey(key: {{classname}}ApiKeys, value: string) {
+        this.authentications[{{classname}}ApiKeys[key]].apiKey = value;
+    }
 {{#authMethods}}
 {{#isBasic}}
 
@@ -149,13 +161,11 @@ export class {{classname}} {
         this.authentications.{{name}}.password = password;
     }
 {{/isBasic}}
-{{#isApiKey}}
-
-    set apiKey(key: string) {
-        this.authentications.{{name}}.apiKey = key;
-    }
-{{/isApiKey}}
 {{#isOAuth}}
+
+    set accessToken(token: string) {
+        this.authentications.{{name}}.accessToken = token;
+    }
 {{/isOAuth}}
 {{/authMethods}}
     private extendObj<T1,T2>(objA: T1, objB: T2) {
@@ -173,16 +183,16 @@ export class {{classname}} {
      {{#allParams}}* @param {{paramName}} {{description}}
      {{/allParams}}*/
     public {{nickname}} ({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) : Promise<{ response: http.ClientResponse; {{#returnType}}body: {{{returnType}}}; {{/returnType}}{{^returnType}}body?: any; {{/returnType}} }> {
-        const path = this.url + this.basePath + '{{path}}'{{#pathParams}}
+        const localVarPath = this.basePath + '{{path}}'{{#pathParams}}
             .replace('{' + '{{baseName}}' + '}', String({{paramName}})){{/pathParams}};
         let queryParameters: any = {};
         let headerParams: any = this.extendObj({}, this.defaultHeaders);
         let formParams: any = {};
 
 {{#allParams}}{{#required}}
-        // verify required parameter '{{paramName}}' is set
-        if (!{{paramName}}) {
-            throw new Error('Missing required parameter {{paramName}} when calling {{nickname}}');
+        // verify required parameter '{{paramName}}' is not null or undefined
+        if ({{paramName}} === null || {{paramName}} === undefined) {
+            throw new Error('Required parameter {{paramName}} was null or undefined when calling {{nickname}}.');
         }
 {{/required}}{{/allParams}}
 {{#queryParams}}
@@ -206,13 +216,13 @@ export class {{classname}} {
 {{/isFile}}
 
 {{/formParams}}
-        let deferred = promise.defer<{ response: http.ClientResponse; {{#returnType}}body: {{{returnType}}}; {{/returnType}}{{^returnType}}body?: any; {{/returnType}} }>();
+        let localVarDeferred = promise.defer<{ response: http.ClientResponse; {{#returnType}}body: {{{returnType}}}; {{/returnType}}{{^returnType}}body?: any; {{/returnType}} }>();
 
         let requestOptions: request.Options = {
             method: '{{httpMethod}}',
             qs: queryParameters,
             headers: headerParams,
-            uri: path,
+            uri: localVarPath,
             json: true,
 {{#bodyParam}}
             body: {{paramName}},
@@ -235,17 +245,17 @@ export class {{classname}} {
 
         request(requestOptions, (error, response, body) => {
             if (error) {
-                deferred.reject(error);
+                localVarDeferred.reject(error);
             } else {
                 if (response.statusCode >= 200 && response.statusCode <= 299) {
-                    deferred.resolve({ response: response, body: body });
+                    localVarDeferred.resolve({ response: response, body: body });
                 } else {
-                    deferred.reject({ response: response, body: body });
+                    localVarDeferred.reject({ response: response, body: body });
                 }
             }
         });
 
-        return deferred.promise;
+        return localVarDeferred.promise;
     }
 {{/operation}}
 }
