@@ -12,7 +12,7 @@
 
 class RestApi_ProcessingException extends Exception {
 
-    private $headers = [];
+    private $headers = array();
 
     public function __construct($code, $message, $cause = null) {
         parent::__construct($message, $code, $cause);

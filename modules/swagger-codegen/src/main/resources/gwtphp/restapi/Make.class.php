@@ -26,7 +26,7 @@ class RestApi_Make {
         return self::getInstance()->innerError($code, $message, $cause);
     }
 
-    public static function result($body, $code = 200, $headers = []) {
+    public static function result($body, $code = 200, $headers = array()) {
         return self::getInstance()->innerResult($body, $code, $headers);
     }
 
