@@ -25,7 +25,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
-public class GwtPhpClientCodegen extends DefaultCodegen
+public class GwtPhpServerCodegen extends DefaultCodegen
     implements CodegenConfig {
   private static class ClassNameLambda extends CustomLambda {
     @Override
@@ -77,22 +77,23 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     }
   }
 
+  public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
   public static final String PACKAGE_PATH = "packagePath";
   public static final String SRC_BASE_PATH = "srcBasePath";
-  public static final String CODEGEN_VERSION = "1";
-  public static final String LANGUAGE_NAME = "gwtphp-client";
+  public static final String CODEGEN_VERSION = "1.3.0";
+  public static final String LANGUAGE_NAME = "gwtphp";
 
   protected String invokerPackage = "GwtPhp";
   protected String packagePath = "";
   protected String artifactVersion = "1";
   protected String srcBasePath = "include/" + invokerPackage;
+  protected String variableNamingConvention = "snake_case";
 
-  public GwtPhpClientCodegen() {
+  public GwtPhpServerCodegen() {
     super();
 
     outputFolder = "generated-code" + File.separator + "php";
     modelTemplateFiles.put("model.mustache", ".class.php");
-    apiTemplateFiles.put("api.mustache", ".class.php");
     embeddedTemplateDir = templateDir = LANGUAGE_NAME;
     setInvokerPackage(invokerPackage);
 
@@ -265,6 +266,11 @@ public class GwtPhpClientCodegen extends DefaultCodegen
           artifactVersion);
     }
 
+    if (additionalProperties.containsKey(VARIABLE_NAMING_CONVENTION)) {
+      this.setParameterNamingConvention(
+          (String) additionalProperties.get(VARIABLE_NAMING_CONVENTION));
+    }
+
     additionalProperties.put("escapedInvokerPackage",
         invokerPackage.replace("\\", "\\\\"));
 
@@ -274,25 +280,6 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     additionalProperties.put("fnClassName", new ClassNameLambda());
     additionalProperties.put("fnMethodName", new MethodNameLambda());
-
-    supportingFiles.add(new SupportingFile("configuration.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "Configuration.php"));
-    supportingFiles.add(new SupportingFile("ApiClient.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiClient.php"));
-    supportingFiles.add(new SupportingFile("ApiException.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiException.php"));
-    supportingFiles.add(new SupportingFile("ObjectSerializer.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ObjectSerializer.php"));
-    supportingFiles.add(new SupportingFile("composer.mustache",
-        getPackagePath(), "composer.json"));
-    supportingFiles.add(new SupportingFile("autoload.mustache",
-        getPackagePath(), "autoload.php"));
-    supportingFiles.add(
-        new SupportingFile("README.mustache", getPackagePath(), "README.md"));
-    supportingFiles.add(
-        new SupportingFile(".travis.yml", getPackagePath(), ".travis.yml"));
-    supportingFiles.add(new SupportingFile("git_push.sh.mustache",
-        getPackagePath(), "git_push.sh"));
 
     supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(),
         "api/v" + artifactVersion + "/index.php"));
@@ -341,6 +328,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
   public void setPackagePath(String packagePath) {
     this.packagePath = packagePath;
+  }
+
+  public void setParameterNamingConvention(String variableNamingConvention) {
+    this.variableNamingConvention = variableNamingConvention;
   }
 
   public void setSrcBasePath(String srcBasePath) {
