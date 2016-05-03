@@ -31,7 +31,7 @@ class {{invokerPackage}}_ApiClient
 
     /**
      * Configuration
-     * @var Configuration
+     * @var {{invokerPackage}}_Configuration
      */
     protected $config;
 
@@ -43,12 +43,12 @@ class {{invokerPackage}}_ApiClient
 
     /**
      * Constructor of the class
-     * @param Configuration $config config for this ApiClient
+     * @param {{invokerPackage}}_Configuration $config config for this ApiClient
      */
-    public function __construct(Configuration $config = null)
+    public function __construct({{invokerPackage}}_Configuration $config = null)
     {
         if ($config == null) {
-            $config = Configuration::getDefaultConfiguration();
+            $config = {{invokerPackage}}_Configuration::getDefaultConfiguration();
         }
 
         $this->config = $config;
@@ -57,7 +57,7 @@ class {{invokerPackage}}_ApiClient
 
     /**
      * Get the config
-     * @return Configuration
+     * @return {{invokerPackage}}_Configuration
      */
     public function getConfig()
     {
@@ -104,7 +104,7 @@ class {{invokerPackage}}_ApiClient
      * @param array  $postData     parameters to be placed in POST body
      * @param array  $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
-     * @throws \{{invokerPackage}}\ApiException on a non 2xx response
+     * @throws {{invokerPackage}}_ApiException on a non 2xx response
      * @return mixed
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)

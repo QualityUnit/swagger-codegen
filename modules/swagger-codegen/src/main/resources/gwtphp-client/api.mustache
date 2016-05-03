@@ -1,6 +1,6 @@
 <?php
 /**
- * {{invokerPackage}}_{{classname}}
+ * {{apiPackage}}_{{classname}}
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-{{#operations}}class {{invokerPackage}}_{{classname}}
+{{#operations}}class {{apiPackage}}_{{classname}}
 {
 
     /**
@@ -53,7 +53,7 @@
     /**
      * Set the API client
      * @param {{invokerPackage}}_ApiClient $apiClient set the API client
-     * @return {{classname}}
+     * @return {{apiPackage}}_{{classname}}
      */
     public function setApiClient({{invokerPackage}}_ApiClient $apiClient)
     {
@@ -84,7 +84,7 @@
      * {{{summary}}}
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
-  {{/allParams}}   * @return Array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
+  {{/allParams}}   * @return array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
      * @throws {{invokerPackage}}_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}WithHttpInfo({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})

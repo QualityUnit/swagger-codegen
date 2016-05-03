@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.CodegenConstants;
@@ -377,23 +378,25 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   }
 
   public String toPackagePath(String packageName, String basePath) {
-    packageName = packageName.replace(invokerPackage, "");
     String regFirstPathSeparator = "^[\\\\/]?";
     String regLastPathSeparator = "[\\\\/]?$";
 
     if (basePath != null && basePath.length() > 0) {
-      basePath = basePath.replaceAll(regLastPathSeparator, "")
+      basePath = basePath.replaceAll("_", "/").replaceAll(regLastPathSeparator, "")
           + File.separatorChar;
     }
 
-    return (getPackagePath() + File.separatorChar + basePath
-    // Replace period, backslash, forward slash with file separator in package
-    // name
-        + packageName.replaceAll("[_]", "/")
-          // Trim prefix file separators from package path
-          .replaceAll(regFirstPathSeparator, ""))
-            // Trim trailing file separators from the overall path
-            .replaceAll(regLastPathSeparator, "");
+    String packagePath = getPackagePath();
+    if (!packagePath.isEmpty()) {
+      packagePath += File.separatorChar;
+    }
+
+    packageName = packageName.replace(invokerPackage, "")
+        .replaceAll("_", "/")
+        .replaceAll(regFirstPathSeparator, "")
+        .replaceAll(regLastPathSeparator, "");
+
+    return packagePath + basePath + packageName;
   }
 
   @Override
@@ -414,15 +417,14 @@ public class GwtPhpClientCodegen extends DefaultCodegen
         break;
     }
 
-    boolean usesId = operation.path.matches("\\{.*\\}");
+    boolean usesId = Pattern.compile("\\{.*\\}").matcher(operation.path).find();
 
-    result += "/" + operation.path.replaceFirst("^/[^/]*/", "").replaceAll(
-        "\\{.*\\}", "");
+    String operationPart = operation.path.replaceFirst("^/[^/]*/", "").replaceAll("\\{.*\\}", "");
+    result += "/" + operationPart;
 
     if ("/".equals(result)) {
       result = "create";
-    }
-    if (!usesId) {
+    } else if (operationPart.isEmpty() && !usesId) {
       result += "All";
     }
 

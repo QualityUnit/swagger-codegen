@@ -42,9 +42,11 @@ class {{invokerPackage}}_ObjectSerializer
         } elseif (is_object($data)) {
             $values = array();
             foreach (array_keys($data::swaggerTypes()) as $property) {
-                $getter = $data::getters()[$property];
+                $getters = $data::getters();
+                $getter = $getters[$property];
                 if ($data->$getter() !== null) {
-                    $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($data->$getter());
+                    $attrMap = $data::attributeMap();
+                    $values[$attrMap[$property]] = self::sanitizeForSerialization($data->$getter());
                 }
             }
             return (object)$values;
@@ -238,13 +240,13 @@ class {{invokerPackage}}_ObjectSerializer
         } elseif ($class === 'SplFileObject') {
             // determine file name
             if (array_key_exists('Content-Disposition', $httpHeaders) && preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = Configuration::getDefaultConfiguration()->getTempFolderPath() . sanitizeFilename($match[1]);
+                $filename = {{invokerPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath() . sanitizeFilename($match[1]);
             } else {
-                $filename = tempnam(Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
+                $filename = tempnam({{invokerPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
             }
             $deserialized = new SplFileObject($filename, "w");
             $byte_written = $deserialized->fwrite($data);
-            error_log("[INFO] Written $byte_written byte to $filename. Please move the file to a proper folder or delete the temp file after processing.\n", 3, Configuration::getDefaultConfiguration()->getDebugFile());
+            error_log("[INFO] Written $byte_written byte to $filename. Please move the file to a proper folder or delete the temp file after processing.\n", 3, {{invokerPackage}}_Configuration::getDefaultConfiguration()->getDebugFile());
             return $deserialized;
  
         } else {
@@ -257,13 +259,15 @@ class {{invokerPackage}}_ObjectSerializer
             }
             $instance = new $class();
             foreach ($instance::swaggerTypes() as $property => $type) {
-                $propertySetter = $instance::setters()[$property];
-     
-                if (!isset($propertySetter) || !isset($data->{$instance::attributeMap()[$property]})) {
+                $setters = $instance::setters();
+                $propertySetter = $setters[$property];
+
+                $attrMap = $instance::attributeMap();
+                if (!isset($propertySetter) || !isset($data->{$attrMap[$property]})) {
                     continue;
                 }
      
-                $propertyValue = $data->{$instance::attributeMap()[$property]};
+                $propertyValue = $data->{$attrMap[$property]};
                 if (isset($propertyValue)) {
                     $instance->$propertySetter(self::deserialize($propertyValue, $type, null, $discriminator));
                 }
