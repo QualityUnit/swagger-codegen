@@ -25,6 +25,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
+@SuppressWarnings({"ALL", "Duplicates"})
 public class GwtPhpClientCodegen extends DefaultCodegen
     implements CodegenConfig {
   private static class ClassNameLambda extends CustomLambda {
@@ -37,6 +38,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
       return parts[0];
     }
   }
+
   private static abstract class CustomLambda implements Mustache.Lambda {
     @Override
     public void execute(Template.Fragment frag, Writer out) throws IOException {
@@ -47,12 +49,14 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     public abstract String formatFragment(String fragment);
   }
+
   private static class ItemTypeLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
       return fragment.replace("[", "").replace("]", "");
     }
   }
+
   private static class MethodNameLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
@@ -63,6 +67,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
       return parts[1];
     }
   }
+
   private static class SlimPathLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
@@ -253,6 +258,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen
           invokerPackage);
     }
 
+    if (!additionalProperties.containsKey(CodegenConstants.API_PACKAGE)) {
+      additionalProperties.put(CodegenConstants.API_PACKAGE, apiPackage);
+    }
+
     if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
       additionalProperties.put(CodegenConstants.MODEL_PACKAGE, modelPackage);
     }
@@ -276,49 +285,13 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     additionalProperties.put("fnMethodName", new MethodNameLambda());
 
     supportingFiles.add(new SupportingFile("configuration.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "Configuration.php"));
+        toPackagePath(invokerPackage, srcBasePath), "Configuration.class.php"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiClient.php"));
+        toPackagePath(invokerPackage, srcBasePath), "ApiClient.class.php"));
     supportingFiles.add(new SupportingFile("ApiException.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiException.php"));
+        toPackagePath(invokerPackage, srcBasePath), "ApiException.class.php"));
     supportingFiles.add(new SupportingFile("ObjectSerializer.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ObjectSerializer.php"));
-    supportingFiles.add(new SupportingFile("composer.mustache",
-        getPackagePath(), "composer.json"));
-    supportingFiles.add(new SupportingFile("autoload.mustache",
-        getPackagePath(), "autoload.php"));
-    supportingFiles.add(
-        new SupportingFile("README.mustache", getPackagePath(), "README.md"));
-    supportingFiles.add(
-        new SupportingFile(".travis.yml", getPackagePath(), ".travis.yml"));
-    supportingFiles.add(new SupportingFile("git_push.sh.mustache",
-        getPackagePath(), "git_push.sh"));
-
-    supportingFiles.add(new SupportingFile("index.mustache", getPackagePath(),
-        "api/v" + artifactVersion + "/index.php"));
-    supportingFiles.add(new SupportingFile(".htaccess", getPackagePath(),
-        "api/v" + artifactVersion + "/.htaccess"));
-
-    String restApiPath = "include/RestApi/";
-    String[][] suppFiles = {
-        {"field/", "TypeUtils/", "Field.class.php"},
-        {"field/", "TypeUtils/", "BoolField.class.php"},
-        {"field/", "TypeUtils/", "IntField.class.php"},
-        {"field/", "TypeUtils/", "FloatField.class.php"},
-        {"field/", "TypeUtils/", "StringField.class.php"},
-        {"field/", "TypeUtils/", "ParseException.class.php"},
-        {"restapi/", "", "Auth.class.php"},
-        {"restapi/", "", "Params.class.php"},
-        {"restapi/", "", "ProcessingException.class.php"},
-        {"restapi/", "", "Response.class.php"},
-        {"restapi/", "", "Make.class.php"},
-        {"restapi/", "", "Result.class.php"},
-        {"restapi/", "", "Role.class.php"}};
-
-    for (String[] file : suppFiles) {
-      supportingFiles.add(new SupportingFile(file[0] + file[2],
-          getPackagePath(), restApiPath + file[1] + file[2]));
-    }
+        toPackagePath(invokerPackage, srcBasePath), "ObjectSerializer.class.php"));
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
   }
@@ -336,7 +309,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     this.invokerPackage = invokerPackage;
     srcBasePath = "include/" + invokerPackage;
     apiPackage = invokerPackage + "_Api";
-    modelPackage = invokerPackage + "_Api_Model";
+    modelPackage = invokerPackage + "_Model";
   }
 
   public void setPackagePath(String packagePath) {
@@ -387,13 +360,13 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     }
 
     return (getPackagePath() + File.separatorChar + basePath
-    // Replace period, backslash, forward slash with file separator in package
-    // name
+        // Replace period, backslash, forward slash with file separator in package
+        // name
         + packageName.replaceAll("[_]", String.valueOf(File.separatorChar))
-          // Trim prefix file separators from package path
-          .replaceAll(regFirstPathSeparator, ""))
-            // Trim trailing file separators from the overall path
-            .replaceAll(regLastPathSeparator, "");
+        // Trim prefix file separators from package path
+        .replaceAll(regFirstPathSeparator, ""))
+        // Trim trailing file separators from the overall path
+        .replaceAll(regLastPathSeparator, "");
   }
 
   @Override
