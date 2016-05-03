@@ -63,7 +63,7 @@
   
     {{#operation}}
     /**
-     * {{{operationId}}}
+     * Call {{httpMethod}}:{{path}}
      *
      * {{{summary}}}
      *
@@ -71,15 +71,15 @@
   {{/allParams}}   * @return {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}
      * @throws {{invokerPackage}}_ApiException on non-2xx response
      */
-    public function {{operationId}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+    public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
-        list($response) = $this->{{operationId}}WithHttpInfo ({{#allParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
-        return $response; 
+        list($response) = $this->{{gwtphpClientMethodName}}WithHttpInfo ({{#allParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        return $response;
     }
 
 
     /**
-     * {{{operationId}}}WithHttpInfo
+     * Call {{httpMethod}}:{{path}}
      *
      * {{{summary}}}
      *
@@ -87,7 +87,7 @@
   {{/allParams}}   * @return Array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
      * @throws {{invokerPackage}}_ApiException on non-2xx response
      */
-    public function {{operationId}}WithHttpInfo({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+    public function {{gwtphpClientMethodName}}WithHttpInfo({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
         {{#allParams}}{{#required}}
         // verify the required parameter '{{paramName}}' is set

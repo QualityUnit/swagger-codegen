@@ -12,13 +12,18 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.CodegenConstants;
+import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
@@ -59,12 +64,15 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
   private static class MethodNameLambda extends CustomLambda {
     @Override
-    public String formatFragment(String fragment) {
-      String[] parts = fragment.split("::", 2);
-      if (parts.length != 2) {
-        return "UNKNOWN";
+    public String formatFragment(String path) {
+      String[] parts = path.split(":");
+      String result = parts[0].toLowerCase();
+      for (String part : parts[1].split("/")) {
+        if (!part.startsWith("{")) {
+          result += camelize(part);
+        }
       }
-      return parts[1];
+      return result;
     }
   }
 
@@ -83,11 +91,12 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   }
 
   public static final String PACKAGE_PATH = "packagePath";
+
   public static final String SRC_BASE_PATH = "srcBasePath";
   public static final String CODEGEN_VERSION = "1";
   public static final String LANGUAGE_NAME = "gwtphp-client";
-
   protected String invokerPackage = "GwtPhp";
+
   protected String packagePath = "";
   protected String artifactVersion = "1";
   protected String srcBasePath = "include/" + invokerPackage;
@@ -155,6 +164,15 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   @Override
   public String escapeReservedWord(String name) {
     return "_" + name;
+  }
+
+  @Override
+  public CodegenOperation fromOperation(String path, String httpMethod,
+      Operation operation, Map<String, Model> definitions, Swagger swagger) {
+    CodegenOperation o = super.fromOperation(path, httpMethod, operation,
+        definitions, swagger);
+    o.gwtphpClientMethodName = formatProcedureName(o);
+    return o;
   }
 
   @Override
@@ -291,7 +309,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     supportingFiles.add(new SupportingFile("ApiException.mustache",
         toPackagePath(invokerPackage, srcBasePath), "ApiException.class.php"));
     supportingFiles.add(new SupportingFile("ObjectSerializer.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ObjectSerializer.class.php"));
+        toPackagePath(invokerPackage, srcBasePath),
+        "ObjectSerializer.class.php"));
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
   }
@@ -318,6 +337,14 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
   public void setSrcBasePath(String srcBasePath) {
     this.srcBasePath = srcBasePath;
+  }
+
+  @Override
+  public String toApiName(String name) {
+    if (name.length() == 0) {
+      return "DefaultApi";
+    }
+    return initialCaps(name);
   }
 
   @Override
@@ -360,17 +387,45 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     }
 
     return (getPackagePath() + File.separatorChar + basePath
-        // Replace period, backslash, forward slash with file separator in package
-        // name
-        + packageName.replaceAll("[_]", String.valueOf(File.separatorChar))
-        // Trim prefix file separators from package path
-        .replaceAll(regFirstPathSeparator, ""))
-        // Trim trailing file separators from the overall path
-        .replaceAll(regLastPathSeparator, "");
+    // Replace period, backslash, forward slash with file separator in package
+    // name
+        + packageName.replaceAll("[_]", "/")
+          // Trim prefix file separators from package path
+          .replaceAll(regFirstPathSeparator, ""))
+            // Trim trailing file separators from the overall path
+            .replaceAll(regLastPathSeparator, "");
   }
 
   @Override
   public String toParamName(String name) {
     return name;
+  }
+
+  private String formatProcedureName(CodegenOperation operation) {
+    String result = "";
+    switch (operation.httpMethod) {
+      case "GET":
+        result = "get";
+        break;
+      case "PUT":
+        result = "set";
+        break;
+      default:
+        break;
+    }
+
+    boolean usesId = operation.path.matches("\\{.*\\}");
+
+    result += "/" + operation.path.replaceFirst("^/[^/]*/", "").replaceAll(
+        "\\{.*\\}", "");
+
+    if ("/".equals(result)) {
+      result = "create";
+    }
+    if (!usesId) {
+      result += "All";
+    }
+
+    return camelize(result, true);
   }
 }

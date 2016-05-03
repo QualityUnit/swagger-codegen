@@ -9,6 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class CodegenOperation {
+    
+    // QU start
+    public String gwtphpClientMethodName = "";
+    // QU end
+    
     public final List<CodegenProperty> responseHeaders = new ArrayList<CodegenProperty>();
     public Boolean hasAuthMethods, hasConsumes, hasProduces, hasParams, hasOptionalParams,
             returnTypeIsPrimitive, returnSimpleType, subresourceOperation, isMapContainer,
