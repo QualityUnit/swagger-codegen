@@ -28,40 +28,59 @@ class {{supportPackage}}_ApiClient
     public static $OPTIONS = "OPTIONS";
     public static $PUT = "PUT";
     public static $DELETE = "DELETE";
+    
+    /**
+     * Access token for OAuth
+     *
+     * @var string
+     */
+    private static $accessToken = '';
 
     /**
-     * Configuration
-     * @var {{supportPackage}}_Configuration
+     * Timeout (second) of the HTTP request, by default set to 0, no timeout
+     * @var string
      */
-    protected $config;
+    protected $curlTimeout = 10;
+    
+    /**
+     * The host
+     * @var string
+     */
+    protected $host = '{{basePath}}';
 
     /**
      * Object Serializer
      * @var {{supportPackage}}_ObjectSerializer
      */
     protected $serializer;
+    
+    /**
+     * User agent of the HTTP request, set to "PHP-Swagger" by default
+     *
+     * @var string
+     */
+    protected $userAgent = "{{#httpUserAgent}}{{{.}}}{{/httpUserAgent}}{{^httpUserAgent}}Swagger-Codegen/{{{artifactVersion}}}/php{{/httpUserAgent}}";
 
+    /**
+     * Indicates if SSL verification should be enabled or disabled.
+     *
+     * This is useful if the host uses a self-signed SSL certificate.
+     *
+     * @var boolean True if the certificate should be validated, false otherwise.
+     */
+    protected $sslVerification = true;
+    
+    public static function setAccessToken($accessToken) {
+    	self::$accessToken = $accessToken;
+    }
+    
     /**
      * Constructor of the class
      * @param {{supportPackage}}_Configuration $config config for this ApiClient
      */
-    public function __construct({{supportPackage}}_Configuration $config = null)
+    public function __construct()
     {
-        if ($config == null) {
-            $config = {{supportPackage}}_Configuration::getDefaultConfiguration();
-        }
-
-        $this->config = $config;
         $this->serializer = new {{supportPackage}}_ObjectSerializer();
-    }
-
-    /**
-     * Get the config
-     * @return {{supportPackage}}_Configuration
-     */
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     /**
@@ -71,29 +90,6 @@ class {{supportPackage}}_ApiClient
     public function getSerializer()
     {
         return $this->serializer;
-    }
-
-    /**
-     * Get API key (with prefix if set)
-     * @param  string $apiKeyIdentifier name of apikey
-     * @return string API key with the prefix
-     */
-    public function getApiKeyWithPrefix($apiKeyIdentifier)
-    {
-        $prefix = $this->config->getApiKeyPrefix($apiKeyIdentifier);
-        $apiKey = $this->config->getApiKey($apiKeyIdentifier);
-
-        if (!isset($apiKey)) {
-            return null;
-        }
-
-        if (isset($prefix)) {
-            $keyWithPrefix = $prefix." ".$apiKey;
-        } else {
-            $keyWithPrefix = $apiKey;
-        }
-
-        return $keyWithPrefix;
     }
 
     /**
@@ -109,15 +105,8 @@ class {{supportPackage}}_ApiClient
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
     {
-
         $headers = array();
-
-        // construct the http header
-        $headerParams = array_merge(
-            (array)$this->config->getDefaultHeaders(),
-            (array)$headerParams
-        );
-
+        
         foreach ($headerParams as $key => $val) {
             $headers[] = "$key: $val";
         }
@@ -129,12 +118,12 @@ class {{supportPackage}}_ApiClient
             $postData = json_encode({{supportPackage}}_ObjectSerializer::sanitizeForSerialization($postData));
         }
 
-        $url = $this->config->getHost() . $resourcePath;
+        $url = $this->host . $resourcePath;
 
         $curl = curl_init();
         // set timeout, if needed
-        if ($this->config->getCurlTimeout() != 0) {
-            curl_setopt($curl, CURLOPT_TIMEOUT, $this->config->getCurlTimeout());
+        if ($this->curlTimeout() != 0) {
+            curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout());
         }
         // return the result on success, rather than just true 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -145,6 +134,10 @@ class {{supportPackage}}_ApiClient
         if ($this->config->getSSLVerification() == false) {
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        }
+        
+        if (strlen(self::$accessToken) !== 0) {
+        	$queryParams['apikey'] = self::$accessToken;
         }
 
         if (! empty($queryParams)) {
@@ -172,19 +165,8 @@ class {{supportPackage}}_ApiClient
             throw new {{supportPackage}}_ApiException('Method ' . $method . ' is not recognized.');
         }
         curl_setopt($curl, CURLOPT_URL, $url);
-
-        // Set user agent
-        curl_setopt($curl, CURLOPT_USERAGENT, $this->config->getUserAgent());
-
-        // debugging for curl
-        if ($this->config->getDebug()) {
-            error_log("[DEBUG] HTTP Request body  ~BEGIN~\n".print_r($postData, true)."\n~END~\n", 3, $this->config->getDebugFile());
-
-            curl_setopt($curl, CURLOPT_VERBOSE, 1);
-            curl_setopt($curl, CURLOPT_STDERR, fopen($this->config->getDebugFile(), 'a'));
-        } else {
-            curl_setopt($curl, CURLOPT_VERBOSE, 0);
-        }
+        curl_setopt($curl, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($curl, CURLOPT_VERBOSE, 0);
 
         // obtain the HTTP response headers
         curl_setopt($curl, CURLOPT_HEADER, 1);
@@ -195,11 +177,6 @@ class {{supportPackage}}_ApiClient
         $http_header = $this->http_parse_headers(substr($response, 0, $http_header_size));
         $http_body = substr($response, $http_header_size);
         $response_info = curl_getinfo($curl);
-
-        // debug HTTP response body
-        if ($this->config->getDebug()) {
-            error_log("[DEBUG] HTTP Response body ~BEGIN~\n".print_r($http_body, true)."\n~END~\n", 3, $this->config->getDebugFile());
-        }
 
         // Handle the response
         if ($response_info['http_code'] == 0) {

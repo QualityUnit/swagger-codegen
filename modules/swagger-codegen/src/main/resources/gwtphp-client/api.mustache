@@ -35,30 +35,9 @@
     {
         if ($apiClient == null) {
             $apiClient = new {{supportPackage}}_ApiClient();
-            $apiClient->getConfig()->setHost('{{basePath}}');
         }
   
         $this->apiClient = $apiClient;
-    }
-  
-    /**
-     * Get API client
-     * @return {{supportPackage}}_ApiClient get the API client
-     */
-    public function getApiClient()
-    {
-        return $this->apiClient;
-    }
-  
-    /**
-     * Set the API client
-     * @param {{supportPackage}}_ApiClient $apiClient set the API client
-     * @return {{apiPackage}}_{{classname}}
-     */
-    public function setApiClient({{supportPackage}}_ApiClient $apiClient)
-    {
-        $this->apiClient = $apiClient;
-        return $this;
     }
   
     {{#operation}}
@@ -168,20 +147,6 @@
         } elseif (count($formParams) > 0) {
             $httpBody = $formParams; // for HTTP post (form)
         }
-        {{#authMethods}}{{#isApiKey}}
-        // this endpoint requires API key authentication
-        $apiKey = $this->apiClient->getApiKeyWithPrefix('{{keyParamName}}');
-        if (strlen($apiKey) !== 0) {
-            {{#isKeyInHeader}}$headerParams['{{keyParamName}}'] = $apiKey;{{/isKeyInHeader}}{{#isKeyInQuery}}$queryParams['{{keyParamName}}'] = $apiKey;{{/isKeyInQuery}}
-        }{{/isApiKey}}
-        {{#isBasic}}// this endpoint requires HTTP basic authentication
-        if (strlen($this->apiClient->getConfig()->getUsername()) !== 0 or strlen($this->apiClient->getConfig()->getPassword()) !== 0) {
-            $headerParams['Authorization'] = 'Basic ' . base64_encode($this->apiClient->getConfig()->getUsername() . ":" . $this->apiClient->getConfig()->getPassword());
-        }{{/isBasic}}{{#isOAuth}}// this endpoint requires OAuth (access token)
-        if (strlen($this->apiClient->getConfig()->getAccessToken()) !== 0) {
-            $headerParams['Authorization'] = 'Bearer ' . $this->apiClient->getConfig()->getAccessToken();
-        }{{/isOAuth}}
-        {{/authMethods}}
         // make the API Call
         try {
             list($response, $statusCode, $httpHeader) = $this->apiClient->callApi(
