@@ -20,7 +20,6 @@
  */
 class {{supportPackage}}_ApiClient
 {
-
     public static $PATCH = "PATCH";
     public static $POST = "POST";
     public static $GET = "GET";
@@ -29,12 +28,11 @@ class {{supportPackage}}_ApiClient
     public static $PUT = "PUT";
     public static $DELETE = "DELETE";
     
-    /**
-     * Access token for OAuth
-     *
-     * @var string
-     */
+    /** @var string */
     private static $accessToken = '';
+    
+    /** @var {{supportPackage}}_ApiClient */
+    private static $instance;
 
     /**
      * Timeout (second) of the HTTP request, by default set to 0, no timeout
@@ -70,8 +68,21 @@ class {{supportPackage}}_ApiClient
      */
     protected $sslVerification = true;
     
+    /**
+     * @param string $accessToken
+     */
     public static function setAccessToken($accessToken) {
     	self::$accessToken = $accessToken;
+    }
+    
+    /**
+     * @return {{supportPackage}}_ApiClient
+     */
+    public static function getInstance() {
+    	if (self::$instance === null) {
+    		self::$instance = new self();
+    	}
+    	return self::$instance;
     }
     
     /**

@@ -27,17 +27,9 @@
      */
     protected $apiClient;
   
-    /**
-     * Constructor
-     * @param {{supportPackage}}_ApiClient|null $apiClient The api client to use
-     */
-    function __construct($apiClient = null)
+    function __construct()
     {
-        if ($apiClient == null) {
-            $apiClient = new {{supportPackage}}_ApiClient();
-        }
-  
-        $this->apiClient = $apiClient;
+    	$this->apiClient = {{supportPackage}}_ApiClient::getInstance();
     }
   
     {{#operation}}
