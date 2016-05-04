@@ -76,7 +76,6 @@ class {{supportPackage}}_ApiClient
     
     /**
      * Constructor of the class
-     * @param {{supportPackage}}_Configuration $config config for this ApiClient
      */
     public function __construct()
     {
@@ -122,8 +121,8 @@ class {{supportPackage}}_ApiClient
 
         $curl = curl_init();
         // set timeout, if needed
-        if ($this->curlTimeout() != 0) {
-            curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout());
+        if ($this->curlTimeout != 0) {
+            curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout);
         }
         // return the result on success, rather than just true 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -131,7 +130,7 @@ class {{supportPackage}}_ApiClient
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
         // disable SSL verification, if needed
-        if ($this->config->getSSLVerification() == false) {
+        if ($this->sslVerification == false) {
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         }

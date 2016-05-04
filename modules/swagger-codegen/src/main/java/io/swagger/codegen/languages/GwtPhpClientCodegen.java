@@ -309,8 +309,6 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     additionalProperties.put("fnClassName", new ClassNameLambda());
     additionalProperties.put("fnMethodName", new MethodNameLambda());
 
-    supportingFiles.add(new SupportingFile("configuration.mustache",
-        toPackagePath(supportPackage, srcBasePath), "Configuration.class.php"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
         toPackagePath(supportPackage, srcBasePath), "ApiClient.class.php"));
     supportingFiles.add(new SupportingFile("ApiException.mustache",
