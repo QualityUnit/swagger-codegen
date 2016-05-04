@@ -1,6 +1,6 @@
 <?php
 /**
- * {{invokerPackage}}_ApiClient
+ * {{supportPackage}}_ApiClient
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{invokerPackage}}_ApiClient
+class {{supportPackage}}_ApiClient
 {
 
     public static $PATCH = "PATCH";
@@ -31,33 +31,33 @@ class {{invokerPackage}}_ApiClient
 
     /**
      * Configuration
-     * @var {{invokerPackage}}_Configuration
+     * @var {{supportPackage}}_Configuration
      */
     protected $config;
 
     /**
      * Object Serializer
-     * @var {{invokerPackage}}_ObjectSerializer
+     * @var {{supportPackage}}_ObjectSerializer
      */
     protected $serializer;
 
     /**
      * Constructor of the class
-     * @param {{invokerPackage}}_Configuration $config config for this ApiClient
+     * @param {{supportPackage}}_Configuration $config config for this ApiClient
      */
-    public function __construct({{invokerPackage}}_Configuration $config = null)
+    public function __construct({{supportPackage}}_Configuration $config = null)
     {
         if ($config == null) {
-            $config = {{invokerPackage}}_Configuration::getDefaultConfiguration();
+            $config = {{supportPackage}}_Configuration::getDefaultConfiguration();
         }
 
         $this->config = $config;
-        $this->serializer = new {{invokerPackage}}_ObjectSerializer();
+        $this->serializer = new {{supportPackage}}_ObjectSerializer();
     }
 
     /**
      * Get the config
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function getConfig()
     {
@@ -66,7 +66,7 @@ class {{invokerPackage}}_ApiClient
 
     /**
      * Get the serializer
-     * @return {{invokerPackage}}_ObjectSerializer
+     * @return {{supportPackage}}_ObjectSerializer
      */
     public function getSerializer()
     {
@@ -104,7 +104,7 @@ class {{invokerPackage}}_ApiClient
      * @param array  $postData     parameters to be placed in POST body
      * @param array  $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
-     * @throws {{invokerPackage}}_ApiException on a non 2xx response
+     * @throws {{supportPackage}}_ApiException on a non 2xx response
      * @return mixed
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
@@ -126,7 +126,7 @@ class {{invokerPackage}}_ApiClient
         if ($postData and in_array('Content-Type: application/x-www-form-urlencoded', $headers)) {
             $postData = http_build_query($postData);
         } elseif ((is_object($postData) or is_array($postData)) and !in_array('Content-Type: multipart/form-data', $headers)) { // json model
-            $postData = json_encode({{invokerPackage}}_ObjectSerializer::sanitizeForSerialization($postData));
+            $postData = json_encode({{supportPackage}}_ObjectSerializer::sanitizeForSerialization($postData));
         }
 
         $url = $this->config->getHost() . $resourcePath;
@@ -169,7 +169,7 @@ class {{invokerPackage}}_ApiClient
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
         } elseif ($method != self::$GET) {
-            throw new {{invokerPackage}}_ApiException('Method ' . $method . ' is not recognized.');
+            throw new {{supportPackage}}_ApiException('Method ' . $method . ' is not recognized.');
         }
         curl_setopt($curl, CURLOPT_URL, $url);
 
@@ -203,7 +203,7 @@ class {{invokerPackage}}_ApiClient
 
         // Handle the response
         if ($response_info['http_code'] == 0) {
-            throw new {{invokerPackage}}_ApiException("API call to $url timed out: ".serialize($response_info), 0, null, null);
+            throw new {{supportPackage}}_ApiException("API call to $url timed out: ".serialize($response_info), 0, null, null);
         } elseif ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
             // return raw body if response is a file
             if ($responseType == '\SplFileObject' || $responseType == 'string') {
@@ -220,7 +220,7 @@ class {{invokerPackage}}_ApiClient
                 $data = $http_body;
             }
 
-            throw new {{invokerPackage}}_ApiException(
+            throw new {{supportPackage}}_ApiException(
                 "[".$response_info['http_code']."] Error connecting to the API ($url)",
                 $response_info['http_code'], $http_header, $data
             );

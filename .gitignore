@@ -24,6 +24,7 @@ packages/
 .vagrant/
 
 .settings
+*.jdt.core.prefs
 
 *.mustache~
 *.java~

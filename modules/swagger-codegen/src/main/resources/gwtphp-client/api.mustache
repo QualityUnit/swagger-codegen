@@ -23,18 +23,18 @@
 
     /**
      * API Client
-     * @var {{invokerPackage}}_ApiClient instance of the ApiClient
+     * @var {{supportPackage}}_ApiClient instance of the ApiClient
      */
     protected $apiClient;
   
     /**
      * Constructor
-     * @param {{invokerPackage}}_ApiClient|null $apiClient The api client to use
+     * @param {{supportPackage}}_ApiClient|null $apiClient The api client to use
      */
     function __construct($apiClient = null)
     {
         if ($apiClient == null) {
-            $apiClient = new {{invokerPackage}}_ApiClient();
+            $apiClient = new {{supportPackage}}_ApiClient();
             $apiClient->getConfig()->setHost('{{basePath}}');
         }
   
@@ -43,7 +43,7 @@
   
     /**
      * Get API client
-     * @return {{invokerPackage}}_ApiClient get the API client
+     * @return {{supportPackage}}_ApiClient get the API client
      */
     public function getApiClient()
     {
@@ -52,10 +52,10 @@
   
     /**
      * Set the API client
-     * @param {{invokerPackage}}_ApiClient $apiClient set the API client
+     * @param {{supportPackage}}_ApiClient $apiClient set the API client
      * @return {{apiPackage}}_{{classname}}
      */
-    public function setApiClient({{invokerPackage}}_ApiClient $apiClient)
+    public function setApiClient({{supportPackage}}_ApiClient $apiClient)
     {
         $this->apiClient = $apiClient;
         return $this;
@@ -69,7 +69,7 @@
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
   {{/allParams}}   * @return {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}
-     * @throws {{invokerPackage}}_ApiException on non-2xx response
+     * @throws {{supportPackage}}_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
@@ -85,7 +85,7 @@
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
   {{/allParams}}   * @return array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
-     * @throws {{invokerPackage}}_ApiException on non-2xx response
+     * @throws {{supportPackage}}_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}WithHttpInfo({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
@@ -198,7 +198,7 @@
             {{/returnType}}{{^returnType}}
             return array(null, $statusCode, $httpHeader);
             {{/returnType}}
-        } catch ({{invokerPackage}}_ApiException $e) {
+        } catch ({{supportPackage}}_ApiException $e) {
             switch ($e->getCode()) { {{#responses}}{{#dataType}}
             {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
                 $data = $this->apiClient->getSerializer()->deserialize($e->getResponseBody(), '{{dataType}}', $e->getResponseHeaders());

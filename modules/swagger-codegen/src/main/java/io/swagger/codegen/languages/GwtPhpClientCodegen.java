@@ -91,6 +91,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     }
   }
 
+  private static final String SUPPORT_PACKAGE = "supportPackage";
+
   public static final String PACKAGE_PATH = "packagePath";
 
   public static final String SRC_BASE_PATH = "srcBasePath";
@@ -101,6 +103,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   protected String packagePath = "";
   protected String artifactVersion = "1";
   protected String srcBasePath = "include/" + invokerPackage;
+
+  private String supportPackage;
 
   public GwtPhpClientCodegen() {
     super();
@@ -293,6 +297,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
           artifactVersion);
     }
 
+    additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+
     additionalProperties.put("escapedInvokerPackage",
         invokerPackage.replace("\\", "\\\\"));
 
@@ -304,13 +310,13 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     additionalProperties.put("fnMethodName", new MethodNameLambda());
 
     supportingFiles.add(new SupportingFile("configuration.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "Configuration.class.php"));
+        toPackagePath(supportPackage, srcBasePath), "Configuration.class.php"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiClient.class.php"));
+        toPackagePath(supportPackage, srcBasePath), "ApiClient.class.php"));
     supportingFiles.add(new SupportingFile("ApiException.mustache",
-        toPackagePath(invokerPackage, srcBasePath), "ApiException.class.php"));
+        toPackagePath(supportPackage, srcBasePath), "ApiException.class.php"));
     supportingFiles.add(new SupportingFile("ObjectSerializer.mustache",
-        toPackagePath(invokerPackage, srcBasePath),
+        toPackagePath(supportPackage, srcBasePath),
         "ObjectSerializer.class.php"));
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
@@ -328,8 +334,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public void setInvokerPackage(String invokerPackage) {
     this.invokerPackage = invokerPackage;
     srcBasePath = "include/" + invokerPackage;
-    apiPackage = invokerPackage + "_Api";
+    apiPackage = invokerPackage;
     modelPackage = invokerPackage + "_Model";
+    supportPackage = invokerPackage + "_Support";
   }
 
   public void setPackagePath(String packagePath) {
@@ -382,8 +389,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     String regLastPathSeparator = "[\\\\/]?$";
 
     if (basePath != null && basePath.length() > 0) {
-      basePath = basePath.replaceAll("_", "/").replaceAll(regLastPathSeparator, "")
-          + File.separatorChar;
+      basePath = basePath.replaceAll("_", "/").replaceAll(regLastPathSeparator,
+          "") + File.separatorChar;
     }
 
     String packagePath = getPackagePath();
@@ -391,10 +398,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen
       packagePath += File.separatorChar;
     }
 
-    packageName = packageName.replace(invokerPackage, "")
-        .replaceAll("_", "/")
-        .replaceAll(regFirstPathSeparator, "")
-        .replaceAll(regLastPathSeparator, "");
+    packageName = packageName.replace(invokerPackage, "").replaceAll("_",
+        "/").replaceAll(regFirstPathSeparator, "").replaceAll(
+            regLastPathSeparator, "");
 
     return packagePath + basePath + packageName;
   }
@@ -419,7 +425,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     boolean usesId = Pattern.compile("\\{.*\\}").matcher(operation.path).find();
 
-    String operationPart = operation.path.replaceFirst("^/[^/]*/", "").replaceAll("\\{.*\\}", "");
+    String operationPart = operation.path.replaceFirst("^/[^/]*/",
+        "").replaceAll("\\{.*\\}", "");
     result += "/" + operationPart;
 
     if ("/".equals(result)) {

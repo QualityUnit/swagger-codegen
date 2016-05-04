@@ -1,6 +1,6 @@
 <?php
 /**
- * {{invokerPackage}}_Configuration
+ * {{supportPackage}}_Configuration
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{invokerPackage}}_Configuration
+class {{supportPackage}}_Configuration
 {
 
     private static $_defaultConfiguration = null;
@@ -61,7 +61,7 @@ class {{invokerPackage}}_Configuration
     /**
      * The default instance of ApiClient
      *
-     * @var {{invokerPackage}}_ApiClient
+     * @var {{supportPackage}}_ApiClient
      */
     protected $defaultHeaders = array();
 
@@ -130,7 +130,7 @@ class {{invokerPackage}}_Configuration
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
      * @param string $key              API key or token
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setApiKey($apiKeyIdentifier, $key)
     {
@@ -156,7 +156,7 @@ class {{invokerPackage}}_Configuration
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
      * @param string $prefix           API key prefix, e.g. Bearer
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setApiKeyPrefix($apiKeyIdentifier, $prefix)
     {
@@ -181,7 +181,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $accessToken Token for OAuth
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setAccessToken($accessToken)
     {
@@ -204,7 +204,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $username Username for HTTP basic authentication
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setUsername($username)
     {
@@ -227,7 +227,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $password Password for HTTP basic authentication
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setPassword($password)
     {
@@ -251,7 +251,7 @@ class {{invokerPackage}}_Configuration
      * @param string $headerName  header name (e.g. Token)
      * @param string $headerValue header value (e.g. 1z8wp3)
      *
-     * @return {{invokerPackage}}_ApiClient
+     * @return {{supportPackage}}_ApiClient
      */
     public function addDefaultHeader($headerName, $headerValue)
     {
@@ -278,7 +278,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $headerName the header to delete
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function deleteDefaultHeader($headerName)
     {
@@ -290,7 +290,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $host Host
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setHost($host)
     {
@@ -313,7 +313,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $userAgent the user agent of the api client
      *
-     * @return {{invokerPackage}}_ApiClient
+     * @return {{supportPackage}}_ApiClient
      */
     public function setUserAgent($userAgent)
     {
@@ -340,7 +340,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param integer $seconds Number of seconds before timing out [set to 0 for no timeout]
      *
-     * @return {{invokerPackage}}_ApiClient
+     * @return {{supportPackage}}_ApiClient
      */
     public function setCurlTimeout($seconds)
     {
@@ -367,7 +367,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param bool $debug Debug flag
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setDebug($debug)
     {
@@ -390,7 +390,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $debugFile Debug file
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setDebugFile($debugFile)
     {
@@ -413,7 +413,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param string $tempFolderPath Temp folder path
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setTempFolderPath($tempFolderPath)
     {
@@ -436,7 +436,7 @@ class {{invokerPackage}}_Configuration
      *
      * @param boolean $sslVerification True if the certificate should be validated, false otherwise
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public function setSSLVerification($sslVerification)
     {
@@ -457,12 +457,12 @@ class {{invokerPackage}}_Configuration
     /**
      * Gets the default configuration instance
      *
-     * @return {{invokerPackage}}_Configuration
+     * @return {{supportPackage}}_Configuration
      */
     public static function getDefaultConfiguration()
     {
         if (self::$_defaultConfiguration == null) {
-            self::$_defaultConfiguration = new {{invokerPackage}}_Configuration();
+            self::$_defaultConfiguration = new {{supportPackage}}_Configuration();
         }
 
         return self::$_defaultConfiguration;
@@ -471,11 +471,11 @@ class {{invokerPackage}}_Configuration
     /**
      * Sets the detault configuration instance
      *
-     * @param {{invokerPackage}}_Configuration $config An instance of the configuration Object
+     * @param {{supportPackage}}_Configuration $config An instance of the configuration Object
      *
      * @return void
      */
-    public static function setDefaultConfiguration({{invokerPackage}}_Configuration $config)
+    public static function setDefaultConfiguration({{supportPackage}}_Configuration $config)
     {
         self::$_defaultConfiguration = $config;
     }

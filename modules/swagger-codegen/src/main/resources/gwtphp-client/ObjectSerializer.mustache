@@ -1,6 +1,6 @@
 <?php
 /**
- * {{invokerPackage}}_ObjectSerializer
+ * {{supportPackage}}_ObjectSerializer
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{invokerPackage}}_ObjectSerializer
+class {{supportPackage}}_ObjectSerializer
 {
 
     /**
@@ -240,13 +240,13 @@ class {{invokerPackage}}_ObjectSerializer
         } elseif ($class === 'SplFileObject') {
             // determine file name
             if (array_key_exists('Content-Disposition', $httpHeaders) && preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = {{invokerPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath() . sanitizeFilename($match[1]);
+                $filename = {{supportPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath() . sanitizeFilename($match[1]);
             } else {
-                $filename = tempnam({{invokerPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
+                $filename = tempnam({{supportPackage}}_Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
             }
             $deserialized = new SplFileObject($filename, "w");
             $byte_written = $deserialized->fwrite($data);
-            error_log("[INFO] Written $byte_written byte to $filename. Please move the file to a proper folder or delete the temp file after processing.\n", 3, {{invokerPackage}}_Configuration::getDefaultConfiguration()->getDebugFile());
+            error_log("[INFO] Written $byte_written byte to $filename. Please move the file to a proper folder or delete the temp file after processing.\n", 3, {{supportPackage}}_Configuration::getDefaultConfiguration()->getDebugFile());
             return $deserialized;
  
         } else {
