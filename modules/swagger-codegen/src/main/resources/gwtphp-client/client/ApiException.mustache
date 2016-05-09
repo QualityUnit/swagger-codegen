@@ -1,6 +1,6 @@
 <?php
 /**
- * {{supportPackage}}_ApiException
+ * RestApi_Client_ApiException
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{supportPackage}}_ApiException extends Exception
+class RestApi_Client_ApiException extends Exception
 {
 
     /**
@@ -46,7 +46,7 @@ class {{supportPackage}}_ApiException extends Exception
      * @param string $responseHeaders HTTP response header
      * @param mixed  $responseBody    HTTP body of the server response either as Json or string
      */
-    public function __construct($message="", $code=0, $responseHeaders=null, $responseBody=null)
+    public function __construct($message='', $code=0, $responseHeaders=null, $responseBody=null)
     {
         parent::__construct($message, $code);
         $this->responseHeaders = $responseHeaders;

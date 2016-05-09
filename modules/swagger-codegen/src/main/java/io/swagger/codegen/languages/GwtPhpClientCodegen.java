@@ -309,13 +309,25 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     additionalProperties.put("fnClassName", new ClassNameLambda());
     additionalProperties.put("fnMethodName", new MethodNameLambda());
 
-    supportingFiles.add(new SupportingFile("ApiClient.mustache",
-        toPackagePath(supportPackage, srcBasePath), "ApiClient.class.php"));
-    supportingFiles.add(new SupportingFile("ApiException.mustache",
-        toPackagePath(supportPackage, srcBasePath), "ApiException.class.php"));
-    supportingFiles.add(new SupportingFile("ObjectSerializer.mustache",
-        toPackagePath(supportPackage, srcBasePath),
-        "ObjectSerializer.class.php"));
+    String restApiPath = "include/RestApi/";
+
+    supportingFiles.add(new SupportingFile("client/ApiClient.mustache",
+        getPackagePath(), restApiPath + "Client/ApiClient.class.php"));
+    supportingFiles.add(new SupportingFile("client/ApiException.mustache",
+        getPackagePath(), restApiPath + "Client/ApiException.class.php"));
+
+    String[][] suppFiles = {
+        {"field/", "TypeUtils/", "Field.class.php"},
+        {"field/", "TypeUtils/", "BoolField.class.php"},
+        {"field/", "TypeUtils/", "IntField.class.php"},
+        {"field/", "TypeUtils/", "FloatField.class.php"},
+        {"field/", "TypeUtils/", "StringField.class.php"},
+        {"field/", "TypeUtils/", "ParseException.class.php"}};
+
+    for (String[] file : suppFiles) {
+      supportingFiles.add(new SupportingFile(file[0] + file[2],
+          getPackagePath(), restApiPath + file[1] + file[2]));
+    }
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
   }

@@ -23,13 +23,13 @@
 
     /**
      * API Client
-     * @var {{supportPackage}}_ApiClient instance of the ApiClient
+     * @var RestApi_Client_ApiClient instance of the ApiClient
      */
     protected $apiClient;
   
     function __construct()
     {
-    	$this->apiClient = {{supportPackage}}_ApiClient::getInstance();
+    	$this->apiClient = RestApi_Client_ApiClient::getInstance();
     }
   
     {{#operation}}
@@ -40,7 +40,7 @@
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
   {{/allParams}}   * @return {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}}
-     * @throws {{supportPackage}}_ApiException on non-2xx response
+     * @throws RestApi_Client_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
@@ -56,7 +56,7 @@
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
   {{/allParams}}   * @return array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
-     * @throws {{supportPackage}}_ApiException on non-2xx response
+     * @throws RestApi_Client_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}WithHttpInfo({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
     {
@@ -151,14 +151,14 @@
                 return array(null, $statusCode, $httpHeader);
             }
 
-            return array($this->apiClient->getSerializer()->deserialize($response, '{{returnType}}', $httpHeader{{#discriminator}}, '{{discriminator}}'{{/discriminator}}), $statusCode, $httpHeader);
+            return array(new {{returnType}}($response), $statusCode, $httpHeader);
             {{/returnType}}{{^returnType}}
             return array(null, $statusCode, $httpHeader);
             {{/returnType}}
-        } catch ({{supportPackage}}_ApiException $e) {
+        } catch (RestApi_Client_ApiException $e) {
             switch ($e->getCode()) { {{#responses}}{{#dataType}}
             {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
-                $data = $this->apiClient->getSerializer()->deserialize($e->getResponseBody(), '{{dataType}}', $e->getResponseHeaders());
+                $data = new {{dataType}}($e->getResponseBody());
                 $e->setResponseObject($data);
                 break;{{/dataType}}{{/responses}}
             }

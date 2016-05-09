@@ -1,6 +1,6 @@
 <?php
 /**
- * {{supportPackage}}_ApiClient
+ * RestApi_Client_ApiClient
  *
  * @copyright 	Copyright (c) 2015 Quality Unit s.r.o.
  * @author		AUTO GENERATED CODE
@@ -18,7 +18,7 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{supportPackage}}_ApiClient
+class RestApi_Client_ApiClient
 {
     public static $PATCH = "PATCH";
     public static $POST = "POST";
@@ -31,7 +31,7 @@ class {{supportPackage}}_ApiClient
     /** @var string */
     private static $accessToken = '';
     
-    /** @var {{supportPackage}}_ApiClient */
+    /** @var RestApi_Client_ApiClient */
     private static $instance;
 
     /**
@@ -45,12 +45,6 @@ class {{supportPackage}}_ApiClient
      * @var string
      */
     protected $host = '{{basePath}}';
-
-    /**
-     * Object Serializer
-     * @var {{supportPackage}}_ObjectSerializer
-     */
-    protected $serializer;
     
     /**
      * User agent of the HTTP request, set to "PHP-Swagger" by default
@@ -76,30 +70,13 @@ class {{supportPackage}}_ApiClient
     }
     
     /**
-     * @return {{supportPackage}}_ApiClient
+     * @return RestApi_Client_ApiClient
      */
     public static function getInstance() {
     	if (self::$instance === null) {
     		self::$instance = new self();
     	}
     	return self::$instance;
-    }
-    
-    /**
-     * Constructor of the class
-     */
-    public function __construct()
-    {
-        $this->serializer = new {{supportPackage}}_ObjectSerializer();
-    }
-
-    /**
-     * Get the serializer
-     * @return {{supportPackage}}_ObjectSerializer
-     */
-    public function getSerializer()
-    {
-        return $this->serializer;
     }
 
     /**
@@ -110,7 +87,7 @@ class {{supportPackage}}_ApiClient
      * @param array  $postData     parameters to be placed in POST body
      * @param array  $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
-     * @throws {{supportPackage}}_ApiException on a non 2xx response
+     * @throws RestApi_Client_ApiException on a non 2xx response
      * @return mixed
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
@@ -119,13 +96,6 @@ class {{supportPackage}}_ApiClient
         
         foreach ($headerParams as $key => $val) {
             $headers[] = "$key: $val";
-        }
-
-        // form data
-        if ($postData and in_array('Content-Type: application/x-www-form-urlencoded', $headers)) {
-            $postData = http_build_query($postData);
-        } elseif ((is_object($postData) or is_array($postData)) and !in_array('Content-Type: multipart/form-data', $headers)) { // json model
-            $postData = json_encode({{supportPackage}}_ObjectSerializer::sanitizeForSerialization($postData));
         }
 
         $url = $this->host . $resourcePath;
@@ -172,7 +142,7 @@ class {{supportPackage}}_ApiClient
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
         } elseif ($method != self::$GET) {
-            throw new {{supportPackage}}_ApiException('Method ' . $method . ' is not recognized.');
+            throw new RestApi_Client_ApiException('Method ' . $method . ' is not recognized.');
         }
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_USERAGENT, $this->userAgent);
@@ -190,7 +160,7 @@ class {{supportPackage}}_ApiClient
 
         // Handle the response
         if ($response_info['http_code'] == 0) {
-            throw new {{supportPackage}}_ApiException("API call to $url timed out: ".serialize($response_info), 0, null, null);
+            throw new RestApi_Client_ApiException("API call to $url timed out: ".serialize($response_info), 0, null, null);
         } elseif ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
             // return raw body if response is a file
             if ($responseType == '\SplFileObject' || $responseType == 'string') {
@@ -207,7 +177,7 @@ class {{supportPackage}}_ApiClient
                 $data = $http_body;
             }
 
-            throw new {{supportPackage}}_ApiException(
+            throw new RestApi_Client_ApiException(
                 "[".$response_info['http_code']."] Error connecting to the API ($url)",
                 $response_info['http_code'], $http_header, $data
             );
