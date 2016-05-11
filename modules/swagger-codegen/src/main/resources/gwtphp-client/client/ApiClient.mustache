@@ -51,7 +51,7 @@ class RestApi_Client_ApiClient
      *
      * @var string
      */
-    protected $userAgent = "{{#httpUserAgent}}{{{.}}}{{/httpUserAgent}}{{^httpUserAgent}}Swagger-Codegen/{{{artifactVersion}}}/php{{/httpUserAgent}}";
+    protected $userAgent = '{{#httpUserAgent}}{{{.}}}{{/httpUserAgent}}{{^httpUserAgent}}Swagger-Codegen/{{{artifactVersion}}}/php{{/httpUserAgent}}';
 
     /**
      * Indicates if SSL verification should be enabled or disabled.
@@ -84,7 +84,7 @@ class RestApi_Client_ApiClient
      * @param string $resourcePath path to method endpoint
      * @param string $method       method to call
      * @param array  $queryParams  parameters to be place in query URL
-     * @param array  $postData     parameters to be placed in POST body
+     * @param object $postData     parameters to be placed in POST body
      * @param array  $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
      * @throws RestApi_Client_ApiException on a non 2xx response
@@ -99,6 +99,8 @@ class RestApi_Client_ApiClient
         }
 
         $url = $this->host . $resourcePath;
+
+        $postData = json_encode($postData->getData());
 
         $curl = curl_init();
         // set timeout, if needed
@@ -160,20 +162,22 @@ class RestApi_Client_ApiClient
 
         // Handle the response
         if ($response_info['http_code'] == 0) {
-            throw new RestApi_Client_ApiException("API call to $url timed out: ".serialize($response_info), 0, null, null);
-        } elseif ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
+            throw new RestApi_Client_ApiException("API call to $url timed out: " . serialize($response_info), 0, null, null);
+        }
+
+        if ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
             // return raw body if response is a file
-            if ($responseType == '\SplFileObject' || $responseType == 'string') {
+            if ($responseType == 'File' || $responseType == 'string') {
                 return array($http_body, $response_info['http_code'], $http_header);
             }
 
             $data = json_decode($http_body);
-            if (json_last_error() > 0) { // if response is a string
+            if (json_last_error() > 0) {
                 $data = $http_body;
             }
         } else {
             $data = json_decode($http_body);
-            if (json_last_error() > 0) { // if response is a string
+            if (json_last_error() > 0) {
                 $data = $http_body;
             }
 

@@ -315,6 +315,8 @@ public class GwtPhpClientCodegen extends DefaultCodegen
         getPackagePath(), restApiPath + "Client/ApiClient.class.php"));
     supportingFiles.add(new SupportingFile("client/ApiException.mustache",
         getPackagePath(), restApiPath + "Client/ApiException.class.php"));
+    supportingFiles.add(new SupportingFile("client/Utils.mustache",
+        getPackagePath(), restApiPath + "Client/Utils.class.php"));
 
     String[][] suppFiles = {
         {"field/", "TypeUtils/", "Field.class.php"},
