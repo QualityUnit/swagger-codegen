@@ -20,25 +20,27 @@ import {{invokerPackage}}.ValidationException;
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-public class {{classname}} extends JavaScriptObject { {{#vars}}
+public class {{classname}} extends JavaScriptObject {
 
-	public final native {{datatype}} {{getter}}() /*-{
-		return this.{{name}};
-	}-*/;
-	
-	public final native void {{setter}}({{datatype}} value) /*-{
-		this.{{name}} = value;
-	}-*/;{{/vars}}
-	
-	public void check() throws ValidationException { {{#vars}}{{#required}}
-		if (this.{{getter}}() == null) {
-			throw new ValidationException("{{{name}}} is required");
-		}{{/required}}{{#isEnum}}
+    protected {{classname}}() { }{{#vars}}
+
+    public final native {{datatype}} {{getter}}() /*-{
+        return this.{{name}};
+    }-*/;
+
+    public final native void {{setter}}({{datatype}} value) /*-{
+        this.{{name}} = value;
+    }-*/;{{/vars}}
+
+    public final void check() throws ValidationException { {{#vars}}{{#required}}
+        if (this.{{getter}}() == null) {
+            throw new ValidationException("{{{name}}} is required");
+        }{{/required}}{{#isEnum}}
         java.util.List<String> allowed = java.util.Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
         if (!allowed.contains(this.{{getter}}())) {
-			throw new ValidationException("{{{name}}} must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+            throw new ValidationException("{{{name}}} must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }{{/isEnum}}{{/vars}}
-	}
+    }
 }
 {{/model}}
 {{/models}}

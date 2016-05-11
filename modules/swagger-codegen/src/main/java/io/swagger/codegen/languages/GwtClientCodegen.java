@@ -9,17 +9,17 @@ import io.swagger.codegen.CodegenConstants;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.DecimalProperty;
+import io.swagger.models.properties.Property;
 
+@SuppressWarnings("Duplicates")
 public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
   private static final String LANGUAGE_NAME = "gwt-client";
 
-  public static final String PACKAGE_PATH = "packagePath";
-
   protected String invokerPackage = "com.qualityunit.swagger.gwtclient";
-
   protected String artifactVersion = "1";
-  protected String srcBasePath = "include/" + invokerPackage;
 
   public GwtClientCodegen() {
     super();
@@ -45,13 +45,22 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         "long", "strictfp", "volatile", "const", "float", "native", "super",
         "while"));
 
-    languageSpecificPrimitives = new HashSet<String>(
+    languageSpecificPrimitives = new HashSet<>(
         Arrays.asList("String", "boolean", "Boolean", "Double", "Integer",
             "Long", "Float", "Object", "byte[]"));
-    instantiationTypes.put("array", "ArrayList");
-    instantiationTypes.put("map", "HashMap");
-    typeMapping.put("date", "Date");
-    typeMapping.put("file", "File");
+    typeMapping.put("date", "String");
+    typeMapping.put("file", "String");
+    typeMapping.put("boolean", "boolean");
+    typeMapping.put("string", "String");
+    typeMapping.put("int", "int");
+    typeMapping.put("float", "float");
+    typeMapping.put("DateTime", "String");
+    typeMapping.put("long", "long");
+    typeMapping.put("short", "short");
+    typeMapping.put("char", "String");
+    typeMapping.put("double", "double");
+    typeMapping.put("object", "Object");
+    typeMapping.put("integer", "int");
   }
 
   @Override
@@ -69,7 +78,24 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     return CodegenType.CLIENT;
   }
 
-  public String packageFolder() {
+  @Override
+  public String getTypeDeclaration(Property p) {
+    if (p instanceof ArrayProperty) {
+      ArrayProperty ap = (ArrayProperty) p;
+      Property inner = ap.getItems();
+      return getTypeDeclaration(inner) + "[]";
+    } else if (p instanceof DecimalProperty) {
+      DecimalProperty dp = (DecimalProperty) p;
+      String format = dp.getFormat();
+      if ("float".equalsIgnoreCase(format)) {
+        return "float";
+      } else {
+        return "double";
+      }
+    }
+    return super.getTypeDeclaration(p);
+  }
+  private String packageFolder() {
     return invokerPackage.replace('.', '/');
   }
 

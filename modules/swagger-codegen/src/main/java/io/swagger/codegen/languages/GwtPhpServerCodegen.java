@@ -25,6 +25,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 
+@SuppressWarnings("Duplicates")
 public class GwtPhpServerCodegen extends DefaultCodegen
     implements CodegenConfig {
   private static class ClassNameLambda extends CustomLambda {
@@ -77,17 +78,15 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     }
   }
 
-  public static final String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
-  public static final String PACKAGE_PATH = "packagePath";
-  public static final String SRC_BASE_PATH = "srcBasePath";
-  public static final String CODEGEN_VERSION = "1.3.0";
-  public static final String LANGUAGE_NAME = "gwtphp";
+  private static final String PACKAGE_PATH = "packagePath";
+  private static final String SRC_BASE_PATH = "srcBasePath";
+  private static final String CODEGEN_VERSION = "1.3.0";
+  private static final String LANGUAGE_NAME = "gwtphp";
 
-  protected String invokerPackage = "GwtPhp";
-  protected String packagePath = "";
-  protected String artifactVersion = "1";
-  protected String srcBasePath = "include/" + invokerPackage;
-  protected String variableNamingConvention = "snake_case";
+  private String invokerPackage = "GwtPhp";
+  private String packagePath = "";
+  private String artifactVersion = "1";
+  private String srcBasePath = "include/" + invokerPackage;
 
   public GwtPhpServerCodegen() {
     super();
@@ -97,7 +96,8 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     embeddedTemplateDir = templateDir = LANGUAGE_NAME;
     setInvokerPackage(invokerPackage);
 
-    reservedWords = new HashSet<String>(Arrays.asList("__halt_compiler",
+    // noinspection SpellCheckingInspection
+    reservedWords = new HashSet<>(Arrays.asList("__halt_compiler",
         "abstract", "and", "array", "as", "break", "callable", "case", "catch",
         "class", "clone", "const", "continue", "declare", "default", "die",
         "do", "echo", "else", "elseif", "empty", "enddeclare", "endfor",
@@ -110,7 +110,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
         "var", "while", "xor"));
 
     // ref: http://php.net/manual/en/language.types.intro.php
-    languageSpecificPrimitives = new HashSet<String>(Arrays.asList("bool",
+    languageSpecificPrimitives = new HashSet<>(Arrays.asList("bool",
         "boolean", "int", "integer", "double", "float", "string", "object",
         "DateTime", "mixed", "number", "void", "byte", "Number", "Integer"));
 
@@ -124,7 +124,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
 
     // ref:
     // https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types
-    typeMapping = new HashMap<String, String>();
+    typeMapping = new HashMap<>();
     typeMapping.put("integer", "int");
     typeMapping.put("number", "float");
     typeMapping.put("long", "int");
@@ -170,14 +170,14 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     return LANGUAGE_NAME;
   }
 
-  public String getPackagePath() {
+  private String getPackagePath() {
     return packagePath;
   }
 
   @Override
   public String getSwaggerType(Property p) {
     String swaggerType = super.getSwaggerType(p);
-    String type = null;
+    String type;
     if (typeMapping.containsKey(swaggerType)) {
       type = typeMapping.get(swaggerType);
       if (languageSpecificPrimitives.contains(type)) {
@@ -266,11 +266,6 @@ public class GwtPhpServerCodegen extends DefaultCodegen
           artifactVersion);
     }
 
-    if (additionalProperties.containsKey(VARIABLE_NAMING_CONVENTION)) {
-      this.setParameterNamingConvention(
-          (String) additionalProperties.get(VARIABLE_NAMING_CONVENTION));
-    }
-
     additionalProperties.put("escapedInvokerPackage",
         invokerPackage.replace("\\", "\\\\"));
 
@@ -315,26 +310,24 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     return name;
   }
 
-  public void setArtifactVersion(String artifactVersion) {
+  private void setArtifactVersion(String artifactVersion) {
     this.artifactVersion = artifactVersion;
   }
 
-  public void setInvokerPackage(String invokerPackage) {
+  private void setInvokerPackage(String invokerPackage) {
     this.invokerPackage = invokerPackage;
     srcBasePath = "include/" + invokerPackage;
     apiPackage = invokerPackage + "_Api";
-    modelPackage = invokerPackage + "_Api_Model";
+    if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
+      modelPackage = invokerPackage + "_Api_Model";
+    }
   }
 
-  public void setPackagePath(String packagePath) {
+  private void setPackagePath(String packagePath) {
     this.packagePath = packagePath;
   }
 
-  public void setParameterNamingConvention(String variableNamingConvention) {
-    this.variableNamingConvention = variableNamingConvention;
-  }
-
-  public void setSrcBasePath(String srcBasePath) {
+  private void setSrcBasePath(String srcBasePath) {
     this.srcBasePath = srcBasePath;
   }
 
@@ -367,7 +360,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     return camelize(name);
   }
 
-  public String toPackagePath(String packageName, String basePath) {
+  private String toPackagePath(String packageName, String basePath) {
     String regFirstPathSeparator = "^[\\\\/]?";
     String regLastPathSeparator = "[\\\\/]?$";
 
