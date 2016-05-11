@@ -304,7 +304,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
 
     for (String[] file : suppFiles) {
       supportingFiles.add(new SupportingFile(file[0] + file[2],
-          getPackagePath(), restApiPath + file[1] + file[2]));
+          getPackagePath() + restApiPath + file[1], file[2]));
     }
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
