@@ -30,7 +30,7 @@ public class {{classname}} extends JavaScriptObject { {{#vars}}
 		this.{{name}} = value;
 	}-*/;{{/vars}}
 	
-	public void check() throws ValidationException {{{#vars}}{{#required}}
+	public void check() throws ValidationException { {{#vars}}{{#required}}
 		if(this.{{getter}}() == null) {
 			throw new ValidationException("{{{name}}} is required");
 		}{{/required}}{{#isEnum}}
