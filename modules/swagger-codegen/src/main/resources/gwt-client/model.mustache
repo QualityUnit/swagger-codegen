@@ -31,11 +31,11 @@ public class {{classname}} extends JavaScriptObject { {{#vars}}
 	}-*/;{{/vars}}
 	
 	public void check() throws ValidationException { {{#vars}}{{#required}}
-		if(this.{{getter}}() == null) {
+		if (this.{{getter}}() == null) {
 			throw new ValidationException("{{{name}}} is required");
 		}{{/required}}{{#isEnum}}
-        java.util.List<String> allowed = Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
-        if(!allowed.contains(this.{{getter}}())) {
+        java.util.List<String> allowed = java.util.Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!allowed.contains(this.{{getter}}())) {
 			throw new ValidationException("{{{name}}} must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }{{/isEnum}}{{/vars}}
 	}
