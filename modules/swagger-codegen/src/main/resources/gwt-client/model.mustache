@@ -1,0 +1,151 @@
+{{#models}}
+{{#model}}
+/**
+ * Copyright 2007 Quality Unit s.r.o.
+ * 
+ * Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ * Version 1.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * http://www.qualityunit.com/licenses/license
+ * 
+ */
+ 
+package com.qualityunit.gpf.client.model;
+
+import com.google.gwt.core.client.JavaScriptObject;
+
+/**
+ * Auto generated code from swagger api description. DO NOT EDIT !!!!
+ * Codegen version: {{codegenVersion}}
+ */
+public class {{classname}} extends JavaScriptObject {
+{{#vars}}
+	public final native {{datatype}} {{getter}}() /*-{
+		return this.{{name}};
+	}-*/;
+	
+	public final native void {{setter}}({{datatype}} value) /*-{
+		this.{{name}} = value;
+	}-*/;
+{{/vars}}
+
+	public void check() {
+		{{#vars}}
+			{{#required}}
+        		{{#isPrimitiveType}}REQUIRED PRIMITIVE{{/isPrimitiveType}}
+        		{{^isPrimitiveType}}REQUIRED NON-PRIMITIVE{{/isPrimitiveType}}
+        	{{/required}}
+        	{{#isEnum}}ENUM
+        		{{#allowableValues}}{{#values}}{{{this}}}{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}
+        	{{/isEnum}}
+        {{/vars}}
+	}
+}
+
+    private static $fieldTypes = array({{#vars}}
+            '{{name}}' => array('{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}){{#hasMore}},{{/hasMore}}{{/vars}});
+
+    /**
+     * @var RestApi_TypeUtils_Field[]
+     */
+    private $data;
+
+    /**
+     * Constructor
+     * @param mixed[] $data Associated array of property value initalizing the model
+     * @throws RestApi_TypeUtils_ParseException
+     */
+    public function __construct($data = null) {
+        if ($data === null || !is_array($data)) {
+            $data = array();
+        }
+        foreach (self::$fieldTypes as $name => $info) {
+            try {
+                $this->data[$name] = RestApi_TypeUtils_Field::of($info[0], @$data[$name], @$info[1]);
+            } catch (RestApi_TypeUtils_ParseException $e) {
+                $e->setFieldName($name);
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getData() {
+        $result = array();
+        foreach($this->data as $name => $field) {
+            $result[$name] = $field->get();
+        }
+        return $result;
+    }
+{{#vars}}
+    /**
+     * Gets {{name}}
+     * @return {{datatype}}
+     */
+    public function {{getter}}() { {{^isPrimitiveType}}{{#isContainer}}
+        $data = array();
+        foreach ($this->data['{{name}}']->get() as $item) {
+           $data[] = new {{#fnItemType}}{{datatype}}{{/fnItemType}}($item);
+        }
+        return $data;{{/isContainer}}{{^isContainer}}
+        $data = $this->data['{{name}}']->get();
+        if($data === array()) {
+            return null;
+        }
+        return new {{datatype}}($data);{{/isContainer}}{{/isPrimitiveType}}{{#isPrimitiveType}}
+        return $this->data['{{name}}']->get();{{/isPrimitiveType}}
+    }
+
+    /**
+     * Sets {{name}}
+     * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
+     * @return $this
+     * @throws RestApi_TypeUtils_ParseException
+     * @throws \InvalidArgumentException
+     */
+    public function {{setter}}({{^isContainer}}{{^isPrimitiveType}}{{datatype}} {{/isPrimitiveType}}{{/isContainer}}{{#isContainer}}array {{/isContainer}}${{name}}) { {{#isEnum}}
+        $allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!in_array(${{{name}}}, $allowed_values)) {
+            throw new \InvalidArgumentException("Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+        }
+        {{/isEnum}}{{#isContainer}}{{^isPrimitiveType}}
+        $data = array();
+        foreach (${{name}} as $item) {
+            $data[] = $item->getData();
+        }
+        $this->data['{{name}}']->set($data);{{/isPrimitiveType}}{{#isPrimitiveType}}
+        $this->data['{{name}}']->set(${{name}});{{/isPrimitiveType}}{{/isContainer}}{{^isContainer}}
+        $this->data['{{name}}']->set(${{name}}{{^isPrimitiveType}}->getData(){{/isPrimitiveType}});{{/isContainer}}
+        return $this;
+    }
+{{/vars}}
+    /**
+     * Gets the string presentation of the object
+     * @return string
+     */
+    public function __toString() {
+        if (defined('JSON_PRETTY_PRINT')) {
+            return json_encode($this->getData(), JSON_PRETTY_PRINT);
+        } else {
+            return json_encode($this->getData());
+        }
+    }
+
+    /**
+     * Checks if the object contains all mandatory fields and that fields are in correct format
+     * @throws RestApi_ProcessingException
+     */
+    public function check() { {{#vars}}{{#required}}
+        {{#isPrimitiveType}}if ($this->{{getter}}() == '') {
+            throw RestApi_Make::error(400, '{{name}} is required');
+        }{{/isPrimitiveType}}{{^isPrimitiveType}}$this->{{getter}}()->check();{{/isPrimitiveType}}{{/required}}{{#isEnum}}
+        $allowed_values = array({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!in_array($this->{{getter}}(), $allowed_values)) {
+            throw RestApi_Make::error(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+        }{{/isEnum}}{{/vars}}
+    }
+}
+{{/model}}
+{{/models}}
