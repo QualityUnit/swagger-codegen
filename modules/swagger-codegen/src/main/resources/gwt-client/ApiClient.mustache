@@ -1,0 +1,48 @@
+/**
+ * Copyright 2007 Quality Unit s.r.o.
+ * 
+ * Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ * Version 1.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * http://www.qualityunit.com/licenses/license
+ * 
+ */
+
+package {{supportPackage}};
+
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Auto generated code from swagger api description. DO NOT EDIT !!!!
+ * Codegen version: {{codegenVersion}}
+ */
+class ApiClient {
+
+    public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<String>> queryParams, RequestCallback callback) {
+        String baseUrl = "www.crm.com/api/v3/";
+
+        StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
+        if (queryParams.size() > 0) {
+            url.append("?");
+        }
+        
+        for (Map.Entry<String, List<String>> param : queryParams.entrySet()) {
+            for (String value : param.getValue()) {
+                url.append(param).append('=').append(value).append('&');
+              }
+        }
+
+        RequestBuilder request = new RequestBuilder(method, url.substring(0, url.length()));
+            
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+              request.setHeader(header.getKey(), header.getValue());
+        }
+
+        request.setRequestData(body);
+        request.setCallback(callback);
+  }
+}

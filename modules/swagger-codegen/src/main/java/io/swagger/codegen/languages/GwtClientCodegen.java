@@ -1,14 +1,26 @@
 package io.swagger.codegen.languages;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.CodegenConstants;
+import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.DecimalProperty;
 import io.swagger.models.properties.Property;
@@ -16,8 +28,53 @@ import io.swagger.models.properties.Property;
 @SuppressWarnings("Duplicates")
 public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
+  private static class CallbackMethodLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      try {
+        int code = Integer.parseInt(fragment);
+        if (code >= 200 && code < 300) {
+          return "onSuccess";
+        }
+      } catch (NumberFormatException e) {
+      }
+      return "onError";
+    }
+  }
+
+  private static abstract class CustomLambda implements Mustache.Lambda {
+    @Override
+    public void execute(Template.Fragment frag, Writer out) throws IOException {
+      final StringWriter tempWriter = new StringWriter();
+      frag.execute(tempWriter);
+      out.write(formatFragment(tempWriter.toString()));
+    }
+
+    public abstract String formatFragment(String fragment);
+  }
+
+  private static class JsArrayLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      if (fragment.endsWith("[]")) {
+        return "JsArray<" + fragment.replace("[]", "") + ">";
+      }
+      return fragment;
+    }
+  }
+
+  private static class UpperCaseLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return fragment.toUpperCase();
+    }
+  }
+
   private static final String LANGUAGE_NAME = "gwt-client";
 
+  private static final String SUPPORT_PACKAGE = "supportPackage";
+
+  private String supportPackage;
   protected String invokerPackage = "com.qualityunit.swagger.gwtclient";
   protected String artifactVersion = "1";
 
@@ -25,6 +82,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     super();
     outputFolder = "generated-code" + File.separator + "java";
     modelTemplateFiles.put("model.mustache", ".java");
+    apiTemplateFiles.put("api.mustache", ".java");
     embeddedTemplateDir = templateDir = LANGUAGE_NAME;
     setInvokerPackage(invokerPackage);
 
@@ -64,6 +122,15 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
   }
 
   @Override
+  public CodegenOperation fromOperation(String path, String httpMethod,
+      Operation operation, Map<String, Model> definitions, Swagger swagger) {
+    CodegenOperation o = super.fromOperation(path, httpMethod, operation,
+        definitions, swagger);
+    o.gwtphpClientMethodName = formatProcedureName(o);
+    return o;
+  }
+
+  @Override
   public String getHelp() {
     return "Generates a GWT client library.";
   }
@@ -89,14 +156,13 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
       String format = dp.getFormat();
       if ("float".equalsIgnoreCase(format)) {
         return "float";
-      } else {
+      } else if ("double".equalsIgnoreCase(format)) {
         return "double";
+      } else {
+        return "int";
       }
     }
     return super.getTypeDeclaration(p);
-  }
-  private String packageFolder() {
-    return invokerPackage.replace('.', '/');
   }
 
   @Override
@@ -126,6 +192,16 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
           artifactVersion);
     }
 
+    additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+
+    additionalProperties.put("fnCallbackMethod", new CallbackMethodLambda());
+    additionalProperties.put("fnUpperCase", new UpperCaseLambda());
+    additionalProperties.put("fnJsArray", new JsArrayLambda());
+
+    supportingFiles.add(new SupportingFile("ApiCallback.mustache",
+        packageFolder(), "ApiCallback.java"));
+    supportingFiles.add(new SupportingFile("ApiClient.mustache",
+        packageFolder(), "ApiClient.java"));
     supportingFiles.add(new SupportingFile("ValidationException.mustache",
         packageFolder(), "ValidationException.java"));
   }
@@ -138,5 +214,38 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     this.invokerPackage = invokerPackage;
     apiPackage = invokerPackage;
     modelPackage = invokerPackage + ".model";
+    supportPackage = invokerPackage;
+  }
+
+  private String formatProcedureName(CodegenOperation operation) {
+    String result = "";
+    switch (operation.httpMethod) {
+      case "GET":
+        result = "get";
+        break;
+      case "PUT":
+        result = "set";
+        break;
+      default:
+        break;
+    }
+
+    boolean usesId = Pattern.compile("\\{.*\\}").matcher(operation.path).find();
+
+    String operationPart = operation.path.replaceFirst("^/[^/]*/",
+        "").replaceAll("\\{.*\\}", "");
+    result += "/" + operationPart;
+
+    if ("/".equals(result)) {
+      result = "create";
+    } else if (operationPart.isEmpty() && !usesId) {
+      result += "All";
+    }
+
+    return camelize(result, true);
+  }
+
+  private String packageFolder() {
+    return invokerPackage.replace('.', '/');
   }
 }
