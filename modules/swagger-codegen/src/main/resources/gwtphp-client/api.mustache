@@ -116,20 +116,25 @@
                 $resourcePath, '{{httpMethod}}',
                 $queryParams, $httpBody,
                 $headerParams{{#returnType}}, '{{returnType}}'{{/returnType}}
-            );
-            {{#returnType}}
+            );{{#returnType}}
             if (!$response) {
                 return array(null, $statusCode, $httpHeader);
+            }{{#isListContainer}}
+            $responseObject = array();
+            foreach($response as $item) {
+                $responseObject[] = new {{#fnItemType}}{{returnType}}{{/fnItemType}}($item);
             }
-
-            return array(new {{returnType}}($response), $statusCode, $httpHeader);
-            {{/returnType}}{{^returnType}}
-            return array(null, $statusCode, $httpHeader);
-            {{/returnType}}
+            return array($responseObject, $statusCode, $httpHeader);{{/isListContainer}}{{^isListContainer}}
+            return array(new {{returnType}}($response), $statusCode, $httpHeader);{{/isListContainer}}{{/returnType}}{{^returnType}}
+            return array(null, $statusCode, $httpHeader);{{/returnType}}
         } catch (RestApi_Client_ApiException $e) {
             switch ($e->getCode()) { {{#responses}}{{#dataType}}
-            {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
-                $data = new {{dataType}}($e->getResponseBody());
+            {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}{{^simpleType}}
+                $data = array();
+                foreach($e->getResponseBody() as $item) {
+                    $data[] = new {{#fnItemType}}{{dataType}}{{/fnItemType}}($item);
+                }{{/simpleType}}{{#simpleType}}
+                $data = new {{dataType}}($e->getResponseBody());{{/simpleType}}
                 $e->setResponseObject($data);
                 break;{{/dataType}}{{/responses}}
             }
