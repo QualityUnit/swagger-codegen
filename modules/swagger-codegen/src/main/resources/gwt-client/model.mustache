@@ -22,6 +22,10 @@ import {{invokerPackage}}.ValidationException;
  */
 public class {{classname}} extends JavaScriptObject {
 
+    public static {{classname}} create() {
+        return JavaScriptObject.createObject().cast();
+    }
+
     protected {{classname}}() { }{{#vars}}
 
     public final native {{datatype}} {{getter}}() /*-{
