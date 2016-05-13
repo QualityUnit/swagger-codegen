@@ -22,7 +22,7 @@ import java.util.Map;
  */
 class ApiClient {
 
-    public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<String>> queryParams, RequestCallback callback) {
+    public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
         String baseUrl = "www.crm.com/api/v3/";
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
@@ -30,9 +30,9 @@ class ApiClient {
             url.append("?");
         }
         
-        for (Map.Entry<String, List<String>> param : queryParams.entrySet()) {
-            for (String value : param.getValue()) {
-                url.append(param).append('=').append(value).append('&');
+        for (Map.Entry<String, List<?>> param : queryParams.entrySet()) {
+            for (Object value : param.getValue()) {
+                url.append(param).append('=').append(String.valueOf(value)).append('&');
               }
         }
 

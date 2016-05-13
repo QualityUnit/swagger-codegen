@@ -22,9 +22,10 @@ import java.util.*;
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
+@SuppressWarnings("Duplicates")
 {{#operations}}class {{classname}} {
-
     {{#operation}}
+
     public static void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";
         {{#pathParams}}
@@ -35,12 +36,12 @@ import java.util.*;
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception.getLocalizedMessage());
             }
+            @SuppressWarnings("unchecked")
             public void onResponseReceived(Request request, Response response) {
                 switch (response.getStatusCode()) {
                 {{#responses}}
                     {{#dataType}}
-                        {{^isWildcard}}case {{code}}:{{/isWildcard}}
-                        {{#isWildcard}}default:{{/isWildcard}}
+                        {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
                             callback.{{#fnCallbackMethod}}{{code}}{{/fnCallbackMethod}}(({{#fnJsArray}}{{dataType}}{{/fnJsArray}}) JsonUtils.safeEval(response.getText()));
                             break;
                     {{/dataType}}
@@ -49,16 +50,16 @@ import java.util.*;
             }
         };
 
-        Map<String, List<String>> queryParams = new HashMap<String, List<String>>();
+        Map<String, List<?>> queryParams = new HashMap<String, List<?>>();
         {{#queryParams}}
         queryParams.put("{{baseName}}", Arrays.asList({{paramName}}));
         {{/queryParams}}
 
         {{#bodyParams}}
-        String body = JsonUtils.stringify({{paramName}});
+        String httpBody = JsonUtils.stringify({{paramName}});
         {{/bodyParams}}
         {{^bodyParams}}
-        String body = "";
+        String httpBody = "";
         {{/bodyParams}}
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -68,7 +69,7 @@ import java.util.*;
         headers.put("{{baseName}}", {{paramName}});
         {{/headerParams}}
 
-        ApiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, body, headers, queryParams, requestCallback);
+        ApiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback);
     }
     {{/operation}}
 }

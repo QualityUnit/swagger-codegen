@@ -36,9 +36,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         if (code >= 200 && code < 300) {
           return "onSuccess";
         }
-      } catch (NumberFormatException e) {
-      }
-      return "onError";
+      } catch (NumberFormatException ignore) { }
+      return "error";
     }
   }
 

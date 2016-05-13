@@ -10,10 +10,20 @@
 
 package {{supportPackage}};
 
-public interface ApiCallback<T> {
+import com.google.gwt.core.client.JavaScriptObject;
 
-    void onError(String mesage);
+public abstract class ApiCallback<T> {
 
-    void onSuccess(T response);
+    public final void error(JavaScriptObject error) {
+        onError(getMessage(error));
+    }
+
+    private final native String getMessage(JavaScriptObject object) /*-{
+        return object.message;
+    }-*/;
+
+    public abstract void onError(String message);
+
+    public abstract void onSuccess(T response);
 
 }
