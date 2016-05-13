@@ -296,8 +296,9 @@ public class GwtPhpClientCodegen extends DefaultCodegen
       additionalProperties.put(CodegenConstants.ARTIFACT_VERSION,
           artifactVersion);
     }
-
-    additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+    if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
+      additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+    }
 
     additionalProperties.put("escapedInvokerPackage",
         invokerPackage.replace("\\", "\\\\"));
@@ -312,11 +313,11 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     String restApiPath = "include/RestApi/";
 
     supportingFiles.add(new SupportingFile("client/ApiClient.mustache",
-        getPackagePath(), restApiPath + "Client/ApiClient.class.php"));
+        getPackagePath() + restApiPath + "Client", "ApiClient.class.php"));
     supportingFiles.add(new SupportingFile("client/ApiException.mustache",
-        getPackagePath(), restApiPath + "Client/ApiException.class.php"));
+        getPackagePath() + restApiPath + "Client", "ApiException.class.php"));
     supportingFiles.add(new SupportingFile("client/Utils.mustache",
-        getPackagePath(), restApiPath + "Client/Utils.class.php"));
+        getPackagePath() + restApiPath + "Client", "Utils.class.php"));
 
     String[][] suppFiles = {
         {"field/", "TypeUtils/", "Field.class.php"},
@@ -328,7 +329,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     for (String[] file : suppFiles) {
       supportingFiles.add(new SupportingFile(file[0] + file[2],
-          getPackagePath(), restApiPath + file[1] + file[2]));
+          getPackagePath() + restApiPath + file[1], file[2]));
     }
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
@@ -346,9 +347,15 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public void setInvokerPackage(String invokerPackage) {
     this.invokerPackage = invokerPackage;
     srcBasePath = "include/" + invokerPackage;
-    apiPackage = invokerPackage;
-    modelPackage = invokerPackage + "_Model";
-    supportPackage = invokerPackage + "_Support";
+    if (!additionalProperties.containsKey(CodegenConstants.API_PACKAGE)) {
+      apiPackage = invokerPackage;
+    }
+    if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
+      modelPackage = invokerPackage + "_Model";
+    }
+    if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
+      supportPackage = invokerPackage + "_Support";
+    }
   }
 
   public void setPackagePath(String packagePath) {
