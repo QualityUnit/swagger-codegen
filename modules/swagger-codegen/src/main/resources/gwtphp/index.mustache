@@ -8,11 +8,12 @@ require '../../scripts/bootstrap_api.php';
 $app = new \Slim\Slim();
 
 try {
-    RestApi_Make::init(new {{invokerPackage}}_Api_Make);
+    RestApi_Make::init(new {{apiPackage}}_Make);
 } catch (Exception $ignore) {}
 
 try {
-    $auth = {{invokerPackage}}_Api_Auth::init($app->request());
+    // You must implement this class, it will not be generated !!! It must extend RestApi_Auth
+    $auth = {{apiPackage}}_Auth::init($app->request());
 } catch (Exception $e) {
     $response = new RestApi_Response($app->response());
     $response->setError($e);

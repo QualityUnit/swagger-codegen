@@ -100,7 +100,9 @@ class RestApi_Client_ApiClient
 
         $url = $this->host . $resourcePath;
 
-        $postData = json_encode($postData->getData());
+        if($postData != '') {
+            $postData = json_encode($postData->getData());
+        }
 
         $curl = curl_init();
         // set timeout, if needed

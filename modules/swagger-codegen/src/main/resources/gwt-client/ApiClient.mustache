@@ -12,6 +12,7 @@ package {{supportPackage}};
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.Map;
 class ApiClient {
 
     public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
-        String baseUrl = "www.crm.com/api/v3/";
+        String baseUrl = "../api/v3";
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
         if (queryParams.size() > 0) {
@@ -32,7 +33,7 @@ class ApiClient {
         
         for (Map.Entry<String, List<?>> param : queryParams.entrySet()) {
             for (Object value : param.getValue()) {
-                url.append(param).append('=').append(String.valueOf(value)).append('&');
+                url.append(param.getKey()).append('=').append(String.valueOf(value)).append('&');
               }
         }
 
@@ -44,5 +45,10 @@ class ApiClient {
 
         request.setRequestData(body);
         request.setCallback(callback);
+        try {
+            request.send();
+        } catch (RequestException e) {
+            callback.onError(null, e);
+        }
   }
 }

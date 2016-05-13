@@ -97,22 +97,22 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     setInvokerPackage(invokerPackage);
 
     // noinspection SpellCheckingInspection
-    reservedWords = new HashSet<>(Arrays.asList("__halt_compiler",
-        "abstract", "and", "array", "as", "break", "callable", "case", "catch",
-        "class", "clone", "const", "continue", "declare", "default", "die",
-        "do", "echo", "else", "elseif", "empty", "enddeclare", "endfor",
-        "endforeach", "endif", "endswitch", "endwhile", "eval", "exit",
-        "extends", "final", "for", "foreach", "function", "global", "goto",
-        "if", "implements", "include", "include_once", "instanceof",
-        "insteadof", "interface", "isset", "list", "namespace", "new", "or",
-        "print", "private", "protected", "public", "require", "require_once",
-        "return", "static", "switch", "throw", "trait", "try", "unset", "use",
-        "var", "while", "xor"));
+    reservedWords = new HashSet<>(Arrays.asList("__halt_compiler", "abstract",
+        "and", "array", "as", "break", "callable", "case", "catch", "class",
+        "clone", "const", "continue", "declare", "default", "die", "do", "echo",
+        "else", "elseif", "empty", "enddeclare", "endfor", "endforeach",
+        "endif", "endswitch", "endwhile", "eval", "exit", "extends", "final",
+        "for", "foreach", "function", "global", "goto", "if", "implements",
+        "include", "include_once", "instanceof", "insteadof", "interface",
+        "isset", "list", "namespace", "new", "or", "print", "private",
+        "protected", "public", "require", "require_once", "return", "static",
+        "switch", "throw", "trait", "try", "unset", "use", "var", "while",
+        "xor"));
 
     // ref: http://php.net/manual/en/language.types.intro.php
-    languageSpecificPrimitives = new HashSet<>(Arrays.asList("bool",
-        "boolean", "int", "integer", "double", "float", "string", "object",
-        "DateTime", "mixed", "number", "void", "byte", "Number", "Integer"));
+    languageSpecificPrimitives = new HashSet<>(Arrays.asList("bool", "boolean",
+        "int", "integer", "double", "float", "string", "object", "DateTime",
+        "mixed", "number", "void", "byte", "Number", "Integer"));
 
     instantiationTypes.put("array", "array");
     instantiationTypes.put("map", "map");
@@ -168,10 +168,6 @@ public class GwtPhpServerCodegen extends DefaultCodegen
   @Override
   public String getName() {
     return LANGUAGE_NAME;
-  }
-
-  private String getPackagePath() {
-    return packagePath;
   }
 
   @Override
@@ -258,6 +254,10 @@ public class GwtPhpServerCodegen extends DefaultCodegen
       additionalProperties.put(CodegenConstants.MODEL_PACKAGE, modelPackage);
     }
 
+    if (!additionalProperties.containsKey(CodegenConstants.API_PACKAGE)) {
+      additionalProperties.put(CodegenConstants.API_PACKAGE, modelPackage);
+    }
+
     if (additionalProperties.containsKey(CodegenConstants.ARTIFACT_VERSION)) {
       this.setArtifactVersion(
           (String) additionalProperties.get(CodegenConstants.ARTIFACT_VERSION));
@@ -310,27 +310,6 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     return name;
   }
 
-  private void setArtifactVersion(String artifactVersion) {
-    this.artifactVersion = artifactVersion;
-  }
-
-  private void setInvokerPackage(String invokerPackage) {
-    this.invokerPackage = invokerPackage;
-    srcBasePath = "include/" + invokerPackage;
-    apiPackage = invokerPackage + "_Api";
-    if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
-      modelPackage = invokerPackage + "_Api_Model";
-    }
-  }
-
-  private void setPackagePath(String packagePath) {
-    this.packagePath = packagePath;
-  }
-
-  private void setSrcBasePath(String srcBasePath) {
-    this.srcBasePath = srcBasePath;
-  }
-
   @Override
   public String toDefaultValue(Property p) {
     if (p instanceof StringProperty) {
@@ -360,13 +339,45 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     return camelize(name);
   }
 
+  @Override
+  public String toParamName(String name) {
+    return name;
+  }
+
+  private String getPackagePath() {
+    return packagePath;
+  }
+
+  private void setArtifactVersion(String artifactVersion) {
+    this.artifactVersion = artifactVersion;
+  }
+
+  private void setInvokerPackage(String invokerPackage) {
+    this.invokerPackage = invokerPackage;
+    srcBasePath = "include/" + invokerPackage;
+    if (!additionalProperties.containsKey(CodegenConstants.API_PACKAGE)) {
+      apiPackage = invokerPackage + "_Api";
+    }
+    if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
+      modelPackage = invokerPackage + "_Api_Model";
+    }
+  }
+
+  private void setPackagePath(String packagePath) {
+    this.packagePath = packagePath;
+  }
+
+  private void setSrcBasePath(String srcBasePath) {
+    this.srcBasePath = srcBasePath;
+  }
+
   private String toPackagePath(String packageName, String basePath) {
     String regFirstPathSeparator = "^[\\\\/]?";
     String regLastPathSeparator = "[\\\\/]?$";
 
     if (basePath != null && basePath.length() > 0) {
-      basePath = basePath.replaceAll("_", "/").replaceAll(regLastPathSeparator, "")
-          + File.separatorChar;
+      basePath = basePath.replaceAll("_", "/").replaceAll(regLastPathSeparator,
+          "") + File.separatorChar;
     }
 
     String packagePath = getPackagePath();
@@ -374,16 +385,10 @@ public class GwtPhpServerCodegen extends DefaultCodegen
       packagePath += File.separatorChar;
     }
 
-    packageName = packageName.replace(invokerPackage, "")
-        .replaceAll("_", "/")
-        .replaceAll(regFirstPathSeparator, "")
-        .replaceAll(regLastPathSeparator, "");
+    packageName = packageName.replace(invokerPackage, "").replaceAll("_",
+        "/").replaceAll(regFirstPathSeparator, "").replaceAll(
+            regLastPathSeparator, "");
 
     return packagePath + basePath + packageName;
-  }
-
-  @Override
-  public String toParamName(String name) {
-    return name;
   }
 }
