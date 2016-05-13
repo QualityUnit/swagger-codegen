@@ -23,7 +23,7 @@ import java.util.*;
  * Codegen version: {{codegenVersion}}
  */
 @SuppressWarnings("Duplicates")
-{{#operations}}class {{classname}} {
+{{#operations}}public class {{classname}} {
     {{#operation}}
 
     public static void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
