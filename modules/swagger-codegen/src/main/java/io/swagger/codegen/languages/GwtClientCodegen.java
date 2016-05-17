@@ -198,7 +198,13 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
           artifactVersion);
     }
 
-    additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+    if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
+      additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
+      System.out.println("NOT CONTAINS SUPPORT:" + supportPackage);
+    } else {
+      supportPackage = (String) additionalProperties.get(SUPPORT_PACKAGE);
+      System.out.println("CONTAINS SUPPORT:" + supportPackage);
+    }
 
     additionalProperties.put("fnCallbackMethod", new CallbackMethodLambda());
     additionalProperties.put("fnUpperCase", new UpperCaseLambda());
@@ -206,11 +212,11 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("fnCamelize", new CamelizeLambda());
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
-        packageFolder(), "ApiCallback.java"));
+        supportPackageFolder(), "ApiCallback.java"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
-        packageFolder(), "ApiClient.java"));
+        supportPackageFolder(), "ApiClient.java"));
     supportingFiles.add(new SupportingFile("ValidationException.mustache",
-        packageFolder(), "ValidationException.java"));
+        supportPackageFolder(), "ValidationException.java"));
   }
 
   public void setArtifactVersion(String artifactVersion) {
@@ -219,9 +225,15 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
   public void setInvokerPackage(String invokerPackage) {
     this.invokerPackage = invokerPackage;
-    apiPackage = invokerPackage;
-    modelPackage = invokerPackage + ".model";
-    supportPackage = invokerPackage;
+    if (!additionalProperties.containsKey(CodegenConstants.API_PACKAGE)) {
+      apiPackage = invokerPackage;
+    }
+    if (!additionalProperties.containsKey(CodegenConstants.MODEL_PACKAGE)) {
+      modelPackage = invokerPackage + ".model";
+    }
+    if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
+      supportPackage = invokerPackage;
+    }
   }
 
   private String formatProcedureName(CodegenOperation operation) {
@@ -252,7 +264,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     return camelize(result, true);
   }
 
-  private String packageFolder() {
-    return invokerPackage.replace('.', '/');
+  private String supportPackageFolder() {
+    return supportPackage.replace('.', '/');
   }
 }

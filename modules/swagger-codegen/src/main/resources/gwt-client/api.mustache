@@ -35,18 +35,22 @@ import java.util.*;
 
         RequestCallback requestCallback = new RequestCallback() {
             public void onError(Request request, Throwable exception) {
-                callback.onError(exception.getLocalizedMessage());
+                callback.onError(exception.getMessage());
             }
             @SuppressWarnings("unchecked")
             public void onResponseReceived(Request request, Response response) {
-                switch (response.getStatusCode()) {
-                {{#responses}}
-                    {{#dataType}}
-                        {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
-                            callback.{{#fnCallbackMethod}}{{code}}{{/fnCallbackMethod}}(({{#fnJsArray}}{{dataType}}{{/fnJsArray}}) JsonUtils.safeEval(response.getText()));
-                            break;
-                    {{/dataType}}
-                {{/responses}}
+                try {
+                    switch (response.getStatusCode()) {
+                    {{#responses}}
+                        {{#dataType}}
+                            {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
+                                callback.{{#fnCallbackMethod}}{{code}}{{/fnCallbackMethod}}(({{#fnJsArray}}{{dataType}}{{/fnJsArray}}) JsonUtils.safeEval(response.getText()));
+                                break;
+                        {{/dataType}}
+                    {{/responses}}
+                    }
+                } catch (IllegalArgumentException e) {
+                    callback.onError(e.getMessage());
                 }
             }
         };
