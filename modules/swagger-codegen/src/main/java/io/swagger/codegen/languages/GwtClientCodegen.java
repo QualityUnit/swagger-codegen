@@ -200,10 +200,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
       additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
-      System.out.println("NOT CONTAINS SUPPORT:" + supportPackage);
     } else {
       supportPackage = (String) additionalProperties.get(SUPPORT_PACKAGE);
-      System.out.println("CONTAINS SUPPORT:" + supportPackage);
     }
 
     additionalProperties.put("fnCallbackMethod", new CallbackMethodLambda());
