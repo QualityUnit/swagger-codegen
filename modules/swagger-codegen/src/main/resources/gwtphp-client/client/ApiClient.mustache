@@ -173,12 +173,12 @@ class RestApi_Client_ApiClient
                 return array($http_body, $response_info['http_code'], $http_header);
             }
 
-            $data = json_decode($http_body);
+            $data = json_decode($http_body, true);
             if (json_last_error() > 0) {
                 $data = $http_body;
             }
         } else {
-            $data = json_decode($http_body);
+            $data = json_decode($http_body, true);
             if (json_last_error() > 0) {
                 $data = $http_body;
             }
