@@ -40,8 +40,8 @@ public class {{classname}} extends JavaScriptObject {
         if (this.{{getter}}() == null) {
             throw new ValidationException("{{{name}}} is required");
         }{{/required}}{{#isEnum}}
-        java.util.List<String> {{name}}Allowed = java.util.Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
-        if (!{{name}}Allowed.contains(this.{{getter}}())) {
+        java.util.List<String> allowed{{#fnCamelize}}{{name}}{{/fnCamelize}} = java.util.Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
+        if (!allowed{{#fnCamelize}}{{name}}{{/fnCamelize}}.contains(this.{{getter}}())) {
             throw new ValidationException("{{{name}}} must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }{{/isEnum}}{{/vars}}
     }

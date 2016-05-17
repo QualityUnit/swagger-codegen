@@ -62,6 +62,13 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     }
   }
 
+  private static class CamelizeLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return DefaultCodegen.camelize(fragment);
+    }
+  }
+
   private static class UpperCaseLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
@@ -196,6 +203,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("fnCallbackMethod", new CallbackMethodLambda());
     additionalProperties.put("fnUpperCase", new UpperCaseLambda());
     additionalProperties.put("fnJsArray", new JsArrayLambda());
+    additionalProperties.put("fnCamelize", new CamelizeLambda());
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
         packageFolder(), "ApiCallback.java"));
