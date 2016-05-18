@@ -113,7 +113,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         Arrays.asList("String", "boolean", "Boolean", "Double", "Integer",
             "Long", "Float", "Object", "byte[]"));
     typeMapping.put("date", "String");
-    typeMapping.put("file", "String");
+    typeMapping.put("file", "Object");
     typeMapping.put("boolean", "boolean");
     typeMapping.put("string", "String");
     typeMapping.put("int", "int");

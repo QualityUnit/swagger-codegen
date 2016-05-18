@@ -130,7 +130,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     // ref: http://php.net/manual/en/language.types.intro.php
     languageSpecificPrimitives = new HashSet<String>(Arrays.asList("bool",
         "boolean", "int", "integer", "double", "float", "string", "object",
-        "DateTime", "mixed", "number", "void", "byte", "Number", "Integer"));
+        "DateTime", "mixed", "number", "void", "byte", "Number", "Integer", "file"));
 
     instantiationTypes.put("array", "array");
     instantiationTypes.put("map", "map");
