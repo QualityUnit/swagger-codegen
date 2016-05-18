@@ -24,7 +24,7 @@ try {
 /*
  * {{notes}}
  */
-$app->{{httpMethod}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
+$app->{{#fnLowerCase}}{{httpMethod}}{{/fnLowerCase}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
     $params = new RestApi_Params($app->request(){{#authMethods}}, array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}){{/authMethods}});
     $response = new RestApi_Response($app->response());
     try { {{#allParams}}{{^isPathParam}}{{^isBodyParam}}
