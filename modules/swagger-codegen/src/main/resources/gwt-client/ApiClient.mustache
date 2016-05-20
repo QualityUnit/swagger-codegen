@@ -13,6 +13,7 @@ package {{supportPackage}};
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
+import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,11 @@ import java.util.Map;
  */
 public class ApiClient {
 
+    @Inject
+    static ApiClientConfig config;
+
     public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
-        String baseUrl = "../api/v3";
+        String baseUrl = "../api/v{{{artifactVersion}}}";
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
         if (queryParams.size() > 0) {

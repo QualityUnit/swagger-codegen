@@ -22,6 +22,9 @@
  */
 class {{modelPackage}}_{{classname}} {
 
+    {{#vars}}const {{#fnUpperCase}}{{name}}{{/fnUpperCase}} = '{{name}}';{{#hasMore}}
+    {{/hasMore}}{{/vars}}
+
     private static $fieldTypes = array({{#vars}}
             '{{name}}' => array('{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}){{#hasMore}},{{/hasMore}}{{/vars}});
 

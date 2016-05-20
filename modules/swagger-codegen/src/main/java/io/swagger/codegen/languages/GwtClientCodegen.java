@@ -113,7 +113,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         Arrays.asList("String", "boolean", "Boolean", "Double", "Integer",
             "Long", "Float", "Object", "byte[]"));
     typeMapping.put("date", "String");
-    typeMapping.put("file", "String");
+    typeMapping.put("file", "Object");
     typeMapping.put("boolean", "boolean");
     typeMapping.put("string", "String");
     typeMapping.put("int", "int");
@@ -200,10 +200,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     if (!additionalProperties.containsKey(SUPPORT_PACKAGE)) {
       additionalProperties.put(SUPPORT_PACKAGE, supportPackage);
-      System.out.println("NOT CONTAINS SUPPORT:" + supportPackage);
     } else {
       supportPackage = (String) additionalProperties.get(SUPPORT_PACKAGE);
-      System.out.println("CONTAINS SUPPORT:" + supportPackage);
     }
 
     additionalProperties.put("fnCallbackMethod", new CallbackMethodLambda());
@@ -217,6 +215,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         supportPackageFolder(), "ApiClient.java"));
     supportingFiles.add(new SupportingFile("ValidationException.mustache",
         supportPackageFolder(), "ValidationException.java"));
+    supportingFiles.add(new SupportingFile("ApiClientConfig.mustache",
+        supportPackageFolder(), "ApiClientConfig.java"));
   }
 
   public void setArtifactVersion(String artifactVersion) {

@@ -95,21 +95,12 @@
                     $resourcePath
             );
         }{{/pathParams}}
-        // default format to json
-        $resourcePath = str_replace("{format}", "json", $resourcePath);
 
         {{#bodyParams}}// body params
-        $_tempBody = null;
         if (isset(${{paramName}})) {
-            $_tempBody = ${{paramName}};
+            $httpBody = ${{paramName}};
         }{{/bodyParams}}
-  
-        // for model (json/xml)
-        if (isset($_tempBody)) {
-            $httpBody = $_tempBody; // $_tempBody is the method argument, if present
-        } elseif (count($formParams) > 0) {
-            $httpBody = $formParams; // for HTTP post (form)
-        }
+
         // make the API Call
         try {
             list($response, $statusCode, $httpHeader) = $this->apiClient->callApi(
@@ -124,8 +115,9 @@
             foreach($response as $item) {
                 $responseObject[] = new {{#fnItemType}}{{returnType}}{{/fnItemType}}($item);
             }
-            return array($responseObject, $statusCode, $httpHeader);{{/isListContainer}}{{^isListContainer}}
-            return array(new {{returnType}}($response), $statusCode, $httpHeader);{{/isListContainer}}{{/returnType}}{{^returnType}}
+            return array($responseObject, $statusCode, $httpHeader);{{/isListContainer}}{{^isListContainer}}{{#returnTypeIsPrimitive}}
+            return array($response, $statusCode, $httpHeader);{{/returnTypeIsPrimitive}}{{^returnTypeIsPrimitive}}
+            return array(new {{returnType}}($response), $statusCode, $httpHeader);{{/returnTypeIsPrimitive}}{{/isListContainer}}{{/returnType}}{{^returnType}}
             return array(null, $statusCode, $httpHeader);{{/returnType}}
         } catch (RestApi_Client_ApiException $e) {
             switch ($e->getCode()) { {{#responses}}{{#dataType}}
@@ -133,9 +125,10 @@
                 $data = array();
                 foreach($e->getResponseBody() as $item) {
                     $data[] = new {{#fnItemType}}{{dataType}}{{/fnItemType}}($item);
-                }{{/simpleType}}{{#simpleType}}
-                $data = new {{dataType}}($e->getResponseBody());{{/simpleType}}
-                $e->setResponseObject($data);
+                }
+                $e->setResponseObject($data);{{/simpleType}}{{#simpleType}}{{^primitiveType}}
+                $data = new {{dataType}}($e->getResponseBody());
+                $e->setResponseObject($data);{{/primitiveType}}{{/simpleType}}
                 break;{{/dataType}}{{/responses}}
             }
   

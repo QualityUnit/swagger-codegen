@@ -169,16 +169,16 @@ class RestApi_Client_ApiClient
 
         if ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
             // return raw body if response is a file
-            if ($responseType == 'File' || $responseType == 'string') {
+            if ($responseType == 'file' || $responseType == 'string') {
                 return array($http_body, $response_info['http_code'], $http_header);
             }
 
-            $data = json_decode($http_body);
+            $data = json_decode($http_body, true);
             if (json_last_error() > 0) {
                 $data = $http_body;
             }
         } else {
-            $data = json_decode($http_body);
+            $data = json_decode($http_body, true);
             if (json_last_error() > 0) {
                 $data = $http_body;
             }

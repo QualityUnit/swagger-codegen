@@ -78,6 +78,13 @@ public class GwtPhpServerCodegen extends DefaultCodegen
     }
   }
 
+  private static class LowerCaseLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return fragment.toLowerCase();
+    }
+  }
+
   private static final String PACKAGE_PATH = "packagePath";
   private static final String SRC_BASE_PATH = "srcBasePath";
   private static final String CODEGEN_VERSION = "1.3.0";
@@ -271,6 +278,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
 
     additionalProperties.put("fnSlimPath", new SlimPathLambda());
     additionalProperties.put("fnUpperCase", new UpperCaseLambda());
+    additionalProperties.put("fnLowerCase", new LowerCaseLambda());
     additionalProperties.put("fnItemType", new ItemTypeLambda());
 
     additionalProperties.put("fnClassName", new ClassNameLambda());
