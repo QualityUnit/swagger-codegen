@@ -5,7 +5,6 @@
  * Version 1.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
  * http://www.qualityunit.com/licenses/license
- * 
  */
 
 package {{supportPackage}};
@@ -24,10 +23,14 @@ import java.util.Map;
  */
 public class ApiClient {
 
-    @Inject
-    static ApiClientConfig config;
+    private ApiClientConfig config;
 
-    public static void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
+    @Inject
+    public ApiClient(ApiClientConfig config) {
+        this.config = config;
+    }
+
+    public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
         String baseUrl = "../api/v{{{artifactVersion}}}";
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
@@ -42,7 +45,8 @@ public class ApiClient {
         }
 
         RequestBuilder request = new RequestBuilder(method, url.substring(0, url.length()));
-            
+        
+        request.setHeader("apikey", config.getApiKey());
         for (Map.Entry<String, String> header : headers.entrySet()) {
               request.setHeader(header.getKey(), header.getValue());
         }
@@ -54,5 +58,5 @@ public class ApiClient {
         } catch (RequestException e) {
             callback.onError(null, e);
         }
-  }
+    }
 }

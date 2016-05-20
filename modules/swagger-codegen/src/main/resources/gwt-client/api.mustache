@@ -13,6 +13,7 @@ package {{apiPackage}};
 import com.google.gwt.core.client.*;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
+import com.google.inject.Inject;
 
 import {{supportPackage}}.*;
 import {{modelPackage}}.*;
@@ -25,9 +26,16 @@ import java.util.*;
  */
 @SuppressWarnings("Duplicates")
 {{#operations}}public class {{classname}} {
+
+    private final ApiClient apiClient;
+
+    @Inject
+    public {{classname}} (ApiClient apiClient) {
+        this.apiClient = apiClient;
+    }
     {{#operation}}
 
-    public static void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
+    public void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";
         {{#pathParams}}
         callUrl = callUrl.replace("{" + "{{baseName}}" + "}", {{paramName}});
@@ -74,7 +82,7 @@ import java.util.*;
         headers.put("{{baseName}}", {{paramName}});
         {{/headerParams}}
 
-        ApiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback);
+        apiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback);
     }
     {{/operation}}
 }
