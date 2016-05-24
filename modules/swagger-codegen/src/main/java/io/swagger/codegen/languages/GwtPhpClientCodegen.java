@@ -98,6 +98,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public static final String SRC_BASE_PATH = "srcBasePath";
   public static final String CODEGEN_VERSION = "1";
   public static final String LANGUAGE_NAME = "gwtphp-client";
+  public static final String TEMPLATE_DIR = "gwtphp";
   protected String invokerPackage = "GwtPhp";
 
   protected String packagePath = "";
@@ -112,7 +113,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     outputFolder = "generated-code" + File.separator + "php";
     modelTemplateFiles.put("model.mustache", ".class.php");
     apiTemplateFiles.put("api.mustache", ".class.php");
-    embeddedTemplateDir = templateDir = LANGUAGE_NAME;
+    embeddedTemplateDir = templateDir = TEMPLATE_DIR;
     setInvokerPackage(invokerPackage);
 
     reservedWords = new HashSet<String>(Arrays.asList("__halt_compiler",
