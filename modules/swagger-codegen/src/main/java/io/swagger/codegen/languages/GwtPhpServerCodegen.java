@@ -87,7 +87,7 @@ public class GwtPhpServerCodegen extends DefaultCodegen
 
   private static final String PACKAGE_PATH = "packagePath";
   private static final String SRC_BASE_PATH = "srcBasePath";
-  private static final String CODEGEN_VERSION = "1.3.0";
+  private static final String CODEGEN_VERSION = "1.5.0";
   private static final String LANGUAGE_NAME = "gwtphp";
   private static final String TEMPLATE_DIR = "gwtphp";
 
