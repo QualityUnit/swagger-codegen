@@ -8,7 +8,7 @@ require '../../scripts/bootstrap_api.php';
 $app = new \Slim\Slim();
 
 try {
-    RestApi_Make::init(new {{apiPackage}}_Make);
+    RestApi_Make::init(new {{apiPackage}}_Make());
 } catch (Exception $ignore) {}
 
 try {
