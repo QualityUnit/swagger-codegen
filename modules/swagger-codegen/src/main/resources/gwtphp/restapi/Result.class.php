@@ -1,8 +1,6 @@
 <?php
 /**
- *   @copyright Copyright (c) 2012 Quality Unit s.r.o.
- *   @package PostAffiliatePro
- *   @author Juraj Simon
+ *   @copyright Copyright (c) 2016 Quality Unit s.r.o.
  *
  *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
  *   Version 1.0 (the "License"); you may not use this file except in compliance
@@ -10,6 +8,9 @@
  *   http://www.qualityunit.com/licenses/license
  */
 
+/**
+ * Auto generated code. DO NOT EDIT !!!!
+ */
 class RestApi_Result {
 
     private $code;
