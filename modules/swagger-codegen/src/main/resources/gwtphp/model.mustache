@@ -58,7 +58,9 @@ class {{modelPackage}}_{{classname}} {
     public function getData() {
         $result = array();
         foreach($this->data as $name => $field) {
-            $result[$name] = $field->get();
+            if($field->get() !== null) {
+                $result[$name] = $field->get();
+            }
         }
         return $result;
     }
