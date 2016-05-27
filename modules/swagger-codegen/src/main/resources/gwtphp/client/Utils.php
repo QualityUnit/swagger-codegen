@@ -9,8 +9,7 @@
  */
 
 /**
- * Auto generated code from swagger api description. DO NOT EDIT !!!!
- * Codegen version: {{codegenVersion}}
+ * Auto generated code. DO NOT EDIT !!!!
  */
 class RestApi_Client_Utils {
 
@@ -46,7 +45,7 @@ class RestApi_Client_Utils {
      * If it's a string, pass through unchanged. It will be url-encoded
      * later.
      *
-     * @param object $object an object to be serialized to a string
+     * @param mixed $object an object to be serialized to a string
      * @return string the serialized object
      */
     public static function toQueryValue($object) {
@@ -71,22 +70,6 @@ class RestApi_Client_Utils {
 
     /**
      * Take value and turn it into a string suitable for inclusion in
-     * the http body (form parameter). If it's a string, pass through unchanged
-     * If it's a datetime object, format it in ISO8601
-     *
-     * @param string $value the value of the form parameter
-     * @return string the form string
-     */
-    public static function toFormValue($value) {
-        if ($value instanceof \SplFileObject) {
-            return $value->getRealPath();
-        } else {
-            return self::toString($value);
-        }
-    }
-
-    /**
-     * Take value and turn it into a string suitable for inclusion in
      * the parameter. If it's a string, pass through unchanged
      * If it's a datetime object, format it in ISO8601
      *
@@ -107,6 +90,7 @@ class RestApi_Client_Utils {
      * @param array $collection collection to serialize to a string
      * @param string $collectionFormat the format use for serialization (csv,
      * ssv, tsv, pipes, multi)
+     * @param bool $allowCollectionFormatMulti
      * @return string
      */
     public static function serializeCollection(array $collection, $collectionFormat,
@@ -119,13 +103,10 @@ class RestApi_Client_Utils {
         switch ($collectionFormat) {
             case 'pipes':
                 return implode('|', $collection);
-
             case 'tsv':
                 return implode("\t", $collection);
-
             case 'ssv':
                 return implode(' ', $collection);
-
             case 'csv':
                 // Deliberate fall through. CSV is default format.
             default:

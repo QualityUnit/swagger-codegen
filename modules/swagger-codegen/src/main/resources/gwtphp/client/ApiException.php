@@ -1,7 +1,6 @@
 <?php
 /**
- *   @copyright Copyright (c) 2016 Quality Unit s.r.o.
- *
+ * @copyright Copyright (c) 2016 Quality Unit s.r.o.
  *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
  *   Version 1.0 (the "License"); you may not use this file except in compliance
  *   with the License. You may obtain a copy of the License at
@@ -9,39 +8,26 @@
  */
 
 /**
- * Auto generated code from swagger api description. DO NOT EDIT !!!!
- * Codegen version: {{codegenVersion}}
+ * Auto generated code. DO NOT EDIT !!!!
  */
-class RestApi_Client_ApiException extends Exception
-{
+class RestApi_Client_ApiException extends Exception {
 
-    /**
-     * The HTTP body of the server response either as Json or string.
-     * @var mixed
-     */
+    /** @var mixed The HTTP body of the server response either as Json or string. */
     protected $responseBody;
 
-    /**
-     * The HTTP header of the server response.
-     * @var string[]
-     */
+    /** @var string[] The HTTP header of the server response. */
     protected $responseHeaders;
 
-    /**
-     * The deserialized response object
-     * @var $responseObject;
-     */
+    /** @var mixed The deserialized response object */
     protected $responseObject;
 
     /**
-     * Constructor
-     * @param string $message         Error message
-     * @param int    $code            HTTP status code
+     * @param string $message Error message
+     * @param int $code HTTP status code
      * @param string $responseHeaders HTTP response header
-     * @param mixed  $responseBody    HTTP body of the server response either as Json or string
+     * @param mixed $responseBody HTTP body of the server response either as Json or string
      */
-    public function __construct($message='', $code=0, $responseHeaders=null, $responseBody=null)
-    {
+    public function __construct($message = '', $code = 0, $responseHeaders = null, $responseBody = null) {
         parent::__construct($message, $code);
         $this->responseHeaders = $responseHeaders;
         $this->responseBody = $responseBody;
@@ -52,8 +38,7 @@ class RestApi_Client_ApiException extends Exception
      *
      * @return string HTTP response header
      */
-    public function getResponseHeaders()
-    {
+    public function getResponseHeaders() {
         return $this->responseHeaders;
     }
 
@@ -62,18 +47,17 @@ class RestApi_Client_ApiException extends Exception
      *
      * @return mixed HTTP body of the server response either as Json or string
      */
-    public function getResponseBody()
-    {
+    public function getResponseBody() {
         return $this->responseBody;
     }
 
     /**
      * Sets the deseralized response object (during deserialization)
+     *
      * @param mixed $obj Deserialized response object
      * @return void
      */
-    public function setResponseObject($obj)
-    {
+    public function setResponseObject($obj) {
         $this->responseObject = $obj;
     }
 
@@ -82,8 +66,7 @@ class RestApi_Client_ApiException extends Exception
      *
      * @return mixed the deserialized response object
      */
-    public function getResponseObject()
-    {
+    public function getResponseObject() {
         return $this->responseObject;
     }
 }

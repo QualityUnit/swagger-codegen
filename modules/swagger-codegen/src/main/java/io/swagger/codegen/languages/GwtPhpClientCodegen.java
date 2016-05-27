@@ -313,11 +313,11 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     String restApiPath = "include/RestApi/";
 
-    supportingFiles.add(new SupportingFile("client/ApiClient.mustache",
+    supportingFiles.add(new SupportingFile("client/ApiClient.php",
         getPackagePath() + restApiPath + "Client", "ApiClient.class.php"));
-    supportingFiles.add(new SupportingFile("client/ApiException.mustache",
+    supportingFiles.add(new SupportingFile("client/ApiException.php",
         getPackagePath() + restApiPath + "Client", "ApiException.class.php"));
-    supportingFiles.add(new SupportingFile("client/Utils.mustache",
+    supportingFiles.add(new SupportingFile("client/Utils.php",
         getPackagePath() + restApiPath + "Client", "Utils.class.php"));
 
     String[][] suppFiles = {

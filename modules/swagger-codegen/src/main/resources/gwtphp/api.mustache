@@ -12,22 +12,14 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-{{#operations}}class {{apiPackage}}_{{classname}}
-{
+{{#operations}}class {{apiPackage}}_{{classname}} {
 
-    /**
-     * API Client
-     * @var RestApi_Client_ApiClient instance of the ApiClient
-     */
+    /** @var RestApi_Client_ApiClient instance of the ApiClient */
     protected $apiClient;
   
-    function __construct()
-    {
-    	$this->apiClient = RestApi_Client_ApiClient::getInstance();
-    }
-
-    {{#operation}}
-
+    function __construct(RestApi_Client_ApiClient $apiClient) {
+    	$this->apiClient = $apiClient;
+    }{{#operation}}
 
     /**
      * Call {{httpMethod}}:{{path}}
@@ -38,64 +30,46 @@
   {{/allParams}}   * @return array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
      * @throws RestApi_Client_ApiException on non-2xx response
      */
-    public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-    {
-        {{#allParams}}{{#required}}
-        // verify the required parameter '{{paramName}}' is set
+    public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) { {{#allParams}}{{#required}}
         if (${{paramName}} === null) {
             throw new InvalidArgumentException('Missing the required parameter ${{paramName}} when calling {{operationId}}');
         }{{/required}}{{/allParams}}
-  
-        // parse inputs
         $resourcePath = "{{path}}";
         $httpBody = '';
         $queryParams = array();
         $headerParams = array();
-        $formParams = array();
         $_header_accept = $this->apiClient->selectHeaderAccept(array({{#produces}}'{{mediaType}}'{{#hasMore}}, {{/hasMore}}{{/produces}}));
         if (!is_null($_header_accept)) {
             $headerParams['Accept'] = $_header_accept;
         }
         $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType(array({{#consumes}}'{{mediaType}}'{{#hasMore}},{{/hasMore}}{{/consumes}}));
-  
-        {{#queryParams}}// query params
-        {{#collectionFormat}}
+        {{#queryParams}}{{#collectionFormat}}
         if (is_array(${{paramName}})) {
             ${{paramName}} = RestApi_Client_Utils::serializeCollection(${{paramName}}, '{{collectionFormat}}', true);
-        }
-        {{/collectionFormat}}
+        }{{/collectionFormat}}
         if (${{paramName}} !== null) {
             $queryParams['{{baseName}}'] = RestApi_Client_Utils::toQueryValue(${{paramName}});
-        }{{/queryParams}}
-        {{#headerParams}}// header params
-        {{#collectionFormat}}
+        }{{/queryParams}}{{#headerParams}}{{#collectionFormat}}
         if (is_array(${{paramName}})) {
             ${{paramName}} = RestApi_Client_Utils::serializeCollection(${{paramName}}, '{{collectionFormat}}');
-        }
-        {{/collectionFormat}}
+        }{{/collectionFormat}}
         if (${{paramName}} !== null) {
             $headerParams['{{baseName}}'] = RestApi_Client_Utils::toHeaderValue(${{paramName}});
-        }{{/headerParams}}
-        {{#pathParams}}// path params
-        {{#collectionFormat}}
+        }{{/headerParams}}{{#pathParams}}{{#collectionFormat}}
         if (is_array(${{paramName}})) {
             ${{paramName}} = RestApi_Client_Utils::serializeCollection(${{paramName}}, '{{collectionFormat}}');
-        }
-        {{/collectionFormat}}
+        }{{/collectionFormat}}
         if (${{paramName}} !== null) {
             $resourcePath = str_replace(
                     "{" . "{{baseName}}" . "}",
                     RestApi_Client_Utils::toPathValue(${{paramName}}),
                     $resourcePath
             );
-        }{{/pathParams}}
-
-        {{#bodyParams}}// body params
+        }{{/pathParams}}{{#bodyParams}}
         if (isset(${{paramName}})) {
             $httpBody = ${{paramName}};
         }{{/bodyParams}}
 
-        // make the API Call
         try {
             list($response, $statusCode, $httpHeader) = $this->apiClient->callApi(
                 $resourcePath, '{{httpMethod}}',
@@ -128,7 +102,5 @@
   
             throw $e;
         }
-    }
-    {{/operation}}
-}
-{{/operations}}
+    }{{/operation}}
+}{{/operations}}

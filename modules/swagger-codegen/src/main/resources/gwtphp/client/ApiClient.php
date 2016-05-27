@@ -9,8 +9,7 @@
  */
 
 /**
- * Auto generated code from swagger api description. DO NOT EDIT !!!!
- * Codegen version: {{codegenVersion}}
+ * Auto generated code. DO NOT EDIT !!!!
  */
 class RestApi_Client_ApiClient
 {
@@ -23,62 +22,23 @@ class RestApi_Client_ApiClient
     public static $DELETE = "DELETE";
     
     /** @var string */
-    private static $accessToken = '';
-    
-    /** @var RestApi_Client_ApiClient */
-    private static $instance;
+    protected $accessToken = '';
 
-    /**
-     * Timeout (second) of the HTTP request, by default set to 0, no timeout
-     * @var string
-     */
+    /** @var int Timeout (second) of the HTTP request, by default set to 0, no timeout */
     protected $curlTimeout = 10;
     
-    /**
-     * The host
-     * @var string
-     */
-    protected $host = '{{basePath}}';
+    /** @var string */
+    protected $host = 'localhost';
     
-    /**
-     * User agent of the HTTP request, set to "PHP-Swagger" by default
-     *
-     * @var string
-     */
-    protected $userAgent = '{{#httpUserAgent}}{{{.}}}{{/httpUserAgent}}{{^httpUserAgent}}Swagger-Codegen/{{{artifactVersion}}}/php{{/httpUserAgent}}';
-
-    /**
-     * Indicates if SSL verification should be enabled or disabled.
-     *
-     * This is useful if the host uses a self-signed SSL certificate.
-     *
-     * @var boolean True if the certificate should be validated, false otherwise.
-     */
-    protected $sslVerification = true;
-    
-    /**
-     * @param string $accessToken
-     */
-    public static function setAccessToken($accessToken) {
-    	self::$accessToken = $accessToken;
-    }
-    
-    /**
-     * @return RestApi_Client_ApiClient
-     */
-    public static function getInstance() {
-    	if (self::$instance === null) {
-    		self::$instance = new self();
-    	}
-    	return self::$instance;
-    }
+    /** @var string User agent of the HTTP request */
+    protected $userAgent = 'PHP-Swagger';
 
     /**
      * Make the HTTP call (Sync)
      * @param string $resourcePath path to method endpoint
      * @param string $method       method to call
      * @param array  $queryParams  parameters to be place in query URL
-     * @param object $postData     parameters to be placed in POST body
+     * @param mixed  $postData     empty string or model object to be included in request body
      * @param array  $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
      * @throws RestApi_Client_ApiException on a non 2xx response
@@ -87,6 +47,10 @@ class RestApi_Client_ApiClient
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
     {
         $headers = array();
+
+        if (strlen($this->accessToken) !== '') {
+            $headerParams['apikey'] = $this->accessToken;
+        }
         
         foreach ($headerParams as $key => $val) {
             $headers[] = "$key: $val";
@@ -108,15 +72,9 @@ class RestApi_Client_ApiClient
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-        // disable SSL verification, if needed
-        if ($this->sslVerification == false) {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        }
-        
-        if (strlen(self::$accessToken) !== 0) {
-        	$queryParams['apikey'] = self::$accessToken;
-        }
+        // disable SSL verification
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         if (! empty($queryParams)) {
             $url = ($url . '?' . http_build_query($queryParams));
@@ -263,5 +221,73 @@ class RestApi_Client_ApiClient
         }
    
         return $headers;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessToken() {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param string $accessToken
+     * @return RestApi_Client_ApiClient
+     */
+    public function setAccessToken($accessToken) {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurlTimeout() {
+        return $this->curlTimeout;
+    }
+
+    /**
+     * @param int $curlTimeout
+     * @return RestApi_Client_ApiClient
+     */
+    public function setCurlTimeout($curlTimeout) {
+        $this->curlTimeout = $curlTimeout;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost() {
+        return $this->host;
+    }
+
+    /**
+     * @param string $host
+     * @return RestApi_Client_ApiClient
+     */
+    public function setHost($host) {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserAgent() {
+        return $this->userAgent;
+    }
+
+    /**
+     * @param string $userAgent
+     * @return RestApi_Client_ApiClient
+     */
+    public function setUserAgent($userAgent) {
+        $this->userAgent = $userAgent;
+
+        return $this;
     }
 }
