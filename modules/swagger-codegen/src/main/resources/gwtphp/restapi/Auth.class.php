@@ -69,9 +69,12 @@ class RestApi_Auth {
     }
     
     protected function __construct(\Slim\Http\Request $request) {
-        $key = $request->get('apikey');
+        $key = $request->headers('apikey');
         if($key == '') {
             $key = $request->post('apikey');
+        }
+        if($key == '') {
+            $key = $request->get('apikey');
         }
         if ($key == '') {
             return;
