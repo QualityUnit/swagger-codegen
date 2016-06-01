@@ -78,6 +78,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
   private static final String LANGUAGE_NAME = "gwt-client";
 
+  private static final String CODEGEN_VERSION = "1.1.0";
   private static final String SUPPORT_PACKAGE = "supportPackage";
 
   private String supportPackage;
@@ -217,6 +218,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         supportPackageFolder(), "ValidationException.java"));
     supportingFiles.add(new SupportingFile("ApiClientConfig.mustache",
         supportPackageFolder(), "ApiClientConfig.java"));
+
+    additionalProperties.put("codegenVersion", CODEGEN_VERSION);
   }
 
   public void setArtifactVersion(String artifactVersion) {

@@ -13,11 +13,11 @@ package {{apiPackage}};
 import com.google.gwt.core.client.*;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
-import com.google.inject.Inject;
 
 import {{supportPackage}}.*;
 import {{modelPackage}}.*;
 
+import java.lang.IllegalArgumentException;
 import java.util.*;
 
 /**
@@ -29,8 +29,14 @@ import java.util.*;
 
     private final ApiClient apiClient;
 
-    @Inject
-    public {{classname}} (ApiClient apiClient) {
+    public {{classname}}() {
+        this(new ApiClient());
+    }
+
+    public {{classname}}(ApiClient apiClient) {
+        if (apiClient == null) {
+            throw new IllegalArgumentException();
+        }
         this.apiClient = apiClient;
     }
     {{#operation}}

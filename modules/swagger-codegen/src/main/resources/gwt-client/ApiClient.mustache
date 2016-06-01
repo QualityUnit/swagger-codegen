@@ -12,8 +12,8 @@ package {{supportPackage}};
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
-import com.google.inject.Inject;
 
+import java.lang.IllegalArgumentException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +23,22 @@ import java.util.Map;
  */
 public class ApiClient {
 
+    private static ApiClientConfig defaultConfig = null;
+
+    public static void setDefaultConfig(ApiClientConfig defaultConfig) {
+        ApiClient.defaultConfig = defaultConfig;
+    }
+
     private ApiClientConfig config;
 
-    @Inject
+    public ApiClient() {
+        this(defaultConfig);
+    }
+
     public ApiClient(ApiClientConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException();
+        }
         this.config = config;
     }
 
