@@ -41,6 +41,20 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     }
   }
 
+  private static class CamelizeLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return DefaultCodegen.camelize(fragment);
+    }
+  }
+
+  private static class CurlyLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return "{" + fragment + "}";
+    }
+  }
+
   private static abstract class CustomLambda implements Mustache.Lambda {
     @Override
     public void execute(Template.Fragment frag, Writer out) throws IOException {
@@ -62,23 +76,15 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     }
   }
 
-  private static class CamelizeLambda extends CustomLambda {
-    @Override
-    public String formatFragment(String fragment) {
-      return DefaultCodegen.camelize(fragment);
-    }
-  }
-
   private static class UpperCaseLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
       return fragment.toUpperCase();
     }
   }
-
   private static final String LANGUAGE_NAME = "gwt-client";
 
-  private static final String CODEGEN_VERSION = "1.1.0";
+  private static final String CODEGEN_VERSION = "1.1.1";
   private static final String SUPPORT_PACKAGE = "supportPackage";
 
   private String supportPackage;
@@ -209,6 +215,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("fnUpperCase", new UpperCaseLambda());
     additionalProperties.put("fnJsArray", new JsArrayLambda());
     additionalProperties.put("fnCamelize", new CamelizeLambda());
+    additionalProperties.put("fnCurly", new CurlyLambda());
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
         supportPackageFolder(), "ApiCallback.java"));

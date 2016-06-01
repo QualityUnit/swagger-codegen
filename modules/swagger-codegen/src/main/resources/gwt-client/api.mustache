@@ -44,7 +44,7 @@ import java.util.*;
     public void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";
         {{#pathParams}}
-        callUrl = callUrl.replace("{" + "{{baseName}}" + "}", {{paramName}});
+        callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}});
         {{/pathParams}}
 
         RequestCallback requestCallback = new RequestCallback() {
