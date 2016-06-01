@@ -76,7 +76,7 @@
                 $queryParams, $httpBody,
                 $headerParams{{#returnType}}, '{{returnType}}'{{/returnType}}
             );{{#returnType}}
-            if (!$response) {
+            if (!is_array($response) && !$response) {
                 return array(null, $statusCode, $httpHeader);
             }{{#isListContainer}}
             $responseObject = array();
