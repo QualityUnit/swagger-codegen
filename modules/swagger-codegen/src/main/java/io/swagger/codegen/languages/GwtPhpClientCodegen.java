@@ -45,6 +45,13 @@ public class GwtPhpClientCodegen extends DefaultCodegen
     }
   }
 
+  private static class CurlyLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return "{" + fragment + "}";
+    }
+  }
+
   private static abstract class CustomLambda implements Mustache.Lambda {
     @Override
     public void execute(Template.Fragment frag, Writer out) throws IOException {
@@ -96,7 +103,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public static final String PACKAGE_PATH = "packagePath";
 
   public static final String SRC_BASE_PATH = "srcBasePath";
-  public static final String CODEGEN_VERSION = "1.5.0";
+  public static final String CODEGEN_VERSION = "1.5.1";
   public static final String LANGUAGE_NAME = "gwtphp-client";
   public static final String TEMPLATE_DIR = "gwtphp";
   protected String invokerPackage = "GwtPhp";
@@ -310,6 +317,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
 
     additionalProperties.put("fnClassName", new ClassNameLambda());
     additionalProperties.put("fnMethodName", new MethodNameLambda());
+    additionalProperties.put("fnCurly", new CurlyLambda());
 
     String restApiPath = "include/RestApi/";
 

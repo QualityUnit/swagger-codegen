@@ -61,7 +61,7 @@
         }{{/collectionFormat}}
         if (${{paramName}} !== null) {
             $resourcePath = str_replace(
-                    "{" . "{{baseName}}" . "}",
+                    "{{#fnCurly}}{{baseName}}{{/fnCurly}}",
                     RestApi_Client_Utils::toPathValue(${{paramName}}),
                     $resourcePath
             );
