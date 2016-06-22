@@ -13,7 +13,7 @@ package {{supportPackage}};
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Header;
 
-public abstract class ApiCallback<T extends JavaScriptObject> {
+public abstract class ApiCallback<T> {
 
     // same as onSuccess for easier error response handling in generated code
     public final void error(int code, Header[] headers, JavaScriptObject error) {

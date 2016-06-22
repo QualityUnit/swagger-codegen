@@ -10,11 +10,9 @@
 
 package {{supportPackage}};
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Header;
 
-public abstract class SimpleApiCallback<T extends JavaScriptObject>
-    extends ApiCallback<T> {
+public abstract class SimpleApiCallback<T> extends ApiCallback<T> {
 
     public final void onError(int code, String message) {
         onError(message);
