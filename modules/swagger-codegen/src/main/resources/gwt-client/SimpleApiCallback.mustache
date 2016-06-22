@@ -1,0 +1,30 @@
+/**
+ * Copyright 2007 Quality Unit s.r.o.
+ *
+ * Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ * Version 1.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * http://www.qualityunit.com/licenses/license
+ * 
+ */
+
+package {{supportPackage}};
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.http.client.Header;
+
+public abstract class SimpleApiCallback<T extends JavaScriptObject>
+    extends ApiCallback<T> {
+
+    public final void onError(int code, String message) {
+        onError(message);
+    }
+
+    public final void onSuccess(int code, Header[] headers, T response) {
+        onSuccess(response);
+    }
+
+    protected abstract void onError(String message);
+
+    protected abstract void onSuccess(T response);
+}

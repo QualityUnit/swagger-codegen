@@ -49,7 +49,7 @@ import java.util.*;
 
         RequestCallback requestCallback = new RequestCallback() {
             public void onError(Request request, Throwable exception) {
-                callback.onError(exception.getMessage());
+                callback.onError(0, exception.getMessage());
             }
             @SuppressWarnings("unchecked")
             public void onResponseReceived(Request request, Response response) {
@@ -58,13 +58,13 @@ import java.util.*;
                     {{#responses}}
                         {{#dataType}}
                             {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
-                                callback.{{#fnCallbackMethod}}{{code}}{{/fnCallbackMethod}}(({{#fnJsArray}}{{dataType}}{{/fnJsArray}}) JsonUtils.safeEval(response.getText()));
+                                callback.{{#fnCallbackMethod}}{{code}}{{/fnCallbackMethod}}(response.getStatusCode(), response.getHeaders(), ({{#fnJsArray}}{{dataType}}{{/fnJsArray}}) JsonUtils.safeEval(response.getText()));
                                 break;
                         {{/dataType}}
                     {{/responses}}
                     }
                 } catch (IllegalArgumentException e) {
-                    callback.onError(e.getMessage());
+                    callback.onError(0, e.getMessage());
                 }
             }
         };

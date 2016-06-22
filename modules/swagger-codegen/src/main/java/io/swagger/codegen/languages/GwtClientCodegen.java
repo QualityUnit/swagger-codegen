@@ -84,7 +84,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
   }
   private static final String LANGUAGE_NAME = "gwt-client";
 
-  private static final String CODEGEN_VERSION = "1.1.3";
+  private static final String CODEGEN_VERSION = "1.1.4";
   private static final String SUPPORT_PACKAGE = "supportPackage";
 
   private String supportPackage;
@@ -219,6 +219,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
         supportPackageFolder(), "ApiCallback.java"));
+    supportingFiles.add(new SupportingFile("SimpleApiCallback.mustache",
+        supportPackageFolder(), "SimpleApiCallback.java"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
         supportPackageFolder(), "ApiClient.java"));
     supportingFiles.add(new SupportingFile("ValidationException.mustache",
