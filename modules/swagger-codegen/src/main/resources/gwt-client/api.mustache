@@ -41,7 +41,15 @@ import java.util.*;
     }
     {{#operation}}
 
-    public void {{gwtphpClientMethodName}}({{#allParams}}{{dataType}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
+    /**
+     * Call {{httpMethod}}:{{path}}
+     *
+     * {{{summary}}}
+     *
+     {{#allParams}}* @param {{paramName}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}} {{description}}
+     {{/allParams}}* @param callback is called if response was received or if there was an error executing request
+     */
+    public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";
         {{#pathParams}}
         callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}});
@@ -71,7 +79,9 @@ import java.util.*;
 
         Map<String, List<?>> queryParams = new HashMap<String, List<?>>();
         {{#queryParams}}
-        queryParams.put("{{baseName}}", Arrays.asList({{paramName}}));
+{{^required}}        if ({{paramName}} != null) {
+    {{/required}}        queryParams.put("{{baseName}}", Arrays.asList({{paramName}}));{{^required}}
+        }{{/required}}
         {{/queryParams}}
 
         {{#bodyParams}}

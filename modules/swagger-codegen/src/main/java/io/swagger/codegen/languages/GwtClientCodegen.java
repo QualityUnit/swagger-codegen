@@ -76,6 +76,26 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     }
   }
 
+  private static class ToWrapperLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      switch (fragment) {
+        case "short":
+          return "Short";
+        case "int":
+          return "Integer";
+        case "long":
+          return "Long";
+        case "float":
+          return "Float";
+        case "double":
+          return "Double";
+        default:
+          return fragment;
+      }
+    }
+  }
+
   private static class UpperCaseLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
@@ -84,7 +104,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
   }
   private static final String LANGUAGE_NAME = "gwt-client";
 
-  private static final String CODEGEN_VERSION = "1.1.4";
+  private static final String CODEGEN_VERSION = "1.2.0";
   private static final String SUPPORT_PACKAGE = "supportPackage";
 
   private String supportPackage;
@@ -216,6 +236,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("fnJsArray", new JsArrayLambda());
     additionalProperties.put("fnCamelize", new CamelizeLambda());
     additionalProperties.put("fnCurly", new CurlyLambda());
+    additionalProperties.put("fnToWrapper", new ToWrapperLambda());
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
         supportPackageFolder(), "ApiCallback.java"));
