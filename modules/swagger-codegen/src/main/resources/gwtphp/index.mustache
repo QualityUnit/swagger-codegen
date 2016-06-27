@@ -42,8 +42,8 @@ $app->{{#fnLowerCase}}{{httpMethod}}{{/fnLowerCase}}('{{#fnSlimPath}}{{path}}{{/
         $data = $params->getBody(){{/dataType}}{{#dataType}}
         $data = new {{dataType}}($params->getBody());
         $data->check();{{/dataType}}{{/bodyParam}}
-        $handler = new {{#fnClassName}}{{operationId}}{{/fnClassName}}($params);
-        $response->setResult($handler->{{#fnMethodName}}{{operationId}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));
+        $handler = new {{#fnClassName}}{{vendorExtensions.x-handler}}{{/fnClassName}}($params);
+        $response->setResult($handler->{{#fnMethodName}}{{vendorExtensions.x-handler}}{{/fnMethodName}}({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#bodyParam}}{{#hasPathParams}}, {{/hasPathParams}}$data{{/bodyParam}}));
     } catch (Exception $e) {
         $response->setError($e);
     }
