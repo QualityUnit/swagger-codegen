@@ -104,7 +104,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
   }
   private static final String LANGUAGE_NAME = "gwt-client";
 
-  private static final String CODEGEN_VERSION = "1.2.0";
+  private static final String CODEGEN_VERSION = "1.2.1";
   private static final String SUPPORT_PACKAGE = "supportPackage";
 
   private String supportPackage;

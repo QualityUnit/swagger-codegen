@@ -36,10 +36,14 @@ public class {{classname}} extends JavaScriptObject {
 
     public final native void {{setter}}({{datatype}} value) /*-{
         this.{{name}} = value;
-    }-*/;{{/vars}}
+    }-*/;{{#required}}
+
+    private final native boolean check{{#fnCamelize}}{{name}}{{/fnCamelize}}() /*-{
+        return this.{{name}} != null && this.{{name}} != "";
+    }-*/;{{/required}}{{/vars}}
 
     public final void check() throws ValidationException { {{#vars}}{{#required}}
-        if (this.{{getter}}() == null) {
+        if (!check{{#fnCamelize}}{{name}}{{/fnCamelize}}()) {
             throw new ValidationException("{{{name}}} is required");
         }{{/required}}{{#isEnum}}
         java.util.List<String> allowed{{#fnCamelize}}{{name}}{{/fnCamelize}} = java.util.Arrays.asList({{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}});
