@@ -66,7 +66,11 @@ class RestApi_Make {
      */
     protected function innerError($code, $message, $cause) {
         $exception = new RestApi_ProcessingException($code, $message, $cause);
-        $exception->setHeader('Content-Type', 'application/json; charset=utf-8');
+        $headers = $exception->getHeaders();
+        $this->initHeaders($headers);
+        foreach ($headers as $header => $value) {
+            $exception->setHeader($header, $value);
+        }
         return $exception;
     }
 
@@ -80,8 +84,37 @@ class RestApi_Make {
         $result = new RestApi_Result();
         $result->setCode($code);
         $result->setBody(json_encode($body));
-        $headers['Content-Type'] = 'application/json; charset=utf-8';
+        $this->initHeaders($headers);
         $result->setHeaders($headers);
         return $result;
+    }
+
+    protected function initHeaders(array &$headers) {
+        $this->initContentHeaders($headers);
+        $this->initCacheHeaders($headers);
+        $this->initAccessControlHeaders($headers);
+    }
+
+    protected function initContentHeaders(array &$headers) {
+        if($headers['Content-Type']) {
+            return;
+        }
+        $headers['Content-Type'] = 'application/json; charset=utf-8';
+    }
+
+    protected function initCacheHeaders(array &$headers) {
+        if($headers['Cache-Control'] || $headers['Pragma'] || $headers['Expired']) {
+            return;
+        }
+        $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
+        $headers['Pragma'] = 'no-cache';
+        $headers['Expires'] = '26 Jun 1997 05:00:00 GMT';
+    }
+
+    protected function initAccessControlHeaders(array &$headers) {
+        if($headers['Access-Control-Allow-Origin']) {
+            return;
+        }
+        $headers['Access-Control-Allow-Origin'] = '*';
     }
 }
