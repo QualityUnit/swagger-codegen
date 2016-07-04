@@ -20,18 +20,18 @@ class RestApi_Client_ApiClient
     public static $OPTIONS = "OPTIONS";
     public static $PUT = "PUT";
     public static $DELETE = "DELETE";
-    
-    /** @var string */
-    protected $accessToken = '';
 
-    /** @var int Timeout (second) of the HTTP request, by default set to 0, no timeout */
-    protected $curlTimeout = 10;
-    
-    /** @var string */
-    protected $host = 'localhost';
-    
-    /** @var string User agent of the HTTP request */
-    protected $userAgent = 'PHP-Swagger';
+    /** @var RestApi_Client_Config */
+    private $config;
+
+    /**
+     * RestApi_Client_ApiClient constructor.
+     *
+     * @param RestApi_Client_Config $config
+     */
+    public function __construct(RestApi_Client_Config $config) {
+        $this->config = $config;
+    }
 
     /**
      * Make the HTTP call (Sync)
@@ -46,17 +46,21 @@ class RestApi_Client_ApiClient
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
     {
+        if($this->config->getAccessToken() == '') {
+            throw new InvalidArgumentException('Api client host not specified.');
+        }
+        
         $headers = array();
 
-        if (strlen($this->accessToken) !== '') {
-            $headerParams['apikey'] = $this->accessToken;
+        if (strlen($this->config->getAccessToken()) !== '') {
+            $headerParams['apikey'] = $this->config->getAccessToken();
         }
         
         foreach ($headerParams as $key => $val) {
             $headers[] = "$key: $val";
         }
 
-        $url = $this->host . $resourcePath;
+        $url = $this->config->getHost() . $resourcePath;
 
         if($postData != '') {
             $postData = json_encode($postData->getData());
@@ -64,8 +68,8 @@ class RestApi_Client_ApiClient
 
         $curl = curl_init();
         // set timeout, if needed
-        if ($this->curlTimeout != 0) {
-            curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout);
+        if ($this->config->getCurlTimeout() != 0) {
+            curl_setopt($curl, CURLOPT_TIMEOUT, $this->config->getCurlTimeout());
         }
         // return the result on success, rather than just true 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -101,7 +105,7 @@ class RestApi_Client_ApiClient
             throw new RestApi_Client_ApiException('Method ' . $method . ' is not recognized.');
         }
         curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($curl, CURLOPT_USERAGENT, $this->config->getUserAgent());
         curl_setopt($curl, CURLOPT_VERBOSE, 0);
 
         // obtain the HTTP response headers
@@ -221,73 +225,5 @@ class RestApi_Client_ApiClient
         }
    
         return $headers;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAccessToken() {
-        return $this->accessToken;
-    }
-
-    /**
-     * @param string $accessToken
-     * @return RestApi_Client_ApiClient
-     */
-    public function setAccessToken($accessToken) {
-        $this->accessToken = $accessToken;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurlTimeout() {
-        return $this->curlTimeout;
-    }
-
-    /**
-     * @param int $curlTimeout
-     * @return RestApi_Client_ApiClient
-     */
-    public function setCurlTimeout($curlTimeout) {
-        $this->curlTimeout = $curlTimeout;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHost() {
-        return $this->host;
-    }
-
-    /**
-     * @param string $host
-     * @return RestApi_Client_ApiClient
-     */
-    public function setHost($host) {
-        $this->host = $host;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserAgent() {
-        return $this->userAgent;
-    }
-
-    /**
-     * @param string $userAgent
-     * @return RestApi_Client_ApiClient
-     */
-    public function setUserAgent($userAgent) {
-        $this->userAgent = $userAgent;
-
-        return $this;
     }
 }

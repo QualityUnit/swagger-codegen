@@ -103,7 +103,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public static final String PACKAGE_PATH = "packagePath";
 
   public static final String SRC_BASE_PATH = "srcBasePath";
-  public static final String CODEGEN_VERSION = "1.5.2";
+  public static final String CODEGEN_VERSION = "1.5.3";
   public static final String LANGUAGE_NAME = "gwtphp-client";
   public static final String TEMPLATE_DIR = "gwtphp";
   protected String invokerPackage = "GwtPhp";
@@ -327,6 +327,11 @@ public class GwtPhpClientCodegen extends DefaultCodegen
         getPackagePath() + restApiPath + "Client", "ApiException.class.php"));
     supportingFiles.add(new SupportingFile("client/Utils.php",
         getPackagePath() + restApiPath + "Client", "Utils.class.php"));
+    supportingFiles.add(new SupportingFile("client/Config.php",
+        getPackagePath() + restApiPath + "Client", "Config.class.php"));
+
+    supportingFiles.add(new SupportingFile("config.mustache",
+        toPackagePath(apiPackage(), srcBasePath) + "Config", "Default.class.php"));
 
     String[][] suppFiles = {
         {"field/", "TypeUtils/", "Field.class.php"},

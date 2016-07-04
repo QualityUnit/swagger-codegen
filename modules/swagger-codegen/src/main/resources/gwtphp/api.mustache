@@ -17,8 +17,13 @@
     /** @var RestApi_Client_ApiClient instance of the ApiClient */
     protected $apiClient;
   
-    function __construct(RestApi_Client_ApiClient $apiClient) {
-    	$this->apiClient = $apiClient;
+    function __construct(RestApi_Client_ApiClient $apiClient = null) {
+        if($apiClient !== null) {
+    	    $this->apiClient = $apiClient;
+        } else {
+            $this->apiClient = new RestApi_Client_ApiClient({{apiPackage}}_Config_Default::get());
+
+        }
     }{{#operation}}
 
     /**

@@ -96,14 +96,14 @@ class RestApi_Make {
     }
 
     protected function initContentHeaders(array &$headers) {
-        if($headers['Content-Type']) {
+        if(isset($headers['Content-Type'])) {
             return;
         }
         $headers['Content-Type'] = 'application/json; charset=utf-8';
     }
 
     protected function initCacheHeaders(array &$headers) {
-        if($headers['Cache-Control'] || $headers['Pragma'] || $headers['Expired']) {
+        if(isset($headers['Cache-Control']) || isset($headers['Pragma']) || isset($headers['Expired'])) {
             return;
         }
         $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
@@ -112,7 +112,7 @@ class RestApi_Make {
     }
 
     protected function initAccessControlHeaders(array &$headers) {
-        if($headers['Access-Control-Allow-Origin']) {
+        if(isset($headers['Access-Control-Allow-Origin'])) {
             return;
         }
         $headers['Access-Control-Allow-Origin'] = '*';
