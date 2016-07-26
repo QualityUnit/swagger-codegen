@@ -1,5 +1,7 @@
 package io.swagger.codegen.languages;
 
+import com.google.common.base.Strings;
+
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
@@ -103,7 +105,7 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   public static final String PACKAGE_PATH = "packagePath";
 
   public static final String SRC_BASE_PATH = "srcBasePath";
-  public static final String CODEGEN_VERSION = "1.5.3";
+  public static final String CODEGEN_VERSION = "1.6.0";
   public static final String LANGUAGE_NAME = "gwtphp-client";
   public static final String TEMPLATE_DIR = "gwtphp";
   protected String invokerPackage = "GwtPhp";
@@ -444,6 +446,10 @@ public class GwtPhpClientCodegen extends DefaultCodegen
   }
 
   private String formatProcedureName(CodegenOperation operation) {
+    if(!Strings.isNullOrEmpty(operation.operationId)) {
+      return operation.operationId;
+    }
+
     String result = "";
     switch (operation.httpMethod) {
       case "GET":
