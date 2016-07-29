@@ -22,4 +22,8 @@ class RestApi_Role {
     public function hasPrivilege($name) {
         return array_key_exists($name, $this->privileges);
     }
+    
+    public function getPrivileges() {
+    	return array_keys($this->privileges);
+    }
 }
