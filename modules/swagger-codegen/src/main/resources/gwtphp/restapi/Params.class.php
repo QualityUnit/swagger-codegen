@@ -43,6 +43,14 @@ class RestApi_Params {
             throw $e;
         }
     }
+
+    public function wasProvided($name) {
+        $value = $this->request->get($name);
+        if ($value === null) {
+            $value = $this->request->post($name);
+        }
+        return $value !== null;
+    }
     
     public function get($name) {
         $value = $this->request->get($name);
