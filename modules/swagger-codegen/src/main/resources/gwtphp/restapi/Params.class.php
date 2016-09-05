@@ -30,11 +30,16 @@ class RestApi_Params {
     public function check($name, $required, $defaultValue, $type, array $allowedValues = null) {
         $this->defaultValues[$name] = $defaultValue;
         $value = $this->get($name);
-        if ($value == '' && $required) {
-            throw RestApi_Make::error(400, sprintf('Param %s is required', $name));
-        }
         if ($allowedValues !== null && !in_array($value, $allowedValues)) {
             throw RestApi_Make::error(400, sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues)));
+        }
+        if($value == '') {
+            if($required) {
+                throw RestApi_Make::error(400, sprintf('Param %s is required', $name));
+            } else {
+                // not required, no need to type check
+                return;
+            }
         }
         try {
             RestApi_TypeUtils_Field::of($type, $this->get($name));
