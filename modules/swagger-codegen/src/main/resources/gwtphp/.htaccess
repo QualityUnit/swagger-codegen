@@ -1,3 +1,6 @@
+<IfModule mod_headers.c>
+  Header add X-Content-Type-Options "nosniff"
+</IfModule>
 <IfModule mod_rewrite.c>
     RewriteEngine On
 	RewriteCond %{REQUEST_FILENAME} !-f

@@ -34,7 +34,11 @@ class {{apiPackage}}_Config_Default {
 
     private static function createDefault() {
         $config = new RestApi_Client_Config();
-        $config->setHost('{{basePath}}');
+        if(defined('{{apiPackage}}_Url')) {
+            $config->setHost({{apiPackage}}_Url);
+        } else {
+            $config->setHost('{{basePath}}');
+        }
         return $config;
     }
 }
