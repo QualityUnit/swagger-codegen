@@ -1,3 +1,4 @@
+# Auto generated code from swagger api description. DO NOT EDIT !!!!
 <IfModule mod_headers.c>
   Header add X-Content-Type-Options "nosniff"
 </IfModule>
