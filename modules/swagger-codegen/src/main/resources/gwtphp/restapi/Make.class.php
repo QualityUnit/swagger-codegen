@@ -40,6 +40,10 @@ class RestApi_Make {
     public static function result($body, $code = 200, $headers = array()) {
         return self::getInstance()->innerResult($body, $code, $headers);
     }
+    
+    public static function run(\Slim\Slim $app) {
+    	return self::getInstance()->innerRun($app);
+    }
 
     /**
      * @return RestApi_Make
@@ -49,6 +53,10 @@ class RestApi_Make {
             self::init(new RestApi_Make());
         }
         return self::$instance;
+    }
+    
+    protected function innerRun(\Slim\Slim $app) {
+    	$app->run();
     }
 
     /**
