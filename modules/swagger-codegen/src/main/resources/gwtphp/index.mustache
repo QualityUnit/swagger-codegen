@@ -49,4 +49,4 @@ $app->{{#fnLowerCase}}{{httpMethod}}{{/fnLowerCase}}('{{#fnSlimPath}}{{path}}{{/
     }
 });
 {{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
-$app->run();
+RestApi_Make::run($app);
