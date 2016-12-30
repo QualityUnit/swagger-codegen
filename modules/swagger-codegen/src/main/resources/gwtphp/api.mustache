@@ -43,6 +43,7 @@
         $httpBody = '';
         $queryParams = array();
         $headerParams = array();
+        $formParams = array();
         $_header_accept = $this->apiClient->selectHeaderAccept(array({{#produces}}'{{mediaType}}'{{#hasMore}}, {{/hasMore}}{{/produces}}));
         if (!is_null($_header_accept)) {
             $headerParams['Accept'] = $_header_accept;
@@ -70,10 +71,30 @@
                     RestApi_Client_Utils::toPathValue(${{paramName}}),
                     $resourcePath
             );
-        }{{/pathParams}}{{#bodyParams}}
+        }{{/pathParams}}
+        {{#formParams}}// form params
+        if (${{paramName}} !== null) {
+            {{#isFile}}
+            // PHP 5.5 introduced a CurlFile object that deprecates the old @filename syntax
+            // See: https://wiki.php.net/rfc/curl-file-upload
+            if (function_exists('curl_file_create')) {
+                $formParams['{{baseName}}'] = curl_file_create(RestApi_Client_Utils::toFormValue(${{paramName}}));
+            } else {
+                $formParams['{{baseName}}'] = '@' . RestApi_Client_Utils::toFormValue(${{paramName}});
+            }
+            {{/isFile}}
+            {{^isFile}}
+            $formParams['{{baseName}}'] = RestApi_Client_Utils::toFormValue(${{paramName}});
+            {{/isFile}}
+        }{{/formParams}}
+        {{#bodyParams}}
         if (isset(${{paramName}})) {
             $httpBody = ${{paramName}};
         }{{/bodyParams}}
+        
+        if ($httpBody == '' && count($formParams) > 0) {
+            $httpBody = $formParams; // for HTTP post (form)
+        }
 
         try {
             list($response, $statusCode, $httpHeader) = $this->apiClient->callApi(
