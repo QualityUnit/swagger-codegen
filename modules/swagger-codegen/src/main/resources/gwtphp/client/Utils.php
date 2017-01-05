@@ -67,6 +67,23 @@ class RestApi_Client_Utils {
     public static function toHeaderValue($value) {
         return self::toString($value);
     }
+    
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the http body (form parameter). If it's a string, pass through unchanged
+     * If it's a datetime object, format it in ISO8601
+     *
+     * @param string $value the value of the form parameter
+     *
+     * @return string the form string
+     */
+    public static function toFormValue($value) {
+    	if ($value instanceof \SplFileObject) {
+    		return $value->getRealPath();
+    	} else {
+    		return self::toString($value);
+    	}
+    }
 
     /**
      * Take value and turn it into a string suitable for inclusion in
