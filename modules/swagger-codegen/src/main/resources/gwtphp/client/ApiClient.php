@@ -105,7 +105,7 @@ class RestApi_Client_ApiClient
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
         } elseif ($method != self::$GET) {
-            throw new RestApi_Client_ApiException('Method ' . $method . ' is not recognized.');
+            throw new RestApi_Client_ApiException('Method ' . $method . ' is not recognized.', 500);
         }
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_USERAGENT, $this->config->getUserAgent());
@@ -122,8 +122,14 @@ class RestApi_Client_ApiClient
         $response_info = curl_getinfo($curl);
 
         // Handle the response
-        if ($response_info['http_code'] == 0) {
-            throw new RestApi_Client_ApiException("API call to $url timed out: " . serialize($response_info), 0, null, null);
+        $errNo = curl_errno($curl);
+        if ($errNo > 0) {
+            $errMessage = "API call to $url failed (errno: $errNo): ";
+            if ($errNo === CURLE_OPERATION_TIMEOUTED) {
+                $timeout = $this->config->getCurlTimeout();
+                $errMessage = "API call to $url timed out ($timeout s): ";
+            }
+            throw new RestApi_Client_ApiException($errMessage . json_encode($response_info), 500);
         }
 
         if ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299 ) {
