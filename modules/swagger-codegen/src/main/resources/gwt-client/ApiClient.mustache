@@ -12,8 +12,11 @@ package {{supportPackage}};
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.lang.IllegalArgumentException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +27,15 @@ import java.util.Map;
 public class ApiClient {
 
     private static ApiClientConfig defaultConfig = null;
-
+    
+    private static final String STANDARD_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    
     public static void setDefaultConfig(ApiClientConfig defaultConfig) {
         ApiClient.defaultConfig = defaultConfig;
     }
 
     private ApiClientConfig config;
+    private DateTimeFormat datetimeFormat;
 
     public ApiClient() {
         this(defaultConfig);
@@ -40,6 +46,7 @@ public class ApiClient {
             throw new IllegalArgumentException();
         }
         this.config = config;
+        initDatetimeFormat();
     }
 
     public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
@@ -71,4 +78,39 @@ public class ApiClient {
             callback.onError(null, e);
         }
     }
+    
+    public DateTimeFormat getDatetimeFormat() {
+        return datetimeFormat;
+    }
+
+    public void setDatetimeFormat(DateTimeFormat datetimeFormat) {
+        this.datetimeFormat = datetimeFormat;
+    }
+    
+    public String parameterToString(Object param) {
+        if (param == null) {
+            return "";
+        } else if (param instanceof Date) {
+            return formatDatetime((Date) param);
+        } else if (param instanceof Collection) {
+            StringBuilder b = new StringBuilder();
+            for (Object o : (Collection)param) {
+                if (b.length() > 0) {
+                    b.append(",");
+                }
+                b.append(String.valueOf(o));
+            }
+            return b.toString();
+        } else {
+            return String.valueOf(param);
+        }
+    }
+    
+    public String formatDatetime(Date date) {
+        return datetimeFormat.format(date);
+    }
+    
+    private void initDatetimeFormat() {
+    	this.datetimeFormat = DateTimeFormat.getFormat(STANDARD_DATETIME_FORMAT);
+  	}
 }
