@@ -79,11 +79,16 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
   private static class ToWrapperLambda extends CustomLambda {
     @Override
     public String formatFragment(String fragment) {
+	  if (fragment.endsWith("[]")) {
+        return "List<" + formatFragment(fragment.replace("[]", "")) + ">";
+      }
       switch (fragment) {
         case "short":
           return "Short";
         case "int":
           return "Integer";
+        case "boolean":
+          return "Boolean";
         case "long":
           return "Long";
         case "float":

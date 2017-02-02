@@ -80,7 +80,7 @@ import java.util.*;
         Map<String, List<?>> queryParams = new HashMap<String, List<?>>();
         {{#queryParams}}
 {{^required}}        if ({{paramName}} != null) {
-    {{/required}}        queryParams.put("{{baseName}}", Arrays.asList({{paramName}}));{{^required}}
+    {{/required}}        queryParams.put("{{baseName}}", Arrays.asList(apiClient.parameterToString({{paramName}})));{{^required}}
         }{{/required}}
         {{/queryParams}}
 
