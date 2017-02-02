@@ -35,7 +35,7 @@ public class ApiClient {
     }
 
     private ApiClientConfig config;
-    private DateTimeFormat datetimeFormat;
+    private DateTimeFormat datetimeFormat = DateTimeFormat.getFormat(STANDARD_DATETIME_FORMAT);
 
     public ApiClient() {
         this(defaultConfig);
@@ -46,7 +46,6 @@ public class ApiClient {
             throw new IllegalArgumentException();
         }
         this.config = config;
-        initDatetimeFormat();
     }
 
     public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
@@ -91,7 +90,7 @@ public class ApiClient {
         if (param == null) {
             return "";
         } else if (param instanceof Date) {
-            return formatDatetime((Date) param);
+            return getDatetimeFormat().format((Date) param);
         } else if (param instanceof Collection) {
             StringBuilder b = new StringBuilder();
             for (Object o : (Collection)param) {
@@ -105,12 +104,4 @@ public class ApiClient {
             return String.valueOf(param);
         }
     }
-    
-    public String formatDatetime(Date date) {
-        return datetimeFormat.format(date);
-    }
-    
-    private void initDatetimeFormat() {
-    	this.datetimeFormat = DateTimeFormat.getFormat(STANDARD_DATETIME_FORMAT);
-  	}
 }
