@@ -102,11 +102,12 @@ import java.util.*;
         {{#-first}}
         StringBuilder formBodyParams = new StringBuilder();
         for (String id : formParams.keySet()) {
-            if (formBodyParams.length() > 0) {
-                formBodyParams.append("&");
-            }
-            formBodyParams.append(URL.encodeQueryString(id) + "=" + URL.encodeQueryString(formParams.get(id)));
+            formBodyParams.append(URL.encodeQueryString(id));
+            formBodyParams.append("=");
+            formBodyParams.append(URL.encodeQueryString(formParams.get(id)));
+            formBodyParams.append("&");
         }
+        formBodyParams.setLength(formBodyParams.length() - 1);
         httpBody = formBodyParams.toString();
         {{/-first}}
         {{/formParams}}
