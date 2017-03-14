@@ -83,6 +83,14 @@ import java.util.*;
     {{/required}}        queryParams.put("{{baseName}}", Arrays.asList(apiClient.parameterToString({{paramName}})));{{^required}}
         }{{/required}}
         {{/queryParams}}
+        {{#formParams}}
+        {{#-first}}
+        Map<String, String> formParams = new HashMap<String, String>();
+        {{/-first}}
+{{^required}}        if ({{paramName}} != null) {
+    {{/required}}        formParams.put("{{baseName}}", apiClient.parameterToString({{paramName}}));{{^required}}
+        }{{/required}}
+        {{/formParams}}
 
         {{#bodyParams}}
         String httpBody = new JSONObject({{paramName}}).toString();
@@ -90,9 +98,22 @@ import java.util.*;
         {{^bodyParams}}
         String httpBody = "";
         {{/bodyParams}}
+        {{#formParams}}
+        {{#-first}}
+        StringBuilder formBodyParams = new StringBuilder();
+        for (String id : formParams.keySet()) {
+            formBodyParams.append(URL.encodeQueryString(id));
+            formBodyParams.append("=");
+            formBodyParams.append(URL.encodeQueryString(formParams.get(id)));
+            formBodyParams.append("&");
+        }
+        formBodyParams.setLength(formBodyParams.length() - 1);
+        httpBody = formBodyParams.toString();
+        {{/-first}}
+        {{/formParams}}
 
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", "application/json");
+        {{#formParams}}{{#-first}}headers.put("Content-Type", "application/x-www-form-urlencoded");{{/-first}}{{/formParams}}{{^formParams}}headers.put("Content-Type", "application/json");{{/formParams}}
         headers.put("Accept", "application/json");
         {{#headerParams}}
         headers.put("{{baseName}}", {{paramName}});
