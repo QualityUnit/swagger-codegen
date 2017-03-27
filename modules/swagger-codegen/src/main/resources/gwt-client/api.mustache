@@ -52,7 +52,7 @@ import java.util.*;
     public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";
         {{#pathParams}}
-        callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}});
+        callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}}.toString());
         {{/pathParams}}
 
         RequestCallback requestCallback = new RequestCallback() {
