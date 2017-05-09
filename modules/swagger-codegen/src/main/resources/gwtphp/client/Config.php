@@ -1,12 +1,23 @@
 <?php
+/**
+ *   @copyright Copyright (c) 2017 Quality Unit s.r.o.
+ *
+ *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ *   Version 1.0 (the "License"); you may not use this file except in compliance
+ *   with the License. You may obtain a copy of the License at
+ *   http://www.qualityunit.com/licenses/license
+ */
 
+/**
+ * Auto generated code. DO NOT EDIT !!!!
+ */
 class RestApi_Client_Config {
 
     /** @var string */
     protected $accessToken = '';
 
     /** @var int Timeout (second) of the HTTP request, by default set to 0, no timeout */
-    protected $curlTimeout = 10;
+    protected $curlTimeout = 30;
 
     /** @var string */
     protected $host = 'localhost';
