@@ -49,7 +49,7 @@ public class ApiClient {
     }
 
     public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
-        String baseUrl = "../api/v{{{artifactVersion}}}";
+        String baseUrl = "../api/v{{{artifactVersion}}}/index.php";
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
         if (queryParams.size() > 0) {
