@@ -14,6 +14,8 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
+import {{settingsPackage}};
+
 import java.lang.IllegalArgumentException;
 import java.util.Collection;
 import java.util.Date;
@@ -49,7 +51,10 @@ public class ApiClient {
     }
 
     public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
-        String baseUrl = "../api/v{{{artifactVersion}}}/index.php";
+        String baseUrl = "../api/v3";
+        if("N".equals(ApplicationSettings.get().getSetting("mod_rewrite_enabled"))) {
+          baseUrl += "/index.php";
+        }
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
         if (queryParams.size() > 0) {
