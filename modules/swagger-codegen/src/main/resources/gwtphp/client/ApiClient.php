@@ -46,13 +46,13 @@ class RestApi_Client_ApiClient
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null)
     {
-        if($this->config->getAccessToken() == '') {
+        if($this->config->getHost() == '') {
             throw new InvalidArgumentException('Api client host not specified.');
         }
         
         $headers = array();
 
-        if (strlen($this->config->getAccessToken()) !== '') {
+        if (strlen($this->config->getAccessToken())) {
             $headerParams['apikey'] = $this->config->getAccessToken();
         }
         
