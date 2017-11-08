@@ -9,12 +9,19 @@
 
 package {{supportPackage}};
 
+import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.UIObject;
+
+import com.qualityunit.gpf.client.model.Application;
+import com.qualityunit.gpf.client.model.ApplicationSettings;
 
 import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +61,7 @@ public class ApiClient {
         this.config = config;
     }
 
-    public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
+    public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, final RequestCallback callback, final ArrayList<UIObject> requestWidgets) {
         String baseUrl = interceptor.buildBaseUrl("../api/v{{{artifactVersion}}}");
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
@@ -76,11 +83,25 @@ public class ApiClient {
         }
 
         request.setRequestData(body);
-        request.setCallback(callback);
+        request.setCallback(new RequestCallback() {
+            public void onResponseReceived(Request request, Response response) {
+                callback.onResponseReceived(request, response);
+                Application.getContentManager().onDataCompletion(requestWidgets);
+            }
+          
+            public void onError(Request request, Throwable exception) {
+                callback.onError(request, exception);
+                Application.getContentManager().onDataCompletion(requestWidgets);
+            }
+        });
+        
+        Application.getContentManager().onDataLoading(requestWidgets);
+        
         try {
             request.send();
         } catch (RequestException e) {
             callback.onError(null, e);
+            Application.getContentManager().onDataCompletion(requestWidgets);
         }
     }
     

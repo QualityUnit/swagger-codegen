@@ -13,6 +13,7 @@ package {{apiPackage}};
 import com.google.gwt.core.client.*;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.ui.UIObject;
 
 import {{supportPackage}}.*;
 import {{modelPackage}}.*;
@@ -50,6 +51,19 @@ import java.util.*;
      {{/allParams}}* @param callback is called if response was received or if there was an error executing request
      */
     public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
+        {{gwtphpClientMethodName}}({{#allParams}}{{paramName}}, {{/allParams}}callback, null);
+    }
+
+    /**
+     * Call {{httpMethod}}:{{path}}
+     *
+     * {{{summary}}}
+     *
+     {{#allParams}}* @param {{paramName}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}} {{description}}
+     {{/allParams}}* @param callback is called if response was received or if there was an error executing request
+     * @param requestWidget is used for loading indicator
+     */
+    public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback, final UIObject requestWidget) {
         String callUrl = "{{path}}";
         {{#pathParams}}
         callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}}.toString());
@@ -119,7 +133,12 @@ import java.util.*;
         headers.put("{{baseName}}", {{paramName}});
         {{/headerParams}}
 
-        apiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback);
+        ArrayList<UIObject> requestWidgets = new ArrayList<UIObject>();
+        if (requestWidget != null) {
+            requestWidgets.add(requestWidget);
+        }
+
+        apiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback, requestWidgets);
     }
     {{/operation}}
 }
