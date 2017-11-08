@@ -253,6 +253,10 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         supportPackageFolder(), "ValidationException.java"));
     supportingFiles.add(new SupportingFile("ApiClientConfig.mustache",
         supportPackageFolder(), "ApiClientConfig.java"));
+    supportingFiles.add(new SupportingFile("Interceptor.mustache",
+        supportPackageFolder(), "Interceptor.java"));
+    supportingFiles.add(new SupportingFile("DefaultInterceptor.mustache",
+        supportPackageFolder(), "DefaultInterceptor.java"));
 
     additionalProperties.put("codegenVersion", CODEGEN_VERSION);
   }

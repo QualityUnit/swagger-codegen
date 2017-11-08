@@ -14,8 +14,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
-{{settingsPackage}}
-
 import java.lang.IllegalArgumentException;
 import java.util.Collection;
 import java.util.Date;
@@ -30,15 +28,16 @@ public class ApiClient {
 
     private static ApiClientConfig defaultConfig = null;
     
+    private static Interceptor interceptor = new DefaultInterceptor();
+
     private static final String STANDARD_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    private static final String NO = "N";
-    private static final String REWRITE = "{{modRewrite}}";
-    private static final String INDEX = "/index.php";
-    private static final String EMPTY = "";
-    
     public static void setDefaultConfig(ApiClientConfig defaultConfig) {
         ApiClient.defaultConfig = defaultConfig;
+    }
+
+    public static void setInterceptor(Interceptor interceptor) {
+        ApiClient.interceptor = interceptor;
     }
 
     private ApiClientConfig config;
@@ -56,8 +55,7 @@ public class ApiClient {
     }
 
     public void callApi(RequestBuilder.Method method, String endUrl, String body, Map<String, String> headers, Map<String, List<?>> queryParams, RequestCallback callback) {
-        String baseUrl = "../api/v{{{artifactVersion}}}";
-        baseUrl = baseUrl.concat(new String({{appendIndexRewriteEnabled}}));
+        String baseUrl = interceptor.buildBaseUrl("../api/v{{{artifactVersion}}}");
 
         StringBuilder url = new StringBuilder(baseUrl).append(endUrl);
         if (queryParams.size() > 0) {
@@ -67,7 +65,7 @@ public class ApiClient {
         for (Map.Entry<String, List<?>> param : queryParams.entrySet()) {
             for (Object value : param.getValue()) {
                 url.append(param.getKey()).append('=').append(String.valueOf(value)).append('&');
-              }
+            }
         }
 
         RequestBuilder request = new RequestBuilder(method, url.substring(0, url.length()));
