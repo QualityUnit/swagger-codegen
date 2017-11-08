@@ -63,7 +63,7 @@ import java.util.*;
      {{/allParams}}* @param callback is called if response was received or if there was an error executing request
      * @param requestWidget is used for loading indicator
      */
-    public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback, final UIObject requestWidget) {
+    public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback, UIObject requestWidget) {
         String callUrl = "{{path}}";
         {{#pathParams}}
         callUrl = callUrl.replace("{{#fnCurly}}{{baseName}}{{/fnCurly}}", {{paramName}}.toString());
@@ -133,12 +133,7 @@ import java.util.*;
         headers.put("{{baseName}}", {{paramName}});
         {{/headerParams}}
 
-        ArrayList<UIObject> requestWidgets = new ArrayList<UIObject>();
-        if (requestWidget != null) {
-            requestWidgets.add(requestWidget);
-        }
-
-        apiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback, requestWidgets);
+        apiClient.callApi(RequestBuilder.{{#fnUpperCase}}{{httpMethod}}{{/fnUpperCase}}, callUrl, httpBody, headers, queryParams, requestCallback, requestWidget);
     }
     {{/operation}}
 }
