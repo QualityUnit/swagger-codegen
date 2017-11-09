@@ -48,6 +48,8 @@ import java.util.*;
      *
      {{#allParams}}* @param {{paramName}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}} {{description}}
      {{/allParams}}* @param callback is called if response was received or if there was an error executing request
+     * @see {{supportPackage}}.SimpleApiCallback
+     * @see {{supportPackage}}.LoadingIndicationApiCallback
      */
     public void {{gwtphpClientMethodName}}({{#allParams}}{{#fnToWrapper}}{{dataType}}{{/fnToWrapper}} {{paramName}}, {{/allParams}}final ApiCallback<{{#fnJsArray}}{{returnType}}{{/fnJsArray}}> callback) {
         String callUrl = "{{path}}";

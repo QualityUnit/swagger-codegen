@@ -1,0 +1,44 @@
+/**
+ * Copyright 2007 Quality Unit s.r.o.
+ *
+ * Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ * Version 1.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * http://www.qualityunit.com/licenses/license
+ * 
+ */
+
+package {{supportPackage}};
+
+import com.google.gwt.http.client.Header;
+import com.google.gwt.user.client.ui.UIObject;
+
+import com.qualityunit.gpf.client.model.Application;
+
+import java.util.ArrayList;
+
+public abstract class LoadingIndicationApiCallback<T> extends ApiCallback<T> {
+
+    private ArrayList<UIObject> requestWidgets = new ArrayList<UIObject>();
+
+    public LoadingIndicationApiCallback(UIObject... requestWidgets) {
+        for (UIObject requestWidget : requestWidgets) {
+            this.requestWidgets.add(requestWidget);
+        }
+        Application.getContentManager().onDataLoading(this.requestWidgets);
+    }
+
+    public final void onError(int code, String message) {
+        onError(message);
+        Application.getContentManager().onDataCompletion(requestWidgets);
+    }
+
+    public final void onSuccess(int code, Header[] headers, T response) {
+        onSuccess(response);
+        Application.getContentManager().onDataCompletion(requestWidgets);
+    }
+
+    protected abstract void onError(String message);
+
+    protected abstract void onSuccess(T response);
+}
