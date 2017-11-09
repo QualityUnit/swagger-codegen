@@ -247,6 +247,8 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
         supportPackageFolder(), "ApiCallback.java"));
     supportingFiles.add(new SupportingFile("SimpleApiCallback.mustache",
         supportPackageFolder(), "SimpleApiCallback.java"));
+    supportingFiles.add(new SupportingFile("LoadingIndicationApiCallback.mustache",
+        supportPackageFolder(), "LoadingIndicationApiCallback.java"));
     supportingFiles.add(new SupportingFile("ApiClient.mustache",
         supportPackageFolder(), "ApiClient.java"));
     supportingFiles.add(new SupportingFile("ValidationException.mustache",
