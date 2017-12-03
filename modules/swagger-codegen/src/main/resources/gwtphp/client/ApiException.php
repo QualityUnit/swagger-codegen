@@ -34,15 +34,6 @@ class RestApi_Client_ApiException extends Exception {
     }
 
     /**
-     * Gets the HTTP response header
-     *
-     * @return string HTTP response header
-     */
-    public function getResponseHeaders() {
-        return $this->responseHeaders;
-    }
-
-    /**
      * Gets the HTTP body of the server response either as Json or string
      *
      * @return mixed HTTP body of the server response either as Json or string
@@ -52,21 +43,30 @@ class RestApi_Client_ApiException extends Exception {
     }
 
     /**
-     * Sets the deseralized response object (during deserialization)
+     * Gets the HTTP response header
+     *
+     * @return string HTTP response header
+     */
+    public function getResponseHeaders() {
+        return $this->responseHeaders;
+    }
+
+    /**
+     * Gets the deserialized response object (during deserialization)
+     *
+     * @return mixed the deserialized response object
+     */
+    public function getResponseObject() {
+        return $this->responseObject;
+    }
+
+    /**
+     * Sets the deserialized response object (during deserialization)
      *
      * @param mixed $obj Deserialized response object
      * @return void
      */
     public function setResponseObject($obj) {
         $this->responseObject = $obj;
-    }
-
-    /**
-     * Gets the deseralized response object (during deserialization)
-     *
-     * @return mixed the deserialized response object
-     */
-    public function getResponseObject() {
-        return $this->responseObject;
     }
 }

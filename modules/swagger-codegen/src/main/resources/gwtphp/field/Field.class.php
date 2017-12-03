@@ -1,7 +1,6 @@
 <?php
 /**
- *   @copyright Copyright (c) 2016 Quality Unit s.r.o.
- *
+ * @copyright Copyright (c) 2016 Quality Unit s.r.o.
  *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
  *   Version 1.0 (the "License"); you may not use this file except in compliance
  *   with the License. You may obtain a copy of the License at
@@ -13,31 +12,33 @@
  */
 abstract class RestApi_TypeUtils_Field {
 
-    private $value = null;
-    private $defaultValue = null;
+    private $value;
+    private $defaultValue;
 
     /**
      * @param string $type
      * @param mixed $value
      * @param mixed $default
      * @return RestApi_TypeUtils_Field
+     * @throws RestApi_TypeUtils_ParseException
      */
-    public static final function of($type, $value = null, $default = null) {
+    final public static function of($type, $value = null, $default = null) {
         $field = self::resolveType(rtrim($type, '[]'));
-        if(strpos($type, '[]')) {
+        if (strpos($type, '[]')) {
             $field = new ArrayField($field);
         }
-        if($value == null) {
-            if($default != null) {
+        if ($value === null) {
+            if ($default !== null) {
                 $value = $default;
             }
         }
         $field->set($value);
+
         return $field;
     }
 
-    private static final function resolveType($type) {
-        switch($type) {
+    final private static function resolveType($type) {
+        switch ($type) {
             case 'int':
             case 'integer':
                 return new RestApi_TypeUtils_IntField();
@@ -55,34 +56,37 @@ abstract class RestApi_TypeUtils_Field {
         }
     }
 
-    public final function get() {
+    final public function get() {
         return $this->value;
     }
 
     /**
      * @param $value
+     * @throws RestApi_TypeUtils_ParseException
      */
-    public final function set($value) {
-        if($value === null) {
+    final public function set($value) {
+        if ($value === null) {
             $this->value = $this->getDefaultValue();
+
             return;
         }
         $this->value = $this->parse($value);
     }
 
+    final protected function getDefaultValue() {
+        return $this->defaultValue;
+    }
+
     /**
      * Converts specified value to implementation type.
+     *
      * @param mixed $value value to convert
      * @return mixed same value after type conversion
      * @throws RestApi_TypeUtils_ParseException when value cannot be converted
      */
-    protected abstract function parse($value);
+    abstract protected function parse($value);
 
-    protected final function getDefaultValue() {
-        return $this->defaultValue;
-    }
-
-    protected final function setDefaultValue($value) {
+    final protected function setDefaultValue($value) {
         $this->defaultValue = $value;
     }
 }
@@ -103,14 +107,20 @@ class ArrayField extends RestApi_TypeUtils_Field {
         $this->setDefaultValue(array());
     }
 
+    /**
+     * @param mixed $value
+     * @return array
+     * @throws RestApi_TypeUtils_ParseException
+     */
     protected function parse($value) {
-        if(!is_array($value)) {
+        if (!is_array($value)) {
             return array();
         }
         $result = array();
-        foreach($value as $key => $item) {
+        foreach ($value as $key => $item) {
             $result[$key] = $this->type->parse($item);
         }
+
         return $result;
     }
 }
