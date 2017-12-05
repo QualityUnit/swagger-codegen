@@ -1,7 +1,6 @@
 <?php
 /**
- *   @copyright Copyright (c) 2016 Quality Unit s.r.o.
- *
+ * @copyright Copyright (c) 2016 Quality Unit s.r.o.
  *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
  *   Version 1.0 (the "License"); you may not use this file except in compliance
  *   with the License. You may obtain a copy of the License at
@@ -15,15 +14,10 @@
 {{#operations}}class {{apiPackage}}_{{classname}} {
 
     /** @var RestApi_Client_ApiClient instance of the ApiClient */
-    protected $apiClient;
-  
-    function __construct(RestApi_Client_ApiClient $apiClient = null) {
-        if($apiClient !== null) {
-    	    $this->apiClient = $apiClient;
-        } else {
-            $this->apiClient = new RestApi_Client_ApiClient({{apiPackage}}_Config_Default::get());
+    private $apiClient;
 
-        }
+    public function __construct() {
+        $this->apiClient = {{apiPackage}}_ApiClient_Default::getDefaultClient();
     }{{#operation}}
 
     /**
@@ -33,6 +27,7 @@
      *
   {{#allParams}}   * @param {{dataType}} ${{paramName}} {{description}} {{#required}}(required){{/required}}{{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
   {{/allParams}}   * @return array of {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}null{{/returnType}}, HTTP status code, HTTP response headers (array of strings)
+     * @throws \InvalidArgumentException
      * @throws RestApi_Client_ApiException on non-2xx response
      */
     public function {{gwtphpClientMethodName}}({{#allParams}}${{paramName}}{{^required}} = null{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) { {{#allParams}}{{#required}}

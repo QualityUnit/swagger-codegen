@@ -1,0 +1,40 @@
+<?php
+/**
+ * @copyright Copyright (c) 2016 Quality Unit s.r.o.
+ *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
+ *   Version 1.0 (the "License"); you may not use this file except in compliance
+ *   with the License. You may obtain a copy of the License at
+ *   http://www.qualityunit.com/licenses/license
+ */
+
+/**
+ * Auto generated code from swagger api description. DO NOT EDIT !!!!
+ * Codegen version: {{codegenVersion}}
+ */
+
+class {{apiPackage}}_ApiClient_Default  {
+
+    /** @var RestApi_Client_ApiClient */
+    private static $defaultClient;
+
+    /**
+     * @throws RuntimeException
+     */
+    private function __construct() {
+        throw new RuntimeException('This is static class');
+    }
+
+    /**
+     * @return RestApi_Client_ApiClient|null
+     */
+    public static function getDefaultClient() {
+        return self::$defaultClient;
+    }
+
+    /**
+     * @param RestApi_Client_ApiClient $defaultClient
+     */
+    public static function setDefaultClient(RestApi_Client_ApiClient $defaultClient) {
+        self::$defaultClient = $defaultClient;
+    }
+}

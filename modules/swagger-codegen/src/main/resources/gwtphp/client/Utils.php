@@ -1,7 +1,6 @@
 <?php
 /**
- *   @copyright Copyright (c) 2016 Quality Unit s.r.o.
- *
+ * @copyright Copyright (c) 2016 Quality Unit s.r.o.
  *   Licensed under the Quality Unit, s.r.o. Standard End User License Agreement,
  *   Version 1.0 (the "License"); you may not use this file except in compliance
  *   with the License. You may obtain a copy of the License at
@@ -23,82 +22,9 @@ class RestApi_Client_Utils {
     public static function sanitizeFilename($filename) {
         if (preg_match("/.*[\/\\\\](.*)$/", $filename, $match)) {
             return $match[1];
-        } else {
-            return $filename;
         }
-    }
 
-    /**
-     * Take value and turn it into a string suitable for inclusion in
-     * the path, by url-encoding.
-     *
-     * @param string $value a string which will be part of the path
-     * @return string the serialized object
-     */
-    public static function toPathValue($value) {
-        return rawurlencode(self::toString($value));
-    }
-
-    /**
-     * Take value and turn it into a string suitable for inclusion in
-     * the query, by imploding comma-separated if it's an object.
-     * If it's a string, pass through unchanged. It will be url-encoded
-     * later.
-     *
-     * @param mixed $object an object to be serialized to a string
-     * @return string the serialized object
-     */
-    public static function toQueryValue($object) {
-        if (is_array($object)) {
-            return implode(',', $object);
-        } else {
-            return self::toString($object);
-        }
-    }
-
-    /**
-     * Take value and turn it into a string suitable for inclusion in
-     * the header. If it's a string, pass through unchanged
-     * If it's a datetime object, format it in ISO8601
-     *
-     * @param string $value a string which will be part of the header
-     * @return string the header string
-     */
-    public static function toHeaderValue($value) {
-        return self::toString($value);
-    }
-    
-    /**
-     * Take value and turn it into a string suitable for inclusion in
-     * the http body (form parameter). If it's a string, pass through unchanged
-     * If it's a datetime object, format it in ISO8601
-     *
-     * @param string $value the value of the form parameter
-     *
-     * @return string the form string
-     */
-    public static function toFormValue($value) {
-    	if ($value instanceof \SplFileObject) {
-    		return $value->getRealPath();
-    	} else {
-    		return self::toString($value);
-    	}
-    }
-
-    /**
-     * Take value and turn it into a string suitable for inclusion in
-     * the parameter. If it's a string, pass through unchanged
-     * If it's a datetime object, format it in ISO8601
-     *
-     * @param string $value the value of the parameter
-     * @return string the header string
-     */
-    public static function toString($value) {
-        if ($value instanceof DateTime) { // datetime in ISO8601 format
-            return $value->format(DateTime::ATOM);
-        } else {
-            return $value;
-        }
+        return $filename;
     }
 
     /**
@@ -129,5 +55,77 @@ class RestApi_Client_Utils {
             default:
                 return implode(',', $collection);
         }
+    }
+
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the http body (form parameter). If it's a string, pass through unchanged
+     * If it's a datetime object, format it in ISO8601
+     *
+     * @param string $value the value of the form parameter
+     * @return string the form string
+     */
+    public static function toFormValue($value) {
+        if ($value instanceof \SplFileObject) {
+            return $value->getRealPath();
+        }
+
+        return self::toString($value);
+    }
+
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the header. If it's a string, pass through unchanged
+     * If it's a datetime object, format it in ISO8601
+     *
+     * @param string $value a string which will be part of the header
+     * @return string the header string
+     */
+    public static function toHeaderValue($value) {
+        return self::toString($value);
+    }
+
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the path, by url-encoding.
+     *
+     * @param string $value a string which will be part of the path
+     * @return string the serialized object
+     */
+    public static function toPathValue($value) {
+        return rawurlencode(self::toString($value));
+    }
+
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the query, by imploding comma-separated if it's an object.
+     * If it's a string, pass through unchanged. It will be url-encoded
+     * later.
+     *
+     * @param mixed $object an object to be serialized to a string
+     * @return string the serialized object
+     */
+    public static function toQueryValue($object) {
+        if (is_array($object)) {
+            return implode(',', $object);
+        }
+
+        return self::toString($object);
+    }
+
+    /**
+     * Take value and turn it into a string suitable for inclusion in
+     * the parameter. If it's a string, pass through unchanged
+     * If it's a datetime object, format it in ISO8601
+     *
+     * @param string $value the value of the parameter
+     * @return string the header string
+     */
+    public static function toString($value) {
+        if ($value instanceof DateTime) { // datetime in ISO8601 format
+            return $value->format(DateTime::ATOM);
+        }
+
+        return $value;
     }
 }
