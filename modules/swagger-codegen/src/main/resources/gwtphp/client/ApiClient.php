@@ -10,7 +10,7 @@
 /**
  * Auto generated code. DO NOT EDIT !!!!
  */
-abstract class RestApi_Client_ApiClient {
+class RestApi_Client_ApiClient {
 
     public static $PATCH = 'PATCH';
     public static $POST = 'POST';
@@ -19,6 +19,21 @@ abstract class RestApi_Client_ApiClient {
     public static $OPTIONS = 'OPTIONS';
     public static $PUT = 'PUT';
     public static $DELETE = 'DELETE';
+
+    private $accessToken;
+    private $host;
+    private $userAgent = 'PHP-swagger';
+    private $curlTimeout = 30;
+
+    /**
+     * @param string $host
+     * @param string $accessToken
+     */
+    public function __construct($host, $accessToken = null) {
+        $this->host = $host;
+        $this->accessToken = $accessToken;
+    }
+
 
     /**
      * Make the HTTP call (Sync)
@@ -29,19 +44,20 @@ abstract class RestApi_Client_ApiClient {
      * @param mixed $postData empty string or model object to be included in request body
      * @param array $headerParams parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
+     *
      * @throws \InvalidArgumentException
      * @throws RestApi_Client_ApiException on a non 2xx response
      * @return mixed
      */
     public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams,
-            $responseType = null) {
-        if ($this->getHost() === '') {
+        $responseType = null) {
+        if ($this->getHost() == '') {
             throw new InvalidArgumentException('Api client host not specified.');
         }
 
         $headers = array();
 
-        if ($this->getAccessToken() !== '') {
+        if ($this->getAccessToken() != '') {
             $headerParams['apikey'] = $this->getAccessToken();
         }
 
@@ -55,7 +71,7 @@ abstract class RestApi_Client_ApiClient {
         if ($postData and in_array('Content-Type: application/x-www-form-urlencoded', $headers)) {
             $postData = http_build_query($postData);
         } elseif ((is_object($postData) or is_array($postData))
-                and !in_array('Content-Type: multipart/form-data', $headers)) { // json model
+            and !in_array('Content-Type: multipart/form-data', $headers)) { // json model
             $postData = json_encode($postData->getData());
         }
 
@@ -139,8 +155,8 @@ abstract class RestApi_Client_ApiClient {
             }
 
             throw new RestApi_Client_ApiException(
-                    '[' . $response_info['http_code'] . "] Error connecting to the API ($url)",
-                    $response_info['http_code'], $http_header, $data
+                '[' . $response_info['http_code'] . "] Error connecting to the API ($url)",
+                $response_info['http_code'], $http_header, $data
             );
         }
 
@@ -148,29 +164,38 @@ abstract class RestApi_Client_ApiClient {
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    abstract public function getAccessToken();
+    public function getAccessToken() {
+        return $this->accessToken;
+    }
 
     /**
      * @return int
      */
-    abstract public function getCurlTimeout();
+    public function getCurlTimeout() {
+        return $this->curlTimeout;
+    }
 
     /**
      * @return string
      */
-    abstract public function getHost();
+    public function getHost() {
+        return $this->host;
+    }
 
     /**
      * @return string
      */
-    abstract public function getUserAgent();
+    public function getUserAgent() {
+        return $this->userAgent;
+    }
 
     /**
      * Return the header 'Accept' based on an array of Accept provided
      *
      * @param string[] $accept Array of header
+     *
      * @return string Accept (e.g. application/json)
      */
     public function selectHeaderAccept($accept) {
@@ -189,6 +214,7 @@ abstract class RestApi_Client_ApiClient {
      * Return the content type based on an array of content-type provided
      *
      * @param string[] $content_type Array fo content-type
+     *
      * @return string Content-Type (e.g. application/json)
      */
     public function selectHeaderContentType($content_type) {
@@ -204,9 +230,32 @@ abstract class RestApi_Client_ApiClient {
     }
 
     /**
+     * @param int $curlTimeout
+     *
+     * @return RestApi_Client_ApiClient
+     */
+    public function setCurlTimeout($curlTimeout) {
+        $this->curlTimeout = $curlTimeout;
+
+        return $this;
+    }
+
+    /**
+     * @param string $userAgent
+     *
+     * @return RestApi_Client_ApiClient
+     */
+    public function setUserAgent($userAgent) {
+        $this->userAgent = $userAgent;
+
+        return $this;
+    }
+
+    /**
      * Return an array of HTTP response headers
      *
      * @param string $raw_headers A string of raw HTTP response headers
+     *
      * @return string[] Array of HTTP response heaers
      */
     protected function http_parse_headers($raw_headers) {
