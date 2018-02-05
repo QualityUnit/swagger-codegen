@@ -107,6 +107,14 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
       return fragment.toUpperCase();
     }
   }
+  
+  private static class SanitizeVariableNameLambda extends CustomLambda {
+    @Override
+    public String formatFragment(String fragment) {
+      return GwtClientCodegen.sanitizeVariableName(fragment);
+    }
+  }
+  
   private static final String LANGUAGE_NAME = "gwt-client";
 
   private static final String CODEGEN_VERSION = "1.2.1";
@@ -159,6 +167,25 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     typeMapping.put("integer", "int");
   }
 
+  public static String sanitizeVariableName(String name) {
+    name = name.replaceAll("\\+", "PLUS");
+    name = name.replaceAll("\\*", "STAR");
+    name = name.replaceAll("\\?", "QUESTION_MARK");
+    name = name.replaceAll("\\$", "DOLLAR");
+    name = name.replaceAll("-$", "MINUS");
+    name = name.replaceAll("-", "");
+    name = name.replaceAll("!", "EXCLAMATION_MARK");
+    name = name.replaceAll("#", "HASH");
+    name = name.replaceAll("~", "TILDE");
+    name = name.replaceAll("@", "AT");
+    name = name.replaceAll("%", "PERCENT");
+    name = name.replaceAll("&", "AMPERSAND");
+    name = name.replaceAll("=", "EQUAL");
+    name = name.replaceAll(":", "COLON");
+    name = name.replaceAll(";", "SEMICOLON");
+    return name;
+  }
+  
   @Override
   public CodegenOperation fromOperation(String path, String httpMethod,
       Operation operation, Map<String, Model> definitions, Swagger swagger) {
@@ -242,6 +269,7 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("fnCamelize", new CamelizeLambda());
     additionalProperties.put("fnCurly", new CurlyLambda());
     additionalProperties.put("fnToWrapper", new ToWrapperLambda());
+    additionalProperties.put("fnSanitizeVariableName", new SanitizeVariableNameLambda());
 
     supportingFiles.add(new SupportingFile("ApiCallback.mustache",
         supportPackageFolder(), "ApiCallback.java"));

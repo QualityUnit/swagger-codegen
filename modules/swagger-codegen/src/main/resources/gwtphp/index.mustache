@@ -14,6 +14,7 @@
 require '../../scripts/bootstrap_api.php';
 
 $app = new \Slim\Slim();
+$app->contentType('application/json');
 
 try {
     RestApi_Make::init(new {{apiPackage}}_Make());
@@ -28,6 +29,12 @@ try {
     $response->send();
     exit();
 }
+
+$app->notFound(function () use ($app) {
+    $app->halt(404, RestApi_Make::errorMessage(
+            sprintf('Page Not Found. The API method %s could not be found.', $app->request()->getPathInfo())
+    ));
+});
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 /*
  * {{notes}}

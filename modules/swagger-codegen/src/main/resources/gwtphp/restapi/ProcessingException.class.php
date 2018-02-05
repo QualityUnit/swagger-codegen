@@ -34,7 +34,7 @@ class RestApi_ProcessingException extends Exception {
     public function asResult() {
         $result = new RestApi_Result();
         $result->setCode($this->getCode());
-        $result->setBody($this->getMessage());
+        $result->setBody(RestApi_Make::errorMessage($this->getMessage()));
         $result->setHeaders($this->headers);
         return $result;
     }

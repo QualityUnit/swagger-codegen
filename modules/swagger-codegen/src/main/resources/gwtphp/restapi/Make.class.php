@@ -36,6 +36,10 @@ class RestApi_Make {
     public static function error($code = 500, $message = 'Unspecified error.', $cause = null) {
         return self::getInstance()->innerError($code, $message, $cause);
     }
+    
+    public static function errorMessage($message) {
+        return self::getInstance()->errorMessage($message);
+    }
 
     public static function result($body, $code = 200, $headers = array()) {
         return self::getInstance()->innerResult($body, $code, $headers);
