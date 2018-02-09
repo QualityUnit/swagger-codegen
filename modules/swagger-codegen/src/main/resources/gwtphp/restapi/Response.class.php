@@ -22,23 +22,36 @@ class RestApi_Response {
         $this->response = $response;
     }
     
-    public function setResult(RestApi_Result $result) {
-        foreach ($result->getHeaders() as $name => $value) {
-            $this->response->headers()->set($name, $value);
+    /**
+     * @param mixed $object RestApi_Result or json serializable
+     */
+    public function setResult($object) {
+        if ($object instanceof RestApi_Result) {
+            $result = $object;
+        } else {
+            $headers = [];
+            if ($object instanceof RestApi_HasHeaders) {
+                $headers = $object->getHeaders();
+            }
+            $result = RestApi_Make::result(json_encode($object), 200, $headers);
         }
-        $this->response->setStatus($result->getCode());
-        $this->response->setBody($result->getBody());
+        
+        $this->fillResponse($result);
     }
     
     public function setError(Exception $error) {
-        if($error instanceof RestApi_TypeUtils_ParseException) {
-            $error = RestApi_Make::error(400, "Invalid field "
-                    . $error->getFieldName() . ": " . $error->getMessage());
-        } else if(!($error instanceof RestApi_ProcessingException)) {
-            $error = RestApi_Make::error(500, "Internal server error: "
-                    . $error->getMessage());
+        $code = 500;
+        $message = "Internal server error: {$error->getMessage()}";
+        $headers = [];
+        if ($error instanceof RestApi_ProcessingException) {
+            $code = $error->getCode();
+            $headers = $error->getHeaders();
+        } else if ($error instanceof RestApi_TypeUtils_ParseException) {
+            $code = 400;
+            $message = "Invalid field {$error->getFieldName()}: {$error->getMessage()}";
         }
-        $this->setResult($error->asResult());
+        
+        $this->fillResponse(RestApi_Make::errorResult($code, $message, $error, $headers));
     }
     
     public function send() {
@@ -46,5 +59,13 @@ class RestApi_Response {
             header("$name: $value", true, $this->response->getStatus());
         }
         echo $this->response->getBody();
+    }
+    
+    private function fillResponse(RestApi_Result $result) {
+        foreach ($result->getHeaders() as $name => $value) {
+            $this->response->headers()->set($name, $value);
+        }
+        $this->response->setStatus($result->getCode());
+        $this->response->setBody($result->getBody());
     }
 }

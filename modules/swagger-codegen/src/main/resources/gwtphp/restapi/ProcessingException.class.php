@@ -11,31 +11,19 @@
 /**
  * Auto generated code. DO NOT EDIT !!!!
  */
-class RestApi_ProcessingException extends Exception {
+class RestApi_ProcessingException extends Exception implements RestApi_HasHeaders {
 
-    private $headers = array();
-
+    use RestApi_HeadersTrait;
+    
     public function __construct($code, $message, $cause = null) {
         parent::__construct($message, $code, $cause);
-    }
-
-    public function getHeaders() {
-        return $this->headers;
-    }
-
-    public function setHeader($name, $value) {
-        $this->headers[$name] = $value;
-    }
-
-    public function removeHeader($name) {
-        unset($this->headers[$name]);
     }
 
     public function asResult() {
         $result = new RestApi_Result();
         $result->setCode($this->getCode());
-        $result->setBody(RestApi_Make::errorMessage($this->getMessage()));
-        $result->setHeaders($this->headers);
+        $result->setBody($this->getMessage());
+        $result->setHeaders($this->getHeaders());
         return $result;
     }
 }

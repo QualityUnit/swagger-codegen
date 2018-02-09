@@ -13,7 +13,9 @@
  * Auto generated code from swagger api description. DO NOT EDIT !!!!
  * Codegen version: {{codegenVersion}}
  */
-class {{modelPackage}}_{{classname}} {
+class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHeaders {
+
+	use RestApi_HeadersTrait;
 
     {{#vars}}const {{#fnUpperCase}}{{name}}{{/fnUpperCase}} = '{{name}}';{{#hasMore}}
     {{/hasMore}}{{/vars}}
@@ -56,6 +58,10 @@ class {{modelPackage}}_{{classname}} {
             }
         }
         return $result;
+    }
+    
+    public function jsonSerialize() {
+        return $this->getData();
     }
 {{#vars}}
     /**

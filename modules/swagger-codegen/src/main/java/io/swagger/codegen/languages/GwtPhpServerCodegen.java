@@ -301,6 +301,8 @@ public class GwtPhpServerCodegen extends DefaultCodegen
         {"restapi/", "", "Auth.class.php"},
         {"restapi/", "", "Params.class.php"},
         {"restapi/", "", "ProcessingException.class.php"},
+        {"restapi/", "", "HasHeaders.class.php"},
+        {"restapi/", "", "HeadersTrait.class.php"},
         {"restapi/", "", "Response.class.php"},
         {"restapi/", "", "Make.class.php"},
         {"restapi/", "", "Result.class.php"},

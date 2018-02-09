@@ -31,14 +31,20 @@ class RestApi_Make {
      * @param int $code
      * @param string $message
      * @param Exception $cause
-     * @return RestApi_ProcessingException
+     * @return RestApi_Result
      */
     public static function error($code = 500, $message = 'Unspecified error.', $cause = null) {
         return self::getInstance()->innerError($code, $message, $cause);
     }
-    
-    public static function errorMessage($message) {
-        return self::getInstance()->errorMessage($message);
+
+    /**
+     * @param int $code
+     * @param string $message
+     * @param Exception $cause
+     * @return RestApi_Result
+     */
+    public static function errorResult($code = 500, $message = 'Unspecified error.', $cause = null, $headers = []) {
+        return self::getInstance()->innerErrorResult($code, $message, $cause, $headers);
     }
 
     public static function result($body, $code = 200, $headers = array()) {
@@ -68,6 +74,21 @@ class RestApi_Make {
      */
     protected function innerOkResult() {
         return RestApi_Make::result(new stdClass());
+    }
+
+    /**
+     * @param int $code
+     * @param mixed $object json encodable body
+     * @param Exception $cause
+     * @return RestApi_ProcessingException
+     */
+    protected function innerErrorResult($code, $object, $cause = null, $headers = []) {
+        $result = new RestApi_Result();
+        $result->setCode($code);
+        $result->setBody(json_encode($object));
+        $this->initHeaders($headers);
+        $result->setHeaders($headers);
+        return $result;
     }
 
     /**

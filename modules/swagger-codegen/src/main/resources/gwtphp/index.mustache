@@ -31,9 +31,10 @@ try {
 }
 
 $app->notFound(function () use ($app) {
-    $app->halt(404, RestApi_Make::errorMessage(
+    echo RestApi_Make::errorResult(
+            0, // not used
             sprintf('Page Not Found. The API method %s could not be found.', $app->request()->getPathInfo())
-    ));
+    )->getBody();
 });
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 /*
