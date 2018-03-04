@@ -47,7 +47,7 @@ class RestApi_Response {
             $code = $error->getCode();
             $headers = $error->getHeaders();
             $message = $error->getMessage();
-        } else if ($error instanceof RestApi_TypeUtils_ParseException) {
+        } else if ($error instanceof RestApi_FieldValidityException) {
             $code = 400;
             $message = "Invalid field {$error->getFieldName()}: {$error->getMessage()}";
         }

@@ -15,7 +15,7 @@
  */
 class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHeaders {
 
-	use RestApi_HeadersTrait;
+    use RestApi_HeadersTrait;
 
     {{#vars}}const {{#fnUpperCase}}{{name}}{{/fnUpperCase}} = '{{name}}';{{#hasMore}}
     {{/hasMore}}{{/vars}}
@@ -31,18 +31,17 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
     /**
      * Constructor
      * @param mixed[] $data Associated array of property value initalizing the model
-     * @throws RestApi_TypeUtils_ParseException
+     * @throws RestApi_FieldValidityException
      */
     public function __construct($data = null) {
         if ($data === null || !is_array($data)) {
             $data = [];
         }
-        foreach (self::$fieldTypes as $name => $info) {
+        foreach (self::$fieldTypes as $fieldName => $info) {
             try {
-                $this->data[$name] = RestApi_TypeUtils_Field::of($info[0], @$data[$name], @$info[1]);
+                $this->data[$fieldName] = RestApi_TypeUtils_Field::of($info[0], @$data[$fieldName], @$info[1]);
             } catch (RestApi_TypeUtils_ParseException $e) {
-                $e->setFieldName($name);
-                throw $e;
+                throw new RestApi_FieldValidityException($fieldName, $e->getMessage())
             }
         }
     }
@@ -52,9 +51,9 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
      */
     public function getData() {
         $result = [];
-        foreach($this->data as $name => $field) {
+        foreach($this->data as $fieldName => $field) {
             if($field->get() !== null) {
-                $result[$name] = $field->get();
+                $result[$fieldName] = $field->get();
             }
         }
         return $result;
@@ -86,7 +85,6 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
      * Sets {{name}}
      * @param {{datatype}} ${{name}} {{#description}}{{{description}}}{{/description}}
      * @return $this
-     * @throws RestApi_TypeUtils_ParseException
      * @throws \InvalidArgumentException
      */
     public function {{setter}}({{^isContainer}}{{^isPrimitiveType}}{{datatype}} {{/isPrimitiveType}}{{/isContainer}}{{#isContainer}}array {{/isContainer}}${{name}}) { {{#isEnum}}
@@ -99,9 +97,13 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
         foreach (${{name}} as $item) {
             $data[] = $item->getData();
         }
-        $this->data['{{name}}']->set($data);{{/isPrimitiveType}}{{#isPrimitiveType}}
-        $this->data['{{name}}']->set(${{name}});{{/isPrimitiveType}}{{/isContainer}}{{^isContainer}}
-        $this->data['{{name}}']->set(${{name}}{{^isPrimitiveType}}->getData(){{/isPrimitiveType}});{{/isContainer}}
+        try {
+            $this->data['{{name}}']->set($data);{{/isPrimitiveType}}{{#isPrimitiveType}}
+            $this->data['{{name}}']->set(${{name}});{{/isPrimitiveType}}{{/isContainer}}{{^isContainer}}
+            $this->data['{{name}}']->set(${{name}}{{^isPrimitiveType}}->getData(){{/isPrimitiveType}});{{/isContainer}}
+        } catch (RestApi_TypeUtils_ParseException $e) {
+            throw new \InvalidArgumentException($e->getMessage())
+        }
         return $this;
     }
 {{/vars}}

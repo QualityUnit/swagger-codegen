@@ -28,36 +28,35 @@ class RestApi_Params {
     }
 
     /**
-     * @param string $name
+     * @param string $fieldName
      * @param bool $required
      * @param string $defaultValue
      * @param string $type
      * @param string[] $allowedValues
      *
+     * @throws RestApi_FieldValidityException
      * @throws RestApi_ProcessingException
-     * @throws RestApi_TypeUtils_ParseException
      */
-    public function check($name, $required, $defaultValue, $type, array $allowedValues = []) {
-        $this->defaultValues[$name] = $defaultValue;
-        $value = $this->get($name);
+    public function check($fieldName, $required, $defaultValue, $type, array $allowedValues = []) {
+        $this->defaultValues[$fieldName] = $defaultValue;
+        $value = $this->get($fieldName);
         if($value === '') {
             if($required) {
-                throw new RestApi_ProcessingException(400, sprintf('Param %s is required', $name));
-            } else {
-                // not required, no need to type check
-                return;
+                throw new RestApi_ProcessingException(400, sprintf('Param %s is required', $fieldName));
             }
+
+            // not required, no need to type check
+            return;
         }
         if (count($allowedValues) > 0 && !in_array($value, $allowedValues, true)) {
             throw new RestApi_ProcessingException(400,
-                sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues))
+                sprintf('Only following values are allowed for %s: %s', $fieldName, implode(',', $allowedValues))
             );
         }
         try {
-            RestApi_TypeUtils_Field::of($type, $this->get($name));
+            RestApi_TypeUtils_Field::of($type, $this->get($fieldName));
         } catch (RestApi_TypeUtils_ParseException $e) {
-            $e->setFieldName($name);
-            throw $e;
+            throw new RestApi_FieldValidityException($fieldName, $e->getMessage());
         }
     }
 
