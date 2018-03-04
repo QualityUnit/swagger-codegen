@@ -31,7 +31,7 @@ class RestApi_Make {
      * @param int $code
      * @param string $message
      * @param Exception $cause
-     * @return RestApi_Result
+     * @return RestApi_ProcessingException
      */
     public static function error($code = 500, $message = 'Unspecified error.', $cause = null) {
         return self::getInstance()->innerError($code, $message, $cause);
@@ -41,6 +41,8 @@ class RestApi_Make {
      * @param int $code
      * @param string $message
      * @param Exception $cause
+     * @param string[] $headers
+     *
      * @return RestApi_Result
      */
     public static function errorResult($code = 500, $message = 'Unspecified error.', $cause = null, $headers = []) {
@@ -80,7 +82,9 @@ class RestApi_Make {
      * @param int $code
      * @param mixed $object json encodable body
      * @param Exception $cause
-     * @return RestApi_ProcessingException
+     * @param string[] $headers
+     *
+     * @return RestApi_Result
      */
     protected function innerErrorResult($code, $object, $cause = null, $headers = []) {
         $result = new RestApi_Result();

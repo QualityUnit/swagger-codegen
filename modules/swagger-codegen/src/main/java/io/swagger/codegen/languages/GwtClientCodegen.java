@@ -173,14 +173,14 @@ public class GwtClientCodegen extends DefaultCodegen implements CodegenConfig {
     name = name.replaceAll("\\?", "QUESTION_MARK");
     name = name.replaceAll("\\$", "DOLLAR");
     name = name.replaceAll("-$", "MINUS");
-    name = name.replaceAll("-", "");
+    name = name.replaceAll("-", "_");
     name = name.replaceAll("!", "EXCLAMATION_MARK");
     name = name.replaceAll("#", "HASH");
     name = name.replaceAll("~", "TILDE");
     name = name.replaceAll("@", "AT");
     name = name.replaceAll("%", "PERCENT");
     name = name.replaceAll("&", "AMPERSAND");
-    name = name.replaceAll("=", "EQUAL");
+    name = name.replaceAll("=", "EQUALS");
     name = name.replaceAll(":", "COLON");
     name = name.replaceAll(";", "SEMICOLON");
     return name;

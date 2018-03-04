@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Auto generated code. DO NOT EDIT !!!!
+ */
 trait RestApi_HeadersTrait {
     
     private $headers = [];
