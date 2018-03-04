@@ -12,17 +12,29 @@
  */
 class RestApi_TypeUtils_ParseException extends Exception {
 
+    /** @var string */
     private $fieldName;
 
-    public function __construct($type, $value, $fieldName = null) {
+    /**
+     * @param string $type
+     * @param string $value
+     * @param string $fieldName
+     */
+    public function __construct($type, $value, $fieldName = '_unset_') {
         parent::__construct("Unable to convert '" . $value . "' to " . $type . '.', 403);
         $this->fieldName = $fieldName;
     }
 
+    /**
+     * @return string
+     */
     public function getFieldName() {
         return $this->fieldName;
     }
 
+    /**
+     * @param string $fieldName
+     */
     public function setFieldName($fieldName) {
         $this->fieldName = $fieldName;
     }

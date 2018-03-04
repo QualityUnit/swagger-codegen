@@ -11,8 +11,8 @@
  * Auto generated code. DO NOT EDIT !!!!
  */
 class RestApi_TypeUtils_BoolField extends RestApi_TypeUtils_Field {
-    private static $true = array('true', 'y');
-    private static $false = array('false', 'n', '');
+    private static $true = ['true', 'y'];
+    private static $false = ['false', 'n', ''];
 
     /**
      * @param mixed $value

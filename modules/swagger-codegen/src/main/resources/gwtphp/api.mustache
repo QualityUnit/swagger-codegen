@@ -36,14 +36,14 @@
         }{{/required}}{{/allParams}}
         $resourcePath = "{{path}}";
         $httpBody = '';
-        $queryParams = array();
-        $headerParams = array();
-        $formParams = array();
-        $_header_accept = $this->apiClient->selectHeaderAccept(array({{#produces}}'{{mediaType}}'{{#hasMore}}, {{/hasMore}}{{/produces}}));
+        $queryParams = [];
+        $headerParams = [];
+        $formParams = [];
+        $_header_accept = $this->apiClient->selectHeaderAccept([{{#produces}}'{{mediaType}}'{{#hasMore}}, {{/hasMore}}{{/produces}}]);
         if (!is_null($_header_accept)) {
             $headerParams['Accept'] = $_header_accept;
         }
-        $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType(array({{#consumes}}'{{mediaType}}'{{#hasMore}},{{/hasMore}}{{/consumes}}));
+        $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType([{{#consumes}}'{{mediaType}}'{{#hasMore}},{{/hasMore}}{{/consumes}}]);
         {{#queryParams}}{{#collectionFormat}}
         if (is_array(${{paramName}})) {
             ${{paramName}} = RestApi_Client_Utils::serializeCollection(${{paramName}}, '{{collectionFormat}}', true);
@@ -98,20 +98,20 @@
                 $headerParams{{#returnType}}, '{{returnType}}'{{/returnType}}
             );{{#returnType}}
             if (!is_array($response) && !$response) {
-                return array(null, $statusCode, $httpHeader);
+                return [null, $statusCode, $httpHeader];
             }{{#isListContainer}}
-            $responseObject = array();
+            $responseObject = [];
             foreach($response as $item) {
                 $responseObject[] = new {{#fnItemType}}{{returnType}}{{/fnItemType}}($item);
             }
-            return array($responseObject, $statusCode, $httpHeader);{{/isListContainer}}{{^isListContainer}}{{#returnTypeIsPrimitive}}
-            return array($response, $statusCode, $httpHeader);{{/returnTypeIsPrimitive}}{{^returnTypeIsPrimitive}}
-            return array(new {{returnType}}($response), $statusCode, $httpHeader);{{/returnTypeIsPrimitive}}{{/isListContainer}}{{/returnType}}{{^returnType}}
-            return array(null, $statusCode, $httpHeader);{{/returnType}}
+            return [$responseObject, $statusCode, $httpHeader];{{/isListContainer}}{{^isListContainer}}{{#returnTypeIsPrimitive}}
+            return [$response, $statusCode, $httpHeader];{{/returnTypeIsPrimitive}}{{^returnTypeIsPrimitive}}
+            return [new {{returnType}}($response), $statusCode, $httpHeader];{{/returnTypeIsPrimitive}}{{/isListContainer}}{{/returnType}}{{^returnType}}
+            return [null, $statusCode, $httpHeader];{{/returnType}}
         } catch (RestApi_Client_ApiException $e) {
             switch ($e->getCode()) { {{#responses}}{{#dataType}}
             {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}{{^simpleType}}
-                $data = array();
+                $data = [];
                 foreach($e->getResponseBody() as $item) {
                     $data[] = new {{#fnItemType}}{{dataType}}{{/fnItemType}}($item);
                 }

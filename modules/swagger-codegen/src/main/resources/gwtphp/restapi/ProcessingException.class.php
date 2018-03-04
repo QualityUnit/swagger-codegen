@@ -19,6 +19,9 @@ class RestApi_ProcessingException extends Exception implements RestApi_HasHeader
         parent::__construct($message, $code, $cause);
     }
 
+    /**
+     * @return RestApi_Result
+     */
     public function asResult() {
         $result = new RestApi_Result();
         $result->setCode($this->getCode());

@@ -19,27 +19,39 @@ class RestApi_Params {
      * @var \Slim\Http\Request
      */
     private $request;
-    private $defaultValues = array();
+    private $defaultValues = [];
     private $scopes;
     
-    public function __construct(\Slim\Http\Request $request, array $scopes = array()) {
+    public function __construct(\Slim\Http\Request $request, array $scopes = []) {
         $this->request = $request;
         $this->scopes = $scopes;
     }
 
-    public function check($name, $required, $defaultValue, $type, array $allowedValues = null) {
+    /**
+     * @param string $name
+     * @param bool $required
+     * @param string $defaultValue
+     * @param string $type
+     * @param string[] $allowedValues
+     *
+     * @throws RestApi_ProcessingException
+     * @throws RestApi_TypeUtils_ParseException
+     */
+    public function check($name, $required, $defaultValue, $type, array $allowedValues = []) {
         $this->defaultValues[$name] = $defaultValue;
         $value = $this->get($name);
-        if($value == '') {
+        if($value === '') {
             if($required) {
-                throw RestApi_Make::error(400, sprintf('Param %s is required', $name));
+                throw new RestApi_ProcessingException(400, sprintf('Param %s is required', $name));
             } else {
                 // not required, no need to type check
                 return;
             }
         }
-        if ($allowedValues !== null && !in_array($value, $allowedValues)) {
-            throw RestApi_Make::error(400, sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues)));
+        if (count($allowedValues) > 0 && !in_array($value, $allowedValues, true)) {
+            throw new RestApi_ProcessingException(400,
+                sprintf('Only following values are allowed for %s: %s', $name, implode(',', $allowedValues))
+            );
         }
         try {
             RestApi_TypeUtils_Field::of($type, $this->get($name));
@@ -49,6 +61,11 @@ class RestApi_Params {
         }
     }
 
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
     public function wasProvided($name) {
         $value = $this->request->get($name);
         if ($value === null) {
@@ -56,7 +73,12 @@ class RestApi_Params {
         }
         return $value !== null;
     }
-    
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
     public function get($name) {
         $value = $this->request->get($name);
         if ($value === null) {
@@ -65,22 +87,30 @@ class RestApi_Params {
         if ($value === null) {
             $value = @$this->defaultValues[$name];
         }
-        return $value;
+        return $value ?: '';
     }
-    
+
+    /**
+     * @return mixed
+     */
     public function getBody() {
         $body = $this->request->getBody();
         if ($body == '') {
-            return array();
+            return [];
         }
         return json_decode($body, true);
     }
-    
+
+    /**
+     * @param bool $includeOwn
+     *
+     * @return string[]
+     */
     public function getScopes($includeOwn = true) {
         if ($includeOwn) {
             return $this->scopes;
         }
-        $scopes = array();
+        $scopes = [];
         foreach ($this->scopes as $scope) {
             if (substr($scope, -strlen(self::OWN_SCOPE_SUFFIX)) === self::OWN_SCOPE_SUFFIX) {
                 continue;
