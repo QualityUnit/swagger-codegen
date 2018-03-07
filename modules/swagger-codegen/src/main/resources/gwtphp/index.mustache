@@ -44,7 +44,7 @@ $app->{{#fnLowerCase}}{{httpMethod}}{{/fnLowerCase}}('{{#fnSlimPath}}{{path}}{{/
     $params = new RestApi_Params($app->request(){{#authMethods}}, [{{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}]{{/authMethods}});
     $response = new RestApi_Response($app->response());
     try { {{#allParams}}{{^isPathParam}}{{^isBodyParam}}
-        $params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}[{{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]{{/isEnum}}{{^isEnum}}null{{/isEnum}});{{/isBodyParam}}{{/isPathParam}}{{/allParams}}{{#authMethods}}{{#isOAuth}}
+        $params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}[{{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]{{/isEnum}}{{^isEnum}}[]{{/isEnum}});{{/isBodyParam}}{{/isPathParam}}{{/allParams}}{{#authMethods}}{{#isOAuth}}
         $auth->checkScope($params->getScopes());{{/isOAuth}}{{/authMethods}}{{#bodyParam}}{{^dataType}}
         $data = $params->getBody(){{/dataType}}{{#dataType}}
         $data = new {{dataType}}($params->getBody());

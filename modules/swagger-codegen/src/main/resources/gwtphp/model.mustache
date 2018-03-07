@@ -41,7 +41,7 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
             try {
                 $this->data[$fieldName] = RestApi_TypeUtils_Field::of($info[0], @$data[$fieldName], @$info[1]);
             } catch (RestApi_TypeUtils_ParseException $e) {
-                throw new RestApi_FieldValidityException($fieldName, $e->getMessage())
+                throw new RestApi_FieldValidityException($fieldName, $e->getMessage());
             }
         }
     }
@@ -97,12 +97,13 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
         foreach (${{name}} as $item) {
             $data[] = $item->getData();
         }
-        try {
+        {{/isPrimitiveType}}{{/isContainer}}
+        try { {{#isContainer}}{{^isPrimitiveType}}
             $this->data['{{name}}']->set($data);{{/isPrimitiveType}}{{#isPrimitiveType}}
             $this->data['{{name}}']->set(${{name}});{{/isPrimitiveType}}{{/isContainer}}{{^isContainer}}
             $this->data['{{name}}']->set(${{name}}{{^isPrimitiveType}}->getData(){{/isPrimitiveType}});{{/isContainer}}
         } catch (RestApi_TypeUtils_ParseException $e) {
-            throw new \InvalidArgumentException($e->getMessage())
+            throw new \InvalidArgumentException($e->getMessage());
         }
         return $this;
     }
