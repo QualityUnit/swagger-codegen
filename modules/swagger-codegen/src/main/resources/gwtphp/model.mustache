@@ -21,7 +21,8 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
     {{/hasMore}}{{/vars}}
 
     private static $fieldTypes = [{{#vars}}
-            '{{name}}' => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}]{{#hasMore}},{{/hasMore}}{{/vars}}];
+            '{{name}}' => ['{{#isPrimitiveType}}{{datatype}}{{/isPrimitiveType}}{{^isPrimitiveType}}mixed[]{{/isPrimitiveType}}'{{#hasDefaultValue}}, {{{defaultValue}}}{{/hasDefaultValue}}]{{#hasMore}},{{/hasMore}}{{/vars}}
+    ];
 
     /**
      * @var RestApi_TypeUtils_Field[]
