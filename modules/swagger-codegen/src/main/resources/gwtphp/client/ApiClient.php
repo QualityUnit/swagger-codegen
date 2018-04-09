@@ -55,7 +55,7 @@ class RestApi_Client_ApiClient {
             throw new InvalidArgumentException('Api client host not specified.');
         }
 
-        $headers = array();
+        $headers = [];
 
         if ($this->getAccessToken() != '') {
             $headerParams['apikey'] = $this->getAccessToken();
@@ -141,7 +141,7 @@ class RestApi_Client_ApiClient {
         if ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299) {
             // return raw body if response is a file
             if ($responseType === 'file' || $responseType === 'string') {
-                return array($http_body, $response_info['http_code'], $http_header);
+                return [$http_body, $response_info['http_code'], $http_header];
             }
 
             $data = json_decode($http_body, true);
@@ -160,7 +160,7 @@ class RestApi_Client_ApiClient {
             );
         }
 
-        return array($data, $response_info['http_code'], $http_header);
+        return [$data, $response_info['http_code'], $http_header];
     }
 
     /**
@@ -260,7 +260,7 @@ class RestApi_Client_ApiClient {
      */
     protected function http_parse_headers($raw_headers) {
         // ref/credit: http://php.net/manual/en/function.http-parse-headers.php#112986
-        $headers = array();
+        $headers = [];
         $key = '';
 
         foreach (explode("\n", $raw_headers) as $h) {
@@ -270,14 +270,14 @@ class RestApi_Client_ApiClient {
                 if (!isset($headers[$h[0]])) {
                     $headers[$h[0]] = trim($h[1]);
                 } elseif (is_array($headers[$h[0]])) {
-                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+                    $headers[$h[0]] = array_merge($headers[$h[0]], [trim($h[1])]);
                 } else {
-                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                    $headers[$h[0]] = array_merge([$headers[$h[0]]], [trim($h[1])]);
                 }
 
                 $key = $h[0];
             } else {
-                if (substr($h[0], 0, 1) == "\t") {
+                if (substr($h[0], 0, 1) === "\t") {
                     $headers[$key] .= "\r\n\t" . trim($h[0]);
                 } elseif (!$key) {
                     $headers[0] = trim($h[0]);

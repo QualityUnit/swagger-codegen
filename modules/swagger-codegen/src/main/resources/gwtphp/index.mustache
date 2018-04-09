@@ -14,6 +14,7 @@
 require '../../scripts/bootstrap_api.php';
 
 $app = new \Slim\Slim();
+$app->contentType('application/json');
 
 try {
     RestApi_Make::init(new {{apiPackage}}_Make());
@@ -28,15 +29,22 @@ try {
     $response->send();
     exit();
 }
+
+$app->notFound(function () use ($app) {
+    echo RestApi_Make::errorResult(
+            0, // not used
+            sprintf('Page Not Found. The API method %s could not be found.', $app->request()->getPathInfo())
+    )->getBody();
+});
 {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
 /*
  * {{notes}}
  */
 $app->{{#fnLowerCase}}{{httpMethod}}{{/fnLowerCase}}('{{#fnSlimPath}}{{path}}{{/fnSlimPath}}', function ({{#pathParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}) use ($app, $auth) {
-    $params = new RestApi_Params($app->request(){{#authMethods}}, array({{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}){{/authMethods}});
+    $params = new RestApi_Params($app->request(){{#authMethods}}, [{{#scopes}}'{{scope}}'{{#hasMore}}, {{/hasMore}}{{/scopes}}]{{/authMethods}});
     $response = new RestApi_Response($app->response());
     try { {{#allParams}}{{^isPathParam}}{{^isBodyParam}}
-        $params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}array({{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}){{/isEnum}}{{^isEnum}}null{{/isEnum}});{{/isBodyParam}}{{/isPathParam}}{{/allParams}}{{#authMethods}}{{#isOAuth}}
+        $params->check('{{paramName}}', {{#required}}true{{/required}}{{^required}}false{{/required}}, '{{defaultValue}}', '{{dataType}}', {{#isEnum}}[{{#allowableValues}}{{#values}}'{{.}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]{{/isEnum}}{{^isEnum}}[]{{/isEnum}});{{/isBodyParam}}{{/isPathParam}}{{/allParams}}{{#authMethods}}{{#isOAuth}}
         $auth->checkScope($params->getScopes());{{/isOAuth}}{{/authMethods}}{{#bodyParam}}{{^dataType}}
         $data = $params->getBody(){{/dataType}}{{#dataType}}
         $data = new {{dataType}}($params->getBody());

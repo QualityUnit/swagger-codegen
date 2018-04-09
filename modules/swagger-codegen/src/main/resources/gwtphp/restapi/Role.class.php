@@ -13,16 +13,28 @@
  */
 class RestApi_Role {
 
-    private $privileges = array();
+    /** @var string[] */
+    private $privileges = [];
 
-    protected function addPrivilege($name) {
-        $this->privileges[$name] = true;
+    /**
+     * @param string $privilegeName
+     */
+    protected function addPrivilege($privilegeName) {
+        $this->privileges[$privilegeName] = true;
     }
 
-    public function hasPrivilege($name) {
-        return array_key_exists($name, $this->privileges);
+    /**
+     * @param string $privilegeName
+     *
+     * @return bool
+     */
+    public function hasPrivilege($privilegeName) {
+        return array_key_exists($privilegeName, $this->privileges);
     }
-    
+
+    /**
+     * @return string[]
+     */
     public function getPrivileges() {
     	return array_keys($this->privileges);
     }

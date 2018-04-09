@@ -22,7 +22,7 @@ import {{supportPackage}}.ValidationException;
  */
 public class {{classname}} extends JavaScriptObject {
 {{#vars}}{{#isEnum}}{{#allowableValues}}{{#values}}
-    public static final String {{#fnUpperCase}}{{name}}_{{{this}}}{{/fnUpperCase}} = "{{{this}}}";{{/values}}{{/allowableValues}}{{/isEnum}}{{/vars}}
+    public static final String {{#fnUpperCase}}{{name}}_{{#fnSanitizeVariableName}}{{{this}}}{{/fnSanitizeVariableName}}{{/fnUpperCase}} = "{{{this}}}";{{/values}}{{/allowableValues}}{{/isEnum}}{{/vars}}
 
     public static {{classname}} create() {
         return JavaScriptObject.createObject().cast();

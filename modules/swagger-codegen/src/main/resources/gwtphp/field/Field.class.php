@@ -104,7 +104,7 @@ class ArrayField extends RestApi_TypeUtils_Field {
 
     public function __construct(RestApi_TypeUtils_Field $type) {
         $this->type = $type;
-        $this->setDefaultValue(array());
+        $this->setDefaultValue([]);
     }
 
     /**
@@ -114,9 +114,9 @@ class ArrayField extends RestApi_TypeUtils_Field {
      */
     protected function parse($value) {
         if (!is_array($value)) {
-            return array();
+            return [];
         }
-        $result = array();
+        $result = [];
         foreach ($value as $key => $item) {
             $result[$key] = $this->type->parse($item);
         }

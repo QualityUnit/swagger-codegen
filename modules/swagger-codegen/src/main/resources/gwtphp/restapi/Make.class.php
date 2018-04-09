@@ -28,35 +28,59 @@ class RestApi_Make {
     }
 
     /**
+     * @deprecated use ProcessingException itself instead
+     * @see \RestApi_ProcessingException::__construct()
+     *
      * @param int $code
      * @param string $message
      * @param Exception $cause
+     *
      * @return RestApi_ProcessingException
      */
     public static function error($code = 500, $message = 'Unspecified error.', $cause = null) {
         return self::getInstance()->innerError($code, $message, $cause);
     }
 
-    public static function result($body, $code = 200, $headers = array()) {
+    /**
+     * @param int $code
+     * @param string $message
+     * @param Exception $cause
+     * @param string[] $headers
+     *
+     * @return RestApi_Result
+     */
+    public static function errorResult($code = 500, $message = 'Unspecified error.', $cause = null, $headers = []) {
+        return self::getInstance()->innerErrorResult($code, $message, $cause, $headers);
+    }
+
+    /**
+     * @param mixed $body
+     * @param int $code
+     * @param string[] $headers
+     *
+     * @return RestApi_Result
+     */
+    public static function result($body, $code = 200, $headers = []) {
         return self::getInstance()->innerResult($body, $code, $headers);
     }
-    
+
     public static function run(\Slim\Slim $app) {
-    	return self::getInstance()->innerRun($app);
+        return self::getInstance()->innerRun($app);
     }
 
     /**
      * @return RestApi_Make
      */
     private static function getInstance() {
-        if(self::$instance == null) {
+        if (self::$instance == null) {
             self::init(new RestApi_Make());
         }
+
         return self::$instance;
     }
-    
+
     protected function innerRun(\Slim\Slim $app) {
-    	$app->run();
+        $app->run();
     }
 
     /**
@@ -68,8 +92,27 @@ class RestApi_Make {
 
     /**
      * @param int $code
+     * @param mixed $object json encodable body
+     * @param Exception $cause
+     * @param string[] $headers
+     *
+     * @return RestApi_Result
+     */
+    protected function innerErrorResult($code, $object, $cause = null, $headers = []) {
+        $result = new RestApi_Result();
+        $result->setCode($code);
+        $result->setBody(json_encode($object));
+        $this->initHeaders($headers);
+        $result->setHeaders($headers);
+
+        return $result;
+    }
+
+    /**
+     * @param int $code
      * @param string $message
      * @param Exception $cause
+     *
      * @return RestApi_ProcessingException
      */
     protected function innerError($code, $message, $cause) {
@@ -79,6 +122,7 @@ class RestApi_Make {
         foreach ($headers as $header => $value) {
             $exception->setHeader($header, $value);
         }
+
         return $exception;
     }
 
@@ -86,6 +130,7 @@ class RestApi_Make {
      * @param mixed $body
      * @param int $code
      * @param string[] $headers
+     *
      * @return RestApi_Result
      */
     protected function innerResult($body, $code, $headers) {
@@ -94,6 +139,7 @@ class RestApi_Make {
         $result->setBody(json_encode($body));
         $this->initHeaders($headers);
         $result->setHeaders($headers);
+
         return $result;
     }
 
@@ -104,14 +150,14 @@ class RestApi_Make {
     }
 
     protected function initContentHeaders(array &$headers) {
-        if(isset($headers['Content-Type'])) {
+        if (isset($headers['Content-Type'])) {
             return;
         }
         $headers['Content-Type'] = 'application/json; charset=utf-8';
     }
 
     protected function initCacheHeaders(array &$headers) {
-        if(isset($headers['Cache-Control']) || isset($headers['Pragma']) || isset($headers['Expired'])) {
+        if (isset($headers['Cache-Control']) || isset($headers['Pragma']) || isset($headers['Expired'])) {
             return;
         }
         $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
@@ -120,7 +166,7 @@ class RestApi_Make {
     }
 
     protected function initAccessControlHeaders(array &$headers) {
-        if(isset($headers['Access-Control-Allow-Origin'])) {
+        if (isset($headers['Access-Control-Allow-Origin'])) {
             return;
         }
         $headers['Access-Control-Allow-Origin'] = '*';

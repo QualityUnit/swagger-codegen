@@ -13,30 +13,51 @@
  */
 class RestApi_Result {
 
+    /** @var int */
     private $code;
+    /** @var string */
     private $body;
-    private $headers = array();
+    /** @var string[] */
+    private $headers = [];
 
+    /**
+     * @return int
+     */
     public function getCode() {
         return $this->code;
     }
 
+    /**
+     * @param int $code
+     */
     public function setCode($code) {
         $this->code = $code;
     }
 
+    /**
+     * @return string
+     */
     public function getBody() {
         return $this->body;
     }
 
+    /**
+     * @param string $body
+     */
     public function setBody($body) {
         $this->body = $body;
     }
 
+    /**
+     * @return string[]
+     */
     public function getHeaders() {
         return $this->headers;
     }
 
+    /**
+     * @param string[] $headers
+     */
     public function setHeaders($headers) {
         $this->headers = $headers;
     }

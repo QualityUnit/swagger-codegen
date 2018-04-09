@@ -36,7 +36,12 @@ class RestApi_Auth {
         return self::$instance = static::getInstance($request);
     }
 
-    protected static function getInstance($request) {
+    /**
+     * @param \Slim\Http\Request $request
+     *
+     * @return RestApi_Auth
+     */
+    protected static function getInstance(\Slim\Http\Request $request) {
         return new RestApi_Auth($request);
     }
 
@@ -98,7 +103,7 @@ class RestApi_Auth {
      */
     public function checkScope($scopes) {
         if (!is_array($scopes)) {
-            $scopes = array($scopes);
+            $scopes = [$scopes];
         }
         if(empty($scopes)) {
             return;
@@ -117,5 +122,4 @@ class RestApi_Auth {
         }
         return $this->role->hasPrivilege($name);
     }
-    
 }
