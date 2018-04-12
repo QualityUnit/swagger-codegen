@@ -33,7 +33,7 @@ class RestApi_Response {
             if ($object instanceof RestApi_HasHeaders) {
                 $headers = $object->getHeaders();
             }
-            $result = RestApi_Make::result(json_encode($object), 200, $headers);
+            $result = RestApi_Make::result($object, 200, $headers);
         }
         
         $this->fillResponse($result);
