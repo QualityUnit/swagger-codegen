@@ -12,6 +12,7 @@ package {{supportPackage}};
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.lang.IllegalArgumentException;
@@ -64,7 +65,7 @@ public class ApiClient {
         
         for (Map.Entry<String, List<?>> param : queryParams.entrySet()) {
             for (Object value : param.getValue()) {
-                url.append(param.getKey()).append('=').append(String.valueOf(value)).append('&');
+                url.append(param.getKey()).append('=').append(URL.encodeQueryString(String.valueOf(value))).append('&');
             }
         }
 
