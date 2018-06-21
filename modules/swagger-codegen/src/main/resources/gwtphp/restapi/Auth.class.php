@@ -68,7 +68,7 @@ class RestApi_Auth {
      */
     public static function checkPrivileges($privileges) {
         if (self::$instance === null) {
-            throw RestApi_Make::error(403, 'You do not have sufficient privileges');
+            throw new RestApi_ProcessingException(403, 'You do not have sufficient privileges');
         }
         self::$instance->checkScope($privileges);
     }
@@ -113,7 +113,7 @@ class RestApi_Auth {
                 return;
             }
         }
-        throw RestApi_Make::error(403, 'You do not have sufficient privileges');
+        throw new RestApi_ProcessingException(403, 'You do not have sufficient privileges');
     }
     
     private function hasPrivilegePrivate($name) {

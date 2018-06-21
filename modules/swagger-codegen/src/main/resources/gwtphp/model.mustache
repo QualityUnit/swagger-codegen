@@ -127,11 +127,11 @@ class {{modelPackage}}_{{classname}} implements JsonSerializable, RestApi_HasHea
      */
     public function check() { {{#vars}}{{#required}}
         {{#isPrimitiveType}}if ($this->{{getter}}() == '') {
-            throw RestApi_Make::error(400, '{{name}} is required');
+            throw new RestApi_ProcessingException(400, '{{name}} is required');
         }{{/isPrimitiveType}}{{^isPrimitiveType}}$this->{{getter}}()->check();{{/isPrimitiveType}}{{/required}}{{#isEnum}}
         $allowed_values = [{{#allowableValues}}{{#values}}"{{{this}}}"{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}];
         if (!in_array($this->{{getter}}(), $allowed_values)) {
-            throw RestApi_Make::error(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
+            throw new RestApi_ProcessingException(400, "Invalid value for '{{name}}', must be one of {{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}");
         }{{/isEnum}}{{/vars}}
     }
 }
