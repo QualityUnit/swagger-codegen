@@ -144,7 +144,7 @@
   </dependencies>
   <properties>
     <swagger-annotations-version>1.5.0</swagger-annotations-version>
-    <retrofit-version>2.0.0-beta4</retrofit-version>
+    <retrofit-version>2.0.0</retrofit-version>
     <oltu-version>1.0.0</oltu-version>
     <maven-plugin-version>1.0.0</maven-plugin-version>
     <junit-version>4.12</junit-version>
